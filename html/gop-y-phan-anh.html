@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nhà Chung — Góp ý / Phản ánh</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@700&display=swap" rel="stylesheet">
+  <style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --primary:           #4137f9;
+  --primary-hover:     #3028e0;
+  --primary-light:     #f7f5ff;
+  --primary-border:    #d3c5fd;
+  --primary-bg-active: #f1f7ff;
+
+  --text:              #222222;
+  --text-272727:       #272727;
+  --text-secondary:    #3e4265;
+  --text-gray:         #585c7b;
+  --text-placeholder:  #b4b7c9;
+  --text-section-label:#959595;
+
+  --canvas:            #ffffff;
+  --surface-hover:     #fafafa;
+  --surface-subtle:    #f7f7f7;
+  --surface-action:    #f7f8fc;
+
+  --border:            #e2e5f1;
+  --border-input:      #d4d7e5;
+  --border-subtle:     #eff2fc;
+  --border-divider:    #dedede;
+
+  --r-xs:   4px;
+  --r-sm:   8px;
+  --r-md:   10px;
+  --r-lg:   12px;
+  --r-xl:   14px;
+  --r-card: 20px;
+
+  --shadow-sidebar: 2px 0 10px rgba(89,89,89,.05);
+
+  --sidebar-w: 268px;
+
+  --fs-xs:   12px;
+  --fs-sm:   13px;
+  --fs-body: 14px;
+  --fs-md:   16px;
+  --fs-3xl:  28px;
+
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-title:"Manrope", "Inter", sans-serif;
+}
+
+/* ============================================================
+   RESET
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: var(--font-body);
+  background: var(--surface-hover);
+  color: var(--text-272727);
+  display: flex;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+a { color: inherit; text-decoration: none; }
+button { font: inherit; cursor: pointer; border: 0; background: none; }
+img { display: block; }
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: var(--canvas);
+  border-right: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sidebar);
+  display: flex;
+  flex-direction: column;
+  padding: 16px 0 24px;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.sidebar-logo {
+  padding: 0 16px 30px;
+  display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+}
+.sidebar-logo-icon { width: 36px; height: 40px; flex-shrink: 0; }
+.sidebar-logo-text { width: 114px; height: 23px; flex-shrink: 0; }
+.sidebar-nav-group {
+  display: flex; flex-direction: column; gap: 20px; padding: 0 16px;
+}
+.nav-section { display: flex; flex-direction: column; gap: 2px; }
+.nav-section-label {
+  font-size: 12px; font-weight: 700; color: var(--text-section-label);
+  text-transform: uppercase; letter-spacing: .5px; padding: 0 8px 6px; line-height: 16px;
+}
+.nav-row { display: flex; align-items: center; position: relative; border-radius: var(--r-sm); width: 100%; }
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px; border-radius: var(--r-sm); cursor: pointer;
+  color: var(--text-272727); font-size: var(--fs-body); font-weight: 400;
+  line-height: 22px; width: 236px; flex-shrink: 0; transition: background .15s;
+}
+.nav-item:hover  { background: var(--surface-hover); }
+.nav-item.active { background: var(--primary-bg-active); color: var(--primary); font-weight: 600; }
+.nav-item .nav-icon {
+  width: 20px; height: 20px; flex: 0 0 20px;
+  filter: brightness(0) opacity(0.5);
+}
+.nav-item.active .nav-icon {
+  filter: brightness(0) saturate(100%) invert(22%) sepia(97%) saturate(2000%) hue-rotate(237deg) brightness(107%) contrast(104%);
+}
+.nav-item span   { flex: 1; }
+.nav-item span.nav-badge { flex: none; }
+.nav-bar { display: none; }
+.nav-badge {
+  background: var(--primary-bg-active); color: var(--primary);
+  font-size: var(--fs-xs); font-weight: 700; padding: 4px 6px;
+  border-radius: 10px; line-height: 1; margin-left: auto; flex: none; white-space: nowrap;
+}
+.sidebar-footer { margin-top: auto; padding: 16px 16px 0; border-top: 1px solid var(--border-divider); }
+.sidebar-footer-text { font-size: 12px; color: var(--text-gray); line-height: 18px; margin-bottom: 8px; }
+.sidebar-collapse {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px; border-radius: var(--r-sm); cursor: pointer; color: var(--text-gray);
+}
+
+/* ============================================================
+   MAIN
+   ============================================================ */
+.main { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; min-width: 0; }
+
+/* HEADER */
+.header {position:relative;z-index:200;
+  background: var(--canvas); border-bottom: 1px solid var(--border-subtle);
+  padding: 10px 20px; display: flex; align-items: center; gap: 20px; flex-shrink: 0;
+}
+.building-selector {
+  display: flex; align-items: center; gap: 10px;
+  border: 1px solid var(--border-input); border-radius: var(--r-sm);
+  padding: 8px 12px; width: 236px; flex-shrink: 0; cursor: pointer;
+}
+.building-selector img { flex: 0 0 auto; }
+.building-selector .label {
+  flex: 1; font-size: 14px; font-weight: 500; color: var(--text-272727);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.search-bar {
+  flex: 1; display: flex; align-items: center; gap: 8px;
+  border: 1px solid var(--border-input); border-radius: var(--r-md);
+  padding: 0 12px; height: 40px; background: var(--canvas);
+}
+.search-bar input {
+  flex: 1; border: 0; outline: 0; font: inherit;
+  font-size: var(--fs-body); color: var(--text); background: transparent;
+}
+.search-bar input::placeholder { color: var(--text-placeholder); }
+.header-right { display: flex; align-items: center; gap: 14px; margin-left: auto; }
+.notif-btn {
+  position: relative; width: 36px; height: 36px; background: #f7f7f7;
+  border-radius: var(--r-md); display: inline-flex; align-items: center;
+  justify-content: center; padding: 6px; cursor: pointer; flex-shrink: 0;
+}
+.notif-btn .notif-dot {
+  position: absolute; top: 5px; left: 19px; width: 10px; height: 10px; pointer-events: none;
+}
+.user-pill { display: flex; align-items: center; gap: 18px; height: 32px; border-radius: var(--r-md); cursor: pointer; }
+.user-pill .avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; flex: 0 0 32px; }
+.user-info { display: flex; flex-direction: column; gap: 2px; }
+.user-name { font-weight: 600; font-size: 14px; line-height: 16px; white-space: nowrap; color: var(--text-272727); }
+.user-apt  { font-size: 12px; color: var(--text-gray); line-height: 14px; white-space: nowrap; }
+
+/* CONTENT SCROLL */
+.content-scroll {
+  flex: 1; overflow-y: auto; overflow-x: hidden; background: var(--surface-hover);
+}
+
+/* ============================================================
+   FEEDBACK PAGE LAYOUT
+   ============================================================ */
+.fb-page {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Page header ── */
+.page-hd { flex-shrink: 0; }
+.page-title-row {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+  margin-bottom: 16px;
+}
+.page-title { font-size: var(--fs-3xl); font-weight: 700; color: var(--text-272727); line-height: 36px; }
+.page-sub   { font-size: var(--fs-md); color: var(--text-secondary); margin-top: 6px; font-weight: 500; line-height: 24px; }
+.btn-new {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 18px; background: var(--primary);
+  border-radius: var(--r-md); font-size: var(--fs-body); font-weight: 500; color: #fff;
+  cursor: pointer; white-space: nowrap; flex-shrink: 0; margin-top: 4px;
+  line-height: 22px;
+}
+
+/* ── Tabs ── */
+.tabs { display: flex; border-bottom: 1px solid var(--border); }
+.tab {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 0 18px 14px; font-size: var(--fs-body); font-weight: 500;
+  color: var(--text-gray); cursor: pointer; position: relative;
+  white-space: nowrap; text-decoration: none; transition: color .15s;
+}
+.tab.active { color: var(--primary); font-weight: 600; }
+.tab.active::after {
+  content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+  height: 2px; background: var(--primary); border-radius: 2px 2px 0 0;
+}
+.tab-count {
+  font-size: 11px; font-weight: 700; padding: 2px 7px;
+  border-radius: 10px; line-height: 17px;
+}
+.tab.active .tab-count { background: var(--primary-bg-active); color: var(--primary); }
+.tab:not(.active) .tab-count { background: #f0f1f5; color: var(--text-gray); }
+
+/* ── Three-column layout ── */
+.three-col {
+  display: flex; gap: 16px; align-items: flex-start;
+}
+
+/* ============================================================
+   LIST COLUMN
+   ============================================================ */
+.col-list {
+  width: 372px; flex-shrink: 0;
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+.list-search-row { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+.list-search {
+  flex: 1; display: flex; align-items: center; gap: 10px;
+  border: 1px solid var(--border-input); border-radius: var(--r-md);
+  padding: 0 15px; height: 44px; background: var(--canvas);
+}
+.list-search input {
+  flex: 1; border: 0; outline: 0; font: inherit;
+  font-size: 14px; background: transparent; color: var(--text);
+}
+.list-search input::placeholder { color: var(--text-placeholder); }
+.list-filter-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 0 16px; height: 44px; background: var(--canvas);
+  border: 1px solid var(--border-input); border-radius: var(--r-md);
+  font-size: 13.5px; font-weight: 400; color: var(--text-272727);
+  cursor: pointer; flex-shrink: 0; white-space: nowrap;
+}
+
+/* Feedback card */
+.fb-card {
+  background: var(--canvas); border: 1px solid var(--border);
+  border-radius: var(--r-card); padding: 16px;
+  cursor: pointer; transition: all .15s; flex-shrink: 0;
+}
+.fb-card:hover { background: var(--surface-hover); }
+.fb-card.active {
+  background: #f7f5ff; border-color: #d3c5fd;
+  box-shadow: 0 2px 5px rgba(65,55,249,.12);
+}
+/* card top: icon + body + dot */
+.card-top-row {
+  display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px;
+}
+.card-icon-bg {
+  width: 44px; height: 44px; border-radius: var(--r-md); background: var(--surface-action);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.fb-card.active .card-icon-bg { background: var(--canvas); }
+.card-body { flex: 1; min-width: 0; }
+.card-category { font-size: 11.5px; color: var(--text-gray); margin-bottom: 4px; line-height: normal; }
+.card-title {
+  font-size: 13.5px; font-weight: 600; color: var(--text-272727); line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.card-status-dot { width: 8px; height: 8px; border-radius: 4px; flex-shrink: 0; margin-top: 4px; }
+/* card bottom: date + badge */
+.card-bottom-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.card-date { font-size: 11.5px; color: var(--text-gray); }
+.card-badge {
+  display: inline-flex; align-items: center;
+  padding: 3px 10px; border-radius: 999px;
+  font-size: 11.5px; font-weight: 600; white-space: nowrap;
+}
+
+/* List pagination */
+.list-pagination {
+  display: flex; align-items: center; justify-content: space-between; gap: 6px;
+  flex-shrink: 0; padding-bottom: 4px; margin-top: 2px;
+}
+.list-pagination-label {
+  font-size: 12px; color: var(--text-secondary); white-space: nowrap;
+}
+.list-pagination-btns { display: flex; align-items: center; gap: 6px; }
+.lpg-btn {
+  min-width: 32px; height: 32px; border-radius: var(--r-sm);
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0 8px; font-size: var(--fs-sm); color: var(--text-secondary);
+  border: 1px solid var(--border-input); background: var(--canvas);
+  cursor: pointer; line-height: 1;
+}
+.lpg-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; font-weight: 600; }
+.lpg-btn:hover:not(.active) { background: var(--surface-hover); }
+.lpg-btn.arrow { padding: 0; min-width: 32px; }
+
+/* ============================================================
+   DETAIL COLUMN
+   ============================================================ */
+.col-detail {
+  flex: 1; min-width: 0;
+  background: var(--canvas); border: 1px solid var(--border);
+  border-radius: var(--r-card); padding: 20px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+.detail-topbar {
+  display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+}
+.detail-back {
+  display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+  color: var(--text-secondary);
+}
+.detail-back span { font-size: 13.5px; line-height: normal; }
+.detail-actions { display: flex; align-items: center; gap: 8px; }
+.detail-btn-follow {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 15px; background: var(--canvas);
+  border: 1px solid var(--border-input); border-radius: var(--r-md);
+  font-size: 13px; font-weight: 500; color: var(--text-272727); cursor: pointer;
+}
+.detail-btn-more {
+  width: 34px; height: 34px; background: var(--canvas);
+  border: 1px solid var(--border-input); border-radius: var(--r-md);
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+}
+
+.detail-status {
+  display: inline-flex; align-items: center;
+  padding: 4px 12px; border-radius: 999px;
+  font-size: 12px; font-weight: 600; white-space: nowrap;
+  align-self: flex-start;
+}
+
+.detail-title {
+  font-family: var(--font-title);
+  font-size: 22px; font-weight: 700; color: var(--text-272727); line-height: 1.3;
+}
+
+/* Author row */
+.detail-author { display: flex; align-items: center; gap: 12px; }
+.author-avatar {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(180deg, #d7e0ee 0%, #c0cadb 100%);
+  overflow: hidden;
+}
+.author-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.author-name { font-size: 13.5px; font-weight: 600; color: var(--text-272727); line-height: normal; }
+.author-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.author-sub  { font-size: 11.5px; color: var(--text-gray); line-height: normal; }
+.meta-sep { width: 3px; height: 3px; border-radius: 50%; background: #b4b7c9; flex-shrink: 0; }
+.meta-date { display: flex; align-items: center; gap: 4px; }
+
+.detail-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.65; }
+
+/* Attachments */
+.att-title {
+  font-family: var(--font-title);
+  font-size: 15px; font-weight: 700; color: var(--text-272727);
+}
+.att-grid { display: flex; gap: 10px; }
+.att-img {
+  flex: 1; aspect-ratio: 1 / 1; min-width: 0; border-radius: var(--r-lg);
+  object-fit: cover;
+}
+.att-overlay {
+  flex: 1; aspect-ratio: 1 / 1; min-width: 0; border-radius: var(--r-lg);
+  position: relative; overflow: hidden;
+}
+.att-overlay-bg { width: 100%; height: 100%; object-fit: cover; display: block; }
+.att-overlay-dim {
+  position: absolute; inset: 0; background: rgba(0,0,0,.5);
+  display: flex; align-items: center; justify-content: center;
+}
+.att-overlay-num { font-size: 22px; font-weight: 700; color: #fff; }
+
+/* History */
+.history-title {
+  font-family: var(--font-title);
+  font-size: 15px; font-weight: 700; color: var(--text-272727);
+}
+.history-list { display: flex; flex-direction: column; }
+.history-item {
+  position: relative; padding-left: 36px; padding-bottom: 22px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.history-item:last-child { padding-bottom: 0; }
+.history-dot {
+  position: absolute; left: 0; top: 0;
+  width: 24px; height: 24px; border-radius: 12px; border: 2px solid;
+  background: var(--canvas); display: flex; align-items: center; justify-content: center;
+  z-index: 1;
+}
+.history-line {
+  position: absolute; left: 11px; top: 26px; bottom: -6px;
+  width: 2px; background: var(--border);
+}
+.history-row { display: flex; align-items: baseline; gap: 20px; }
+.history-label { flex: 1; min-width: 0; font-size: 13.5px; font-weight: 600; color: var(--text-272727); line-height: normal; }
+.history-time  { font-size: 11.5px; color: var(--text-gray); white-space: nowrap; flex-shrink: 0; line-height: normal; }
+.history-text  { font-size: 13px; color: var(--text-secondary); line-height: 1.55; }
+
+/* Comment bar */
+.comment-area {
+  border-top: 1px solid var(--border-subtle); padding-top: 19px;
+  display: flex; gap: 10px; align-items: center; flex-shrink: 0;
+}
+.comment-input {
+  flex: 1; height: 44px; border: 1px solid var(--border-input);
+  border-radius: var(--r-md); background: var(--canvas);
+  display: flex; align-items: center; padding: 0 15px; min-width: 0;
+}
+.comment-input input {
+  flex: 1; border: 0; outline: 0; font: inherit;
+  font-size: var(--fs-md); background: transparent; color: var(--text); min-width: 0;
+}
+.comment-input input::placeholder { color: var(--text-placeholder); }
+.comment-send {
+  width: 44px; height: 44px; background: var(--primary);
+  border-radius: var(--r-md); display: inline-flex;
+  align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+}
+
+/* ============================================================
+   RAIL COLUMN
+   ============================================================ */
+.col-rail {
+  width: 260px; flex-shrink: 0;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.rail-section {
+  background: var(--canvas); border: 1px solid var(--border);
+  border-radius: var(--r-card); padding: 17px 19px; flex-shrink: 0;
+}
+.rail-title {
+  font-family: var(--font-title);
+  font-size: 14.5px; font-weight: 700; color: var(--text-272727); margin-bottom: 14px;
+}
+.info-row { display: flex; flex-direction: column; gap: 4px; }
+.info-row + .info-row { margin-top: 14px; }
+.info-label { font-size: 11.5px; color: var(--text-gray); line-height: normal; }
+.info-value {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 500; color: var(--text-272727); line-height: normal;
+}
+.info-dot { width: 8px; height: 8px; border-radius: 4px; flex-shrink: 0; }
+
+.quick-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0; cursor: pointer; transition: opacity .15s;
+}
+.quick-item:hover { opacity: .75; }
+.quick-item + .quick-item { border-top: 1px solid var(--border-subtle); }
+.quick-icon  { width: 18px; height: 18px; flex-shrink: 0; }
+.quick-label { flex: 1; font-size: 13px; color: var(--text-272727); min-width: 0; }
+.quick-label.danger { color: #f5222d; }
+.quick-arrow { width: 14px; height: 14px; flex-shrink: 0; opacity: .5; }
+
+/* ============================================================
+   AI BANNER
+   ============================================================ */
+.ai-banner {
+  position: relative; overflow: hidden;
+  border: 1px solid #d3c5fd; border-radius: var(--r-md);
+  padding: 23px 24px 23px 220px; flex-shrink: 0;
+}
+.ai-banner-bg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; border-radius: var(--r-md); pointer-events: none;
+}
+.ai-banner-inner {
+  position: relative; display: flex; align-items: center;
+  justify-content: space-between; gap: 20px;
+}
+.ai-banner-content { display: flex; flex-direction: column; gap: 16px; }
+.ai-banner-title {
+  font-size: 28px; font-weight: 700; color: var(--primary);
+  line-height: 36px; margin-bottom: 4px;
+}
+.ai-banner-sub {
+  font-size: 18px; font-weight: 500; color: var(--text-272727); line-height: 26px;
+}
+.ai-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.ai-chip {
+  background: #fff; border-radius: var(--r-lg);
+  padding: 8px 10px; font-size: var(--fs-body); font-weight: 500;
+  color: var(--text-272727); white-space: nowrap; cursor: pointer;
+  line-height: 22px;
+}
+.ai-cta {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--primary); color: #fff;
+  padding: 8px 10px; border-radius: var(--r-lg);
+  font-size: var(--fs-body); font-weight: 500; cursor: pointer;
+  white-space: nowrap; flex-shrink: 0; line-height: 22px;
+}
+  
+/* ── Dropdown system ── */
+.building-selector{position:relative;}
+.notif-btn{position:relative;}
+.user-pill{position:relative;}
+.dd{position:fixed;z-index:9999;background:var(--canvas);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:0 8px 32px rgba(0,0,0,.14);display:none;}
+.dd.open{display:block;animation:ddIn .14s ease;}
+@keyframes ddIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+/* Building dropdown */
+.dd-building{min-width:272px;}
+.dd-search{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);}
+.dd-search svg{width:15px;height:15px;color:var(--text-placeholder);flex-shrink:0;}
+.dd-search input{flex:1;border:0;outline:0;font:inherit;font-size:13px;background:transparent;color:var(--text);}
+.dd-search input::placeholder{color:var(--text-placeholder);}
+.dd-sep-label{font-size:11px;font-weight:700;color:var(--text-placeholder);text-transform:uppercase;letter-spacing:.5px;padding:10px 14px 3px;}
+.dd-bld-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;transition:background .15s;}
+.dd-bld-item:hover{background:var(--surface-hover);}
+.dd-bld-item.active{background:var(--primary-bg);}
+.dd-bld-ico{width:30px;height:30px;border-radius:var(--r-sm);background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.dd-bld-ico svg{width:15px;height:15px;color:var(--primary);}
+.dd-bld-ico.muted{background:var(--surface-subtle);}
+.dd-bld-ico.muted svg{color:var(--text-gray);}
+.dd-bld-info{flex:1;}
+.dd-bld-name{font-size:13px;font-weight:600;color:var(--text);}
+.dd-bld-meta{font-size:11px;color:var(--text-gray);margin-top:1px;}
+.dd-bld-check svg{width:14px;height:14px;color:var(--primary);}
+.dd-divider{height:1px;background:var(--border);margin:4px 0;}
+/* Notification dropdown */
+.dd-notif{width:348px;}
+.dd-nt-hd{display:flex;align-items:center;justify-content:space-between;padding:13px 16px 9px;border-bottom:1px solid var(--border);}
+.dd-nt-hd-title{font-size:14px;font-weight:700;color:var(--text);}
+.dd-nt-mark{font-size:12px;font-weight:600;color:var(--primary);cursor:pointer;}
+.dd-nt-grp{font-size:11px;font-weight:700;color:var(--text-placeholder);text-transform:uppercase;letter-spacing:.4px;padding:9px 16px 3px;}
+.dd-nt-item{display:flex;align-items:flex-start;gap:10px;padding:9px 16px;cursor:pointer;transition:background .15s;position:relative;}
+.dd-nt-item:hover{background:var(--surface-hover);}
+.dd-nt-item.unread{background:var(--primary-bg);}
+.dd-nt-item.unread::before{content:'';position:absolute;left:5px;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:var(--primary);}
+.dd-nt-ico{width:30px;height:30px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.dd-nt-ico svg{width:14px;height:14px;}
+.dd-nt-body{flex:1;min-width:0;text-align:left;}
+.dd-nt-title{font-size:13px;font-weight:600;color:var(--text);line-height:1.4;text-align:left;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.dd-nt-meta{font-size:12px;color:var(--text-placeholder);margin-top:3px;text-align:left;}
+.dd-nt-footer{display:block;text-align:center;padding:11px;font-size:12px;font-weight:600;color:var(--primary);border-top:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.dd-nt-footer:hover{background:var(--surface-hover);}
+/* User dropdown */
+.dd-user{min-width:216px;}
+.dd-usr-info{display:flex;align-items:center;gap:10px;padding:13px 16px 16px;}
+.dd-usr-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+.dd-usr-name{font-size:13px;font-weight:700;color:var(--text);}
+.dd-usr-email{font-size:11px;color:var(--text-gray);margin-top:1px;}
+.dd-menu-item{display:flex;align-items:center;gap:9px;padding:9px 16px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text);transition:background .15s;}
+.dd-menu-item:hover{background:var(--surface-hover);}
+.dd-menu-item svg{width:15px;height:15px;color:var(--text-gray);flex-shrink:0;}
+.dd-menu-item.danger{color:var(--danger);}
+.dd-menu-item.danger svg{color:var(--danger);}
+.dd-menu-item.danger:hover{background:#fff5f5;}
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     SIDEBAR
+     ============================================================ -->
+<aside class="sidebar">
+
+  <div class="sidebar-logo">
+    <svg class="sidebar-logo-icon" width="36" height="40" viewBox="0 0 36 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 12.6995V36.7148C0 36.8859 0.0894999 37.043 0.235683 37.13L3.58397 39.1241C3.73215 39.2122 3.91711 39.2142 4.06727 39.1281L7.61545 37.086C7.76461 37 7.8571 36.8399 7.8571 36.6668V16.7058C7.8571 16.5337 7.76561 16.3736 7.61744 16.2875L0.719977 12.2813C0.399766 12.0952 0 12.3273 0 12.6995Z" fill="#4137F9"/>
+      <path d="M19.4784 8.91446L27.7512 13.7201C27.8993 13.8062 27.9908 13.9662 27.9908 14.1383V30.0301C27.9908 30.2973 28.2056 30.5134 28.4711 30.5134H35.3676C35.6331 30.5134 35.8479 30.2973 35.8479 30.0301V9.57482C35.8479 9.40273 35.7564 9.24264 35.6082 9.15659L19.9587 0.0655729C19.6385 -0.12053 19.2387 0.111598 19.2387 0.483804V8.49523C19.2387 8.66732 19.3302 8.82741 19.4784 8.91346V8.91446Z" fill="#A7A3F7"/>
+      <path d="M15.8893 0.0655729L1.13768 8.6353C0.817474 8.82141 0.817474 9.28566 1.13768 9.47177L8.03315 13.478C8.18133 13.564 8.3643 13.564 8.51347 13.478L16.3696 8.91446C16.5177 8.82841 16.6092 8.66832 16.6092 8.49623V0.483804C16.6092 0.111598 16.2095 -0.12053 15.8893 0.0655729Z" fill="#4137F9"/>
+      <path d="M31.9184 40.0005C34.0878 40.0005 35.8464 38.231 35.8464 36.0483C35.8464 33.8656 34.0878 32.0961 31.9184 32.0961C29.749 32.0961 27.9903 33.8656 27.9903 36.0483C27.9903 38.231 29.749 40.0005 31.9184 40.0005Z" fill="#4137F9"/>
+      <path d="M17.72 14.6407C15.3164 14.6407 13.3613 16.6068 13.3613 19.0261C13.3613 21.4455 15.206 23.3185 17.6096 23.4016C17.6832 23.3926 17.7568 23.3926 17.8115 23.4016H17.8761C20.225 23.3185 22.0687 21.3985 22.0786 19.0261C22.0786 16.6078 20.1245 14.6407 17.72 14.6407Z" fill="#4137F9"/>
+      <path d="M22.3805 25.8569C19.8208 24.1399 15.6461 24.1399 13.0675 25.8569C11.902 26.6413 11.2596 27.7029 11.2596 28.8385C11.2596 29.9742 11.902 31.0267 13.0576 31.8022C14.3424 32.6697 16.03 33.1039 17.7185 33.1039C19.4071 33.1039 21.0947 32.6697 22.3795 31.8022C23.536 31.0177 24.1774 29.9652 24.1774 28.8205C24.1685 27.6849 23.535 26.6323 22.3795 25.8569H22.3805Z" fill="#4137F9"/>
+    </svg>
+    <svg class="sidebar-logo-text" width="114" height="23" viewBox="0 0 114 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3.08376 0.41618L10.7434 11.7261V0.41618H13.6282V17.0307H10.7932L3.08376 5.72081V17.0307H0V0.666398C0 0.605345 0.079581 0.513264 0 0.41618H3.08376Z" fill="#161A48"/>
+      <path d="M111.115 15.3252C108.772 17.8894 104.134 17.0627 102.672 13.962C100.157 8.62835 105.228 2.80527 110.467 6.21925L111.215 6.91786V5.51664H114V17.4771C114 17.8704 113.652 19.0575 113.476 19.4518C111.549 23.7666 103.993 23.5974 102.56 18.9293L105.285 18.0195C106.038 20.5267 110.022 20.6018 110.895 18.1557C110.939 18.0296 111.115 17.449 111.115 17.377V15.3252ZM107.811 7.84667C103.858 8.23001 104.125 14.8558 108.769 14.2152C112.193 13.7428 111.9 7.45033 107.811 7.84667Z" fill="#161A48"/>
+      <path d="M51.2667 12.9877C53.4541 15.1626 57.8182 14.8553 59.1074 11.8347L62.1334 12.6174C60.8015 17.3075 54.6399 18.4615 50.7325 16.3777C45.4413 13.5552 45.127 5.19392 49.8481 1.67184C53.7197 -1.21668 59.8515 -0.34792 62.0648 4.16702L59.3213 5.60427C59.1332 5.62129 58.7184 4.81959 58.5453 4.61441C56.6622 2.37946 52.903 2.63969 51.0369 4.76854C49.1866 6.87839 49.2672 10.998 51.2676 12.9877H51.2667Z" fill="#161A48"/>
+      <path d="M19.4978 0.0146542V6.72051C21.5023 4.48656 25.6743 4.68773 26.877 7.65332C26.9496 7.83348 27.257 8.75929 27.257 8.87238V17.0295H24.2727V10.2736C24.2727 8.49606 23.0322 7.76442 21.362 8.04566C20.5503 8.18278 19.4978 9.36081 19.4978 10.1735V17.0295H16.613V0.0146542H19.4978Z" fill="#161A48"/>
+      <path d="M67.0478 0.0146542V6.72051L68.2475 5.77568C71.0059 4.25435 74.8069 5.89779 74.8069 9.27273V17.0295H71.9221V10.1735C71.9221 9.94732 71.6834 9.26473 71.562 9.03453C70.7473 7.48517 68.14 7.70837 67.395 9.22169C67.3422 9.32978 67.0478 10.2176 67.0478 10.2736V17.0295H64.163V0.0146542H67.0478Z" fill="#161A48"/>
+      <path d="M39.5915 17.0319H36.8062C36.8171 16.6846 36.7853 16.3173 36.7047 15.981C36.6003 15.5456 36.4779 16.019 36.3645 16.1331C34.6366 17.8856 30.6217 17.8136 29.427 15.4986C28.0314 12.7962 30.1482 10.1259 32.9763 10.1259H36.5077C36.5286 9.26713 36.6152 8.58053 35.9029 7.982C35.0176 7.23836 33.0649 7.31042 32.3864 8.33131C32.1935 8.62156 32.1228 9.2411 31.8612 9.31216C31.5091 9.25311 29.3932 9.10098 29.3504 8.86878C29.7812 5.48382 33.5881 4.74818 36.3874 5.49383C38.3431 6.01529 39.2911 7.39349 39.4811 9.38723C39.7149 11.8494 39.2523 14.5637 39.5925 17.0319H39.5915ZM36.5077 12.0275H33.5732C33.426 12.0275 32.5854 12.4369 32.4262 12.575C31.3051 13.5499 32.2213 15.0842 33.5712 15.1773C35.6304 15.3184 36.7843 14.0923 36.5077 12.0275Z" fill="#161A48"/>
+      <path d="M100.471 17.0268H97.4871V9.77049C97.4871 9.5613 97.0941 8.80665 96.934 8.62549C96.1203 7.70969 94.1466 7.80777 93.3558 8.71657C93.1807 8.91774 92.7122 9.96265 92.7122 10.1708V17.0268H89.8274V5.51677H92.6127V6.81691L93.7766 5.83705C96.3878 4.20063 100.471 5.86308 100.471 9.16996V17.0268Z" fill="#161A48"/>
+      <path d="M84.556 5.5178H87.4408V17.0278H84.6555V15.7267C82.7605 18.1318 78.4541 17.8526 77.2167 14.954C77.0784 14.6308 76.7969 13.6889 76.7969 13.3747V5.5178H79.6319L79.7812 5.66793V12.9743C79.7812 13.0414 80.0647 13.6139 80.1353 13.719C81.0843 15.1122 83.3892 14.8139 84.179 13.3957C84.2417 13.2836 84.556 12.4278 84.556 12.3738V5.5178Z" fill="#161A48"/>
+      <path d="M31.3356 0.617431H34.4691L35.997 3.7882L35.8618 4.0204H33.4743L31.3903 1.11386L31.3356 0.617431Z" fill="#161A48"/>
+    </svg>
+  </div>
+
+  <div class="sidebar-nav-group">
+    <!-- Main -->
+    <div class="nav-section">
+      <div class="nav-row">
+        <a href="dashboard.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/948dfd1b-cf10-487e-a625-2f3992055751" alt="" />
+          <span>Dashboard</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="notification.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/48c83959-0e4a-4796-92aa-855c591bea09" alt="" />
+          <span>Thông báo</span>
+          <span class="nav-badge" style="background:#f9c268;color:#272727;">298</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="kho-tai-lieu.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/4d81f87e-d02e-4f11-bbeb-1cbb8bd237cd" alt="" />
+          <span>Kho tài liệu</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="gop-y-phan-anh.html" class="nav-item active">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/e7a24a0c-9154-4fe5-b775-e28b59efd97b" alt="" />
+          <span>Góp ý / Phản ánh</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="tin-tuc-cong-dong.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/88032ed9-c023-453f-ace1-48bac91b8033" alt="" />
+          <span>Tin tức cộng đồng</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="ai-assistant.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/78e1328a-b252-4727-85bd-ef574d18925e" alt="" />
+          <span>AI Assistant</span>
+        </a><div class="nav-bar"></div>
+      </div>
+    </div>
+
+    <!-- Báo cáo minh bạch -->
+    <div class="nav-section">
+      <div class="nav-section-label">báo cáo minh bạch</div>
+      <div class="nav-row">
+        <a href="tong-quan-tai-chinh.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/704a494d-6aa9-4050-93d6-8be752cc3e38" alt="" />
+          <span>Tổng quan tài chính</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="bao-cao-thu-chi.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/89c6053d-33c3-448d-b8d6-5eaef37341ac" alt="" />
+          <span>Báo cáo thu chi</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="quy-bao-tri.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/73832a3c-38ad-496e-b944-0ebb15cb0d62" alt="" />
+          <span>Quỹ bảo trì</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="van-hanh-bao-tri.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/82bc45d6-8665-4c78-bac3-f9fbb084e888" alt="" />
+          <span>Vận hành &amp; bảo trì</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="kpi-ban-quan-tri.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/4a802188-fa92-4a4d-97e3-f3cf05f15319" alt="" />
+          <span>KPI Ban quản trị</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="bao-cao-dinh-ky.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/6df232ea-f0e0-4733-9c5b-bd32987e6750" alt="" />
+          <span>Báo cáo định kỳ</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="lich-su-luu-tru.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/e68588e5-a681-4c29-aeea-03abf1166456" alt="" />
+          <span>Lịch sử &amp; lưu trữ</span>
+        </a><div class="nav-bar"></div>
+      </div>
+    </div>
+
+    <!-- Cá nhân -->
+    <div class="nav-section">
+      <div class="nav-section-label">cá nhân</div>
+      <div class="nav-row">
+        <a href="ho-so-ca-nhan.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/33744d68-a412-4dd3-aed3-a586e2256f38" alt="" />
+          <span>Hồ sơ cá nhân</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="thanh-vien-gia-dinh.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/29317f27-aa9f-46d1-b44e-723d4ca142d1" alt="" />
+          <span>Thành viên gia đình</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="can-ho-cua-toi.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/5239243c-3028-423d-a5d8-7983f3bcf2c1" alt="" />
+          <span>Căn hộ của tôi</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="cai-dat.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/1effc1b6-c32f-4ad4-8e08-df8f1d1ec6bf" alt="" />
+          <span>Cài đặt</span>
+        </a><div class="nav-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-text">Nhà Chung Platform<br/>Phiên bản 1.0.0</div>
+    <div class="sidebar-collapse">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </div>
+  </div>
+</aside>
+
+<!-- ============================================================
+     MAIN
+     ============================================================ -->
+<div class="main">
+
+  <!-- Header / Topbar -->
+  <header class="header">
+    <div class="building-selector" data-dd="dd-building">
+      <img src="https://www.figma.com/api/mcp/asset/e6f58352-70f9-4da3-97bd-52e295398cd2" alt="" width="20" height="20" />
+      <span class="label">Landmark 1</span>
+      <img src="https://www.figma.com/api/mcp/asset/923cda87-71a9-4618-97e0-fba047a66ea1" alt="" width="18" height="18" />
+      <div class="dd dd-building" id="dd-building">
+        <div class="dd-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Tìm kiếm tòa nhà..." />
+        </div>
+        <div class="dd-sep-label">Của tôi</div>
+        <div class="dd-bld-item active">
+          <div class="dd-bld-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="9" y1="22" x2="9" y2="2"/><line x1="15" y1="6" x2="15" y2="2"/><line x1="15" y1="10" x2="19" y2="10"/><line x1="15" y1="14" x2="19" y2="14"/></svg></div>
+          <div class="dd-bld-info">
+            <div class="dd-bld-name">Landmark 1</div>
+            <div class="dd-bld-meta">Căn hộ A-12.05 · Vinhomes Central Park</div>
+          </div>
+          <div class="dd-bld-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        </div>
+        <div class="dd-divider"></div>
+        <div class="dd-sep-label">Khám phá</div>
+        <div class="dd-bld-item">
+          <div class="dd-bld-ico muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="9" y1="22" x2="9" y2="2"/></svg></div>
+          <div class="dd-bld-info">
+            <div class="dd-bld-name">Landmark 2</div>
+            <div class="dd-bld-meta">Vinhomes Central Park</div>
+          </div>
+        </div>
+        <div class="dd-bld-item">
+          <div class="dd-bld-ico muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="9" y1="22" x2="9" y2="2"/></svg></div>
+          <div class="dd-bld-info">
+            <div class="dd-bld-name">The Grand Marina</div>
+            <div class="dd-bld-meta">Quận 1, TP. Hồ Chí Minh</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="search-bar">
+      <img src="https://www.figma.com/api/mcp/asset/1b7094e2-18f3-4a4d-8483-36ebc09553c2" alt="" width="20" height="20" style="flex:0 0 20px;" />
+      <input placeholder="Tìm kiếm thông báo, phản ánh..." />
+    </div>
+    <div class="header-right">
+      <button class="notif-btn" data-dd="dd-notif" aria-label="Thông báo">
+        <img src="https://www.figma.com/api/mcp/asset/088722b6-433a-4c41-a336-286691d19904" alt="" width="24" height="24" />
+        <img class="notif-dot" src="https://www.figma.com/api/mcp/asset/b33a6d31-df5d-4121-8e34-e50fe1b0c7e5" alt="" />
+        <div id="dd-notif" class="dd dd-notif">
+          <div class="dd-nt-hd">
+            <span class="dd-nt-hd-title">Thông báo</span>
+            <span class="dd-nt-mark">Đánh dấu đã đọc</span>
+          </div>
+          <div class="dd-nt-grp">Hôm nay</div>
+          <div class="dd-nt-item unread">
+            <div class="dd-nt-ico" style="background:#fff3e0;">
+              <svg viewBox="0 0 16 16" fill="none" stroke="#c8761b" stroke-width="1.5"><path d="M8 2L2 13h12L8 2z" stroke-linejoin="round"/><path d="M8 6v4M8 11.5v.5" stroke-linecap="round"/></svg>
+            </div>
+            <div class="dd-nt-body">
+              <div class="dd-nt-title">Bảo trì hệ thống PCCC định kỳ — Tầng B1 &amp; B2</div>
+              <div class="dd-nt-meta">Ban quản trị · 10:30 sáng</div>
+            </div>
+          </div>
+          <div class="dd-nt-item unread">
+            <div class="dd-nt-ico" style="background:#e8f4fd;">
+              <svg viewBox="0 0 16 16" fill="none" stroke="#1890ff" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 7v5M8 5.5v.5" stroke-linecap="round"/></svg>
+            </div>
+            <div class="dd-nt-body">
+              <div class="dd-nt-title">Điều chỉnh phí gửi xe ô tô từ tháng 6/2026</div>
+              <div class="dd-nt-meta">Ban quản trị · 09:15 sáng</div>
+            </div>
+          </div>
+          <div class="dd-nt-grp">Hôm qua</div>
+          <div class="dd-nt-item">
+            <div class="dd-nt-ico" style="background:#e6f9f1;">
+              <svg viewBox="0 0 16 16" fill="none" stroke="#1c9d5f" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="1"/><path d="M5 3V1.5M11 3V1.5M2 7h12" stroke-linecap="round"/></svg>
+            </div>
+            <div class="dd-nt-body">
+              <div class="dd-nt-title">Sự kiện: Ngày hội cư dân 1/6/2026 — Đăng ký tham gia</div>
+              <div class="dd-nt-meta">Ban quản trị · Hôm qua</div>
+            </div>
+          </div>
+          <a href="notification.html" class="dd-nt-footer">Xem tất cả thông báo →</a>
+        </div>
+      </button>
+      <div class="user-pill" data-dd="dd-user">
+        <img class="avatar" src="https://www.figma.com/api/mcp/asset/ee21e768-a070-4e15-ad43-73a28943d4ee" alt="" width="32" height="32" />
+        <div class="user-info">
+          <div class="user-name">Chris Tran</div>
+          <div class="user-apt">Căn hộ A-12.05</div>
+        </div>
+        <img src="https://www.figma.com/api/mcp/asset/d8416c17-0767-465c-b7db-cbcbe7dc0620" alt="" width="10" height="10" style="flex:0 0 10px;" />
+        <div class="dd dd-user" id="dd-user">
+          <div class="dd-usr-info">
+            <img class="dd-usr-avatar" src="https://www.figma.com/api/mcp/asset/ee21e768-a070-4e15-ad43-73a28943d4ee" alt="" />
+            <div>
+              <div class="dd-usr-name">Chris Tran</div>
+              <div class="dd-usr-email">chris.tran@gmail.com</div>
+            </div>
+          </div>
+          <a class="dd-menu-item" href="ho-so-ca-nhan.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Hồ sơ cá nhân
+          </a>
+          <a class="dd-menu-item" href="cai-dat.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            Cài đặt
+          </a>
+          <a class="dd-menu-item danger" href="login.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Đăng xuất
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <div class="content-scroll">
+    <div class="fb-page">
+
+      <!-- ── Page header ── -->
+      <div class="page-hd">
+        <div class="page-title-row">
+          <div>
+            <h1 class="page-title">Góp ý / Phản ánh</h1>
+            <p class="page-sub">Gửi phản ánh và theo dõi tình trạng xử lý từ Ban quản trị</p>
+          </div>
+          <button class="btn-new">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3.333v9.334M3.333 8h9.334" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Tạo phản ánh mới
+          </button>
+        </div>
+        <!-- Tabs -->
+        <nav class="tabs">
+          <a href="#" class="tab active">Tất cả <span class="tab-count">24</span></a>
+          <a href="#" class="tab">Đang xử lý <span class="tab-count">6</span></a>
+          <a href="#" class="tab">Chờ phản hồi <span class="tab-count">3</span></a>
+          <a href="#" class="tab">Đã hoàn thành <span class="tab-count">12</span></a>
+          <a href="#" class="tab">Từ chối <span class="tab-count">3</span></a>
+        </nav>
+      </div>
+
+      <!-- ── Three columns ── -->
+      <div class="three-col">
+
+        <!-- ======================================================
+             LEFT — LIST
+             ====================================================== -->
+        <div class="col-list">
+
+          <!-- Search + filter -->
+          <div class="list-search-row">
+            <div class="list-search">
+              <img src="https://www.figma.com/api/mcp/asset/715b105e-116c-4950-a349-27462ff6de3e" alt="" width="16" height="16" style="flex:0 0 16px;" />
+              <input placeholder="Tìm kiếm phản ánh..." />
+            </div>
+            <button class="list-filter-btn">
+              <img src="https://www.figma.com/api/mcp/asset/02a58ae9-cd99-47a3-838d-c5dfab7af5ef" alt="" width="16" height="16" />
+              Bộ lọc
+            </button>
+          </div>
+
+          <!-- Card 1 — Vệ sinh, Đang xử lý (ACTIVE / SELECTED) -->
+          <div class="fb-card active">
+            <div class="card-top-row">
+              <div class="card-icon-bg">
+                <img src="https://www.figma.com/api/mcp/asset/ec541bd5-fad0-4e4f-8433-b90771929e65" alt="" width="22" height="22" />
+              </div>
+              <div class="card-body">
+                <div class="card-category">Vệ sinh - Môi trường</div>
+                <div class="card-title">Rác thải không được dọn dẹp ở tầng hầm B2</div>
+              </div>
+              <div class="card-status-dot" style="background:#2f7bf6;"></div>
+            </div>
+            <div class="card-bottom-row">
+              <span class="card-date">#PA-240525-0012 &nbsp;·&nbsp; 10:30 &nbsp;·&nbsp; Hôm nay</span>
+              <span class="card-badge" style="background:#e7eeff;color:#2f7bf6;">Đang xử lý</span>
+            </div>
+          </div>
+
+          <!-- Card 2 — Thang máy, Chờ phản hồi -->
+          <div class="fb-card">
+            <div class="card-top-row">
+              <div class="card-icon-bg">
+                <img src="https://www.figma.com/api/mcp/asset/9363a7be-87de-4f19-9dd6-071e4dff1672" alt="" width="22" height="22" />
+              </div>
+              <div class="card-body">
+                <div class="card-category">Thang máy</div>
+                <div class="card-title">Thang máy số 2 bị kẹt và dừng đột ngột</div>
+              </div>
+              <div class="card-status-dot" style="background:#f5a623;"></div>
+            </div>
+            <div class="card-bottom-row">
+              <span class="card-date">#PA-240524-0011 &nbsp;·&nbsp; 16:45 &nbsp;·&nbsp; Hôm qua</span>
+              <span class="card-badge" style="background:#fff1de;color:#c87a13;">Chờ phản hồi</span>
+            </div>
+          </div>
+
+          <!-- Card 3 — Kỹ thuật, Đã hoàn thành -->
+          <div class="fb-card">
+            <div class="card-top-row">
+              <div class="card-icon-bg">
+                <img src="https://www.figma.com/api/mcp/asset/ce3d1932-a120-413f-9915-8ed3c62226f6" alt="" width="22" height="22" />
+              </div>
+              <div class="card-body">
+                <div class="card-category">Kỹ thuật - Hạ tầng</div>
+                <div class="card-title">Đèn hành lang tầng 15 không hoạt động</div>
+              </div>
+              <div class="card-status-dot" style="background:#1cbf6a;"></div>
+            </div>
+            <div class="card-bottom-row">
+              <span class="card-date">#PA-240524-0010 &nbsp;·&nbsp; 09:15 &nbsp;·&nbsp; 2 ngày trước</span>
+              <span class="card-badge" style="background:#e3fbed;color:#1c9d5f;">Đã hoàn thành</span>
+            </div>
+          </div>
+
+          <!-- Card 4 — An ninh, Đang xử lý -->
+          <div class="fb-card">
+            <div class="card-top-row">
+              <div class="card-icon-bg">
+                <img src="https://www.figma.com/api/mcp/asset/cf7184bf-d98a-417b-97b3-a823a07f9355" alt="" width="22" height="22" />
+              </div>
+              <div class="card-body">
+                <div class="card-category">An ninh</div>
+                <div class="card-title">Xe lạ thường xuyên ra vào khu vực căn hộ</div>
+              </div>
+              <div class="card-status-dot" style="background:#2f7bf6;"></div>
+            </div>
+            <div class="card-bottom-row">
+              <span class="card-date">#PA-240523-0009 &nbsp;·&nbsp; 21:30 &nbsp;·&nbsp; 2 ngày trước</span>
+              <span class="card-badge" style="background:#e7eeff;color:#2f7bf6;">Đang xử lý</span>
+            </div>
+          </div>
+
+          <!-- Card 5 — Tiện ích, Từ chối -->
+          <div class="fb-card">
+            <div class="card-top-row">
+              <div class="card-icon-bg">
+                <img src="https://www.figma.com/api/mcp/asset/b4a15126-3fb5-4f75-9541-4a3fff306493" alt="" width="22" height="22" />
+              </div>
+              <div class="card-body">
+                <div class="card-category">Tiện ích - Dịch vụ</div>
+                <div class="card-title">Phòng gym thiếu máy và thiết bị hỏng</div>
+              </div>
+              <div class="card-status-dot" style="background:#ef4444;"></div>
+            </div>
+            <div class="card-bottom-row">
+              <span class="card-date">#PA-240523-0008 &nbsp;·&nbsp; 18:20 &nbsp;·&nbsp; 3 ngày trước</span>
+              <span class="card-badge" style="background:#ffeded;color:#ef4444;">Từ chối</span>
+            </div>
+          </div>
+
+          <!-- Pagination -->
+          <div class="list-pagination">
+            <span class="list-pagination-label">Hiển thị 1 - 5 của 24 phản ánh</span>
+            <div class="list-pagination-btns">
+              <button class="lpg-btn arrow">
+                <img src="https://www.figma.com/api/mcp/asset/f1006bab-257c-4f10-9b0f-708a766e554a" alt="" width="10" height="10" />
+              </button>
+              <button class="lpg-btn active">1</button>
+              <button class="lpg-btn">2</button>
+              <button class="lpg-btn">3</button>
+              <button class="lpg-btn">4</button>
+              <button class="lpg-btn">5</button>
+              <button class="lpg-btn arrow">
+                <img src="https://www.figma.com/api/mcp/asset/553ef640-5114-42f4-b632-43b7aba10442" alt="" width="10" height="10" />
+              </button>
+            </div>
+          </div>
+
+        </div><!-- /col-list -->
+
+        <!-- ======================================================
+             MIDDLE — DETAIL
+             ====================================================== -->
+        <div class="col-detail">
+
+          <!-- Topbar: back + follow + more -->
+          <div class="detail-topbar">
+            <a href="#" class="detail-back">
+              <img src="https://www.figma.com/api/mcp/asset/d061fb6b-8fc1-4ecd-9bdb-a8a976365cf6" alt="" width="15" height="15" />
+              <span>Quay lại danh sách</span>
+            </a>
+            <div class="detail-actions">
+              <button class="detail-btn-follow">
+                <img src="https://www.figma.com/api/mcp/asset/6dd5d7dd-0213-4d29-8a4d-c8369df012e7" alt="" width="14" height="14" />
+                Theo dõi
+              </button>
+              <button class="detail-btn-more">
+                <img src="https://www.figma.com/api/mcp/asset/705aaa04-0fba-4a62-9c13-a4ff3a3a1975" alt="" width="15" height="15" />
+              </button>
+            </div>
+          </div>
+
+          <!-- Status badge -->
+          <div>
+            <span class="detail-status" style="background:#e7eeff;color:#2f7bf6;">Đang xử lý</span>
+          </div>
+
+          <!-- Title -->
+          <h2 class="detail-title">Rác thải không được dọn dẹp ở tầng hầm B2</h2>
+
+          <!-- Author -->
+          <div class="detail-author">
+            <div class="author-avatar"></div>
+            <div class="author-info">
+              <div class="author-name">Nguyễn Hoàng Nam</div>
+              <div class="author-meta">
+                <span class="author-sub">Căn hộ A-12.05</span>
+                <div class="meta-sep"></div>
+                <span class="author-sub">10:30 AM</span>
+                <div class="meta-sep"></div>
+                <div class="meta-date">
+                  <img src="https://www.figma.com/api/mcp/asset/2fa24cfe-7563-4730-822f-99db41075e63" alt="" width="11" height="11" />
+                  <span class="author-sub">25/05/2024</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <p class="detail-desc">Khu vực gần thang thoát hiểm và cột B2-07 có nhiều rác thải sinh hoạt, mùi hôi khó chịu. Đề nghị ban quản lý kiểm tra và xử lý sớm.</p>
+
+          <!-- Attachments -->
+          <div class="att-title">Hình ảnh đính kèm (3)</div>
+          <div class="att-grid">
+            <img class="att-img" src="https://www.figma.com/api/mcp/asset/ce2a3881-b289-4f47-9a40-cce0ed2e2a3d" alt="" />
+            <img class="att-img" src="https://www.figma.com/api/mcp/asset/547b3a90-e46f-4ee6-a805-dac6339f7cfb" alt="" />
+            <div class="att-overlay">
+              <img class="att-overlay-bg" src="https://www.figma.com/api/mcp/asset/711f85c8-ac3e-42a3-ae26-540d70bede3e" alt="" />
+              <div class="att-overlay-dim">
+                <span class="att-overlay-num">+1</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- History -->
+          <div class="history-title">Lịch sử xử lý</div>
+          <div class="history-list">
+
+            <!-- Step 1 — received (green) -->
+            <div class="history-item">
+              <div class="history-dot" style="border-color:#1cbf6a;">
+                <img src="https://www.figma.com/api/mcp/asset/3feab6cf-60ec-4e5b-adff-84aa994169bc" alt="" width="12" height="12" />
+              </div>
+              <div class="history-line"></div>
+              <div class="history-row">
+                <div class="history-label">Ban quản lý đã tiếp nhận phản ánh</div>
+                <div class="history-time">10:45 AM &bull; 25/05/2024</div>
+              </div>
+              <div class="history-text">Cảm ơn Anh/Chị đã phản ánh. Chúng tôi đã tiếp nhận và sẽ kiểm tra ngay.</div>
+            </div>
+
+            <!-- Step 2 — processing (blue) -->
+            <div class="history-item">
+              <div class="history-dot" style="border-color:#2f7bf6;">
+                <img src="https://www.figma.com/api/mcp/asset/74849f66-a1f0-4144-9eb2-4f014d1ca1ee" alt="" width="11" height="11" />
+              </div>
+              <div class="history-line"></div>
+              <div class="history-row">
+                <div class="history-label">Đang xử lý</div>
+                <div class="history-time">11:20 AM &bull; 25/05/2024</div>
+              </div>
+              <div class="history-text">Bộ phận vệ sinh đã được thông báo và đang tiến hành xử lý.</div>
+            </div>
+
+            <!-- Step 3 — waiting (gray) -->
+            <div class="history-item">
+              <div class="history-dot" style="border-color:#d4d7e5;background:#f7f8fc;">
+                <div style="width:8px;height:8px;background:#d4d7e5;border-radius:4px;"></div>
+              </div>
+              <div class="history-row">
+                <div class="history-label" style="color:var(--text-gray);font-weight:600;">Chờ phản hồi từ cư dân</div>
+                <div class="history-time">—</div>
+              </div>
+              <div class="history-text">Sau khi xử lý, chúng tôi sẽ cập nhật kết quả tại đây. Cảm ơn Anh/Chị!</div>
+            </div>
+
+          </div><!-- /history-list -->
+
+          <!-- Comment input -->
+          <div class="comment-area">
+            <div class="comment-input">
+              <input placeholder="Viết bình luận..." />
+            </div>
+            <button class="comment-send">
+              <img src="https://www.figma.com/api/mcp/asset/e8ea7b01-bd93-42b6-968b-6b6f97ebe7e6" alt="" width="18" height="18" />
+            </button>
+          </div>
+
+        </div><!-- /col-detail -->
+
+        <!-- ======================================================
+             RIGHT — RAIL
+             ====================================================== -->
+        <div class="col-rail">
+
+          <!-- Thông tin phản ánh -->
+          <div class="rail-section">
+            <div class="rail-title">Thông tin phản ánh</div>
+            <div class="info-row">
+              <div class="info-label">Danh mục</div>
+              <div class="info-value">
+                Vệ sinh - Môi trường
+                <div class="info-dot" style="background:#2f7bf6;"></div>
+              </div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Ưu tiên</div>
+              <div class="info-value">
+                Trung bình
+                <div class="info-dot" style="background:#f5a623;"></div>
+              </div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Địa điểm</div>
+              <div class="info-value">Tầng hầm B2 - Gần cột B2-07</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Ngày tạo</div>
+              <div class="info-value">10:30 AM &nbsp;•&nbsp; 25/05/2024</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Cập nhật cuối</div>
+              <div class="info-value">11:20 AM &nbsp;•&nbsp; 25/05/2024</div>
+            </div>
+          </div>
+
+          <!-- Thao tác nhanh -->
+          <div class="rail-section">
+            <div class="rail-title">Thao tác nhanh</div>
+            <div class="quick-item">
+              <img class="quick-icon" src="https://www.figma.com/api/mcp/asset/25de301b-b7d7-4fa8-9cbc-d698f3caefd3" alt="" />
+              <span class="quick-label">Cập nhật thông tin</span>
+              <img class="quick-arrow" src="https://www.figma.com/api/mcp/asset/cc8a571d-04d1-4aef-a765-86c99b4bb7a2" alt="" />
+            </div>
+            <div class="quick-item">
+              <img class="quick-icon" src="https://www.figma.com/api/mcp/asset/a92c0573-5529-487b-975a-9aef1e1a753c" alt="" />
+              <span class="quick-label">Bổ sung hình ảnh</span>
+              <img class="quick-arrow" src="https://www.figma.com/api/mcp/asset/cc8a571d-04d1-4aef-a765-86c99b4bb7a2" alt="" />
+            </div>
+            <div class="quick-item">
+              <img class="quick-icon" src="https://www.figma.com/api/mcp/asset/ed0b617a-a42c-4678-959a-5c7a8ca90908" alt="" />
+              <span class="quick-label danger">Hủy phản ánh</span>
+              <img class="quick-arrow" src="https://www.figma.com/api/mcp/asset/cc8a571d-04d1-4aef-a765-86c99b4bb7a2" alt="" />
+            </div>
+          </div>
+
+        </div><!-- /col-rail -->
+
+      </div><!-- /three-col -->
+
+      <!-- ── AI Banner ── -->
+      <div class="ai-banner">
+        <img class="ai-banner-bg" src="https://www.figma.com/api/mcp/asset/e1803480-f04b-45ee-b55c-9cd83b6024a7" alt="" />
+        <div class="ai-banner-inner">
+          <div class="ai-banner-content">
+            <div>
+              <div class="ai-banner-title">Hỏi AI trợ lý của cư dân</div>
+              <div class="ai-banner-sub">Tôi có thể giúp gì cho bạn hôm nay?</div>
+            </div>
+            <div class="ai-chips">
+              <span class="ai-chip">Quy định về việc nuôi thú cưng?</span>
+              <span class="ai-chip">Hướng dẫn đăng ký xe</span>
+              <span class="ai-chip">Tìm tài liệu nội quy</span>
+            </div>
+          </div>
+          <button class="ai-cta">
+            Chat với AI
+            <img src="https://www.figma.com/api/mcp/asset/2d5f6eb3-da7c-4c55-b3e3-3e94dcef4928" alt="" width="18" height="18" />
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /fb-page -->
+  </div><!-- /content-scroll -->
+
+</div><!-- /main -->
+<script>
+(function(){
+  function posDD(trigger, dd) {
+    var r = trigger.getBoundingClientRect();
+    var id = dd.id;
+    var ww = window.innerWidth;
+    if (id === 'dd-building') {
+      dd.style.top  = (r.bottom + 8) + 'px';
+      dd.style.left = r.left + 'px';
+      dd.style.right = 'auto';
+    } else if (id === 'dd-notif') {
+      dd.style.top   = (r.bottom + 10) + 'px';
+      dd.style.right = (ww - r.right - 4) + 'px';
+      dd.style.left  = 'auto';
+    } else if (id === 'dd-user') {
+      dd.style.top   = (r.bottom + 10) + 'px';
+      dd.style.right = (ww - r.right) + 'px';
+      dd.style.left  = 'auto';
+    }
+  }
+  document.addEventListener('click', function(e) {
+    var t = e.target.closest('[data-dd]');
+    if (t) {
+      var id = t.getAttribute('data-dd');
+      var dd = document.getElementById(id);
+      if (!dd) return;
+      var wasOpen = dd.classList.contains('open');
+      document.querySelectorAll('.dd').forEach(function(d){ d.classList.remove('open'); });
+      if (!wasOpen) { posDD(t, dd); dd.classList.add('open'); }
+      e.stopPropagation();
+    } else {
+      document.querySelectorAll('.dd').forEach(function(d){ d.classList.remove('open'); });
+    }
+  });
+})();
+</script>
+</body>
+</html>
