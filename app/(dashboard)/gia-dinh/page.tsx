@@ -1,4 +1,28 @@
+"use client";
 /* eslint-disable @next/next/no-img-element */
+import { api } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
+
+const RELATION_LABEL: Record<string, string> = {
+  SELF: "Chủ hộ", SPOUSE: "Vợ/Chồng", CHILD: "Con", PARENT: "Cha/Mẹ",
+  SIBLING: "Anh/Chị/Em", GRANDPARENT: "Ông/Bà", GRANDCHILD: "Cháu",
+  RELATIVE: "Họ hàng", TENANT: "Người thuê", OTHER: "Khác",
+};
+const GENDER_LABEL: Record<string, string> = { MALE: "Nam", FEMALE: "Nữ", OTHER: "Khác" };
+const AVATAR_GRADIENT = [
+  null, // first member has photo
+  "linear-gradient(135deg,#f9a8d4,#ec4899)",
+  "linear-gradient(135deg,#93c5fd,#3b82f6)",
+  "linear-gradient(135deg,#fde047,#eab308)",
+  "linear-gradient(135deg,#86efac,#22c55e)",
+  "linear-gradient(135deg,#c4b5fd,#8b5cf6)",
+];
+
+const computeAge = (dob?: string) =>
+  dob ? Math.floor((Date.now() - new Date(dob).getTime()) / (365.25 * 86400_000)) : null;
+const initials = (name: string) =>
+  name.split(" ").slice(-2).map((p) => p[0]).join("").toUpperCase();
+const fmtDob = (dob?: string) => (dob ? new Date(dob).toLocaleDateString("vi-VN") : "—");
 
 const CheckMini = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -54,13 +78,20 @@ const PlusIcon = () => (
 );
 
 export default function GiaDinhPage() {
+  const { data } = useApi(() => api.family(), []);
+  const members = data?.members ?? [];
+  const stats = data?.stats ?? { total: 3, maxSlots: 6, verified: 2, pending: 1, temporary: 0 };
+  const slotsRemaining = Math.max(0, stats.maxSlots - stats.total);
+  const apartmentCode = members[0]?.apartment?.code ?? "A-12.05";
+  const buildingName = members[0]?.apartment?.building?.name ?? "Landmark 1";
+
   return (
     <div className="giadinh-page">
       {/* ── Page Header ── */}
       <div className="page-header">
         <div className="page-header-left">
           <div className="page-title">Thành viên gia đình</div>
-          <div className="page-subtitle">Quản lý các thành viên đăng ký tại căn hộ A-12.05 · Landmark 1</div>
+          <div className="page-subtitle">Quản lý các thành viên đăng ký tại căn hộ {apartmentCode} · {buildingName}</div>
         </div>
         <button className="btn-add-member">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -84,8 +115,8 @@ export default function GiaDinhPage() {
           </div>
           <div className="stat-body">
             <div className="stat-lbl">Tổng thành viên</div>
-            <div className="stat-val">3</div>
-            <div className="stat-sub">Còn <b>3 slot</b> trống</div>
+            <div className="stat-val">{stats.total}</div>
+            <div className="stat-sub">Còn <b>{slotsRemaining} slot</b> trống</div>
           </div>
         </div>
         <div className="stat-card">
@@ -97,7 +128,7 @@ export default function GiaDinhPage() {
           </div>
           <div className="stat-body">
             <div className="stat-lbl">Đã xác minh</div>
-            <div className="stat-val" style={{ color: "#1c9d5f" }}>2</div>
+            <div className="stat-val" style={{ color: "#1c9d5f" }}>{stats.verified}</div>
             <div className="stat-sub"><b>CCCD</b> hợp lệ</div>
           </div>
         </div>
@@ -111,7 +142,7 @@ export default function GiaDinhPage() {
           </div>
           <div className="stat-body">
             <div className="stat-lbl">Chờ xác minh</div>
-            <div className="stat-val" style={{ color: "#c8761b" }}>1</div>
+            <div className="stat-val" style={{ color: "#c8761b" }}>{stats.pending}</div>
             <div className="stat-sub">Cần bổ sung giấy tờ</div>
           </div>
         </div>
@@ -133,164 +164,120 @@ export default function GiaDinhPage() {
       {/* ── Section header ── */}
       <div className="section-hd-row">
         <div className="section-hd-title">Danh sách thành viên</div>
-        <div className="section-hd-sub">Tối đa 6 người · Đang dùng 3/6 slot</div>
+        <div className="section-hd-sub">Tối đa {stats.maxSlots} người · Đang dùng {stats.total}/{stats.maxSlots} slot</div>
       </div>
 
       {/* ── Member grid ── */}
       <div className="member-grid">
-        {/* Member 1: Chủ hộ */}
-        <div className="member-card">
-          <span className="owner-tag">Chủ hộ</span>
-          <div className="mc-top">
-            <img
-              className="mc-avatar"
-              src="https://www.figma.com/api/mcp/asset/ee21e768-a070-4e15-ad43-73a28943d4ee"
-              alt="Chris Tran"
-              width="56"
-              height="56"
-              style={{ borderRadius: "50%", objectFit: "cover" }}
-            />
-            <div className="mc-info">
-              <div className="mc-name">Trần Hoàng Chris</div>
-              <div className="mc-relation">Chủ hộ · Nam · 33 tuổi</div>
-              <div className="mc-status ok">
-                <span className="mc-status-dot"></span>
-                Đã xác minh
-              </div>
-            </div>
-          </div>
-          <hr className="mc-divider" />
-          <div className="mc-fields">
-            <div className="mc-field">
-              <span className="mc-field-label">Ngày sinh</span>
-              <span className="mc-field-value">15/08/1990</span>
-            </div>
-            <div className="mc-field">
-              <span className="mc-field-label">Số điện thoại</span>
-              <span className="mc-field-value">
-                0912 345 678{" "}
-                <span className="verified-badge"><CheckMini /></span>
-              </span>
-            </div>
-            <div className="mc-field">
-              <span className="mc-field-label">Giấy tờ</span>
-              <span className="mc-field-value">
-                <span className="doc-badge doc-cccd">CCCD · 079 190 015 820</span>
-              </span>
-            </div>
-            <div className="mc-field">
-              <span className="mc-field-label">Phương tiện</span>
-              <div className="mc-vehicles">
-                <span className="mc-veh"><CarMini />51G-123.45</span>
-                <span className="mc-veh"><BikeMini />59K-999.00</span>
-              </div>
-            </div>
-          </div>
-          <div className="mc-actions">
-            <button className="mc-btn"><EditIcon />Chỉnh sửa</button>
-            <button className="mc-btn primary"><EyeIcon />Xem hồ sơ</button>
-          </div>
-        </div>
+        {members.map((m: any, idx: number) => {
+          const age = computeAge(m.dob);
+          const relationLabel = RELATION_LABEL[m.relation] ?? m.relation;
+          const genderLabel = m.gender ? GENDER_LABEL[m.gender] : "";
+          const relationLine = [relationLabel, genderLabel, age != null ? `${age} tuổi` : null].filter(Boolean).join(" · ");
+          const verified = m.verificationStatus === "VERIFIED";
+          const pending = m.verificationStatus === "PENDING";
+          const cccdDoc = m.documents?.find((d: any) => d.type === "CCCD" || d.type === "CMND");
+          const birthDoc = m.documents?.find((d: any) => d.type === "BIRTH_CERT");
+          const useImageAvatar = idx === 0 && m.avatar;
+          const gradient = AVATAR_GRADIENT[idx] ?? "linear-gradient(135deg,#cbd5e1,#64748b)";
 
-        {/* Member 2: Vợ */}
-        <div className="member-card">
-          <div className="mc-top">
-            <div className="mc-avatar" style={{ background: "linear-gradient(135deg,#f9a8d4,#ec4899)", fontSize: 20 }}>TH</div>
-            <div className="mc-info">
-              <div className="mc-name">Trần Thị Hoa</div>
-              <div className="mc-relation">Vợ · Nữ · 31 tuổi</div>
-              <div className="mc-status ok">
-                <span className="mc-status-dot"></span>
-                Đã xác minh
+          return (
+            <div className="member-card" key={m.id}>
+              {m.isPrimary && <span className="owner-tag">Chủ hộ</span>}
+              <div className="mc-top">
+                {useImageAvatar ? (
+                  <img
+                    className="mc-avatar"
+                    src={m.avatar}
+                    alt={m.fullName}
+                    width="56"
+                    height="56"
+                    style={{ borderRadius: "50%", objectFit: "cover" }}
+                  />
+                ) : (
+                  <div className="mc-avatar" style={{ background: gradient, fontSize: 20 }}>{initials(m.fullName)}</div>
+                )}
+                <div className="mc-info">
+                  <div className="mc-name">{m.fullName}</div>
+                  <div className="mc-relation">{relationLine}</div>
+                  <div className={`mc-status ${verified ? "ok" : pending ? "pending" : ""}`}>
+                    <span className="mc-status-dot"></span>
+                    {verified ? "Đã xác minh" : pending ? "Chờ xác minh" : "Tạm trú"}
+                  </div>
+                </div>
+              </div>
+              <hr className="mc-divider" />
+              <div className="mc-fields">
+                <div className="mc-field">
+                  <span className="mc-field-label">Ngày sinh</span>
+                  <span className="mc-field-value">{fmtDob(m.dob)}</span>
+                </div>
+                <div className="mc-field">
+                  <span className="mc-field-label">{m.phone ? "Số điện thoại" : "Liên hệ"}</span>
+                  {m.phone ? (
+                    <span className="mc-field-value">
+                      {m.phone}{verified ? <> {" "}<span className="verified-badge"><CheckMini /></span></> : null}
+                    </span>
+                  ) : (
+                    <span className="mc-field-value" style={{ color: "#585c7b", fontStyle: "italic" }}>Qua phụ huynh</span>
+                  )}
+                </div>
+                <div className="mc-field">
+                  <span className="mc-field-label">Giấy tờ</span>
+                  <span className="mc-field-value">
+                    {cccdDoc || m.cccd ? (
+                      <span className="doc-badge doc-cccd">CCCD{m.cccd ? ` · ${m.cccd}` : ""}</span>
+                    ) : birthDoc ? (
+                      <span className="doc-badge doc-ks">Giấy khai sinh</span>
+                    ) : (
+                      <span className="doc-badge doc-ks">Chưa nộp</span>
+                    )}
+                  </span>
+                </div>
+                {m.vehicles?.length ? (
+                  <div className="mc-field">
+                    <span className="mc-field-label">Phương tiện</span>
+                    <div className="mc-vehicles">
+                      {m.vehicles.map((v: any) => (
+                        <span className="mc-veh" key={v.id}>
+                          {v.type === "CAR" ? <CarMini /> : <BikeMini />}
+                          {v.plateNumber}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ) : pending ? (
+                  <div className="mc-field">
+                    <span className="mc-field-label">Ghi chú</span>
+                    <span className="mc-field-value" style={{ color: "#c8761b", fontSize: 11 }}>Cần bổ sung giấy tờ để xác minh</span>
+                  </div>
+                ) : null}
+              </div>
+              <div className="mc-actions">
+                <button className="mc-btn"><EditIcon />Chỉnh sửa</button>
+                {pending ? (
+                  <button className="mc-btn" style={{ borderColor: "#c8761b", color: "#c8761b" }}>
+                    <UploadIcon />Nộp giấy tờ
+                  </button>
+                ) : (
+                  <button className="mc-btn primary"><EyeIcon />Xem hồ sơ</button>
+                )}
               </div>
             </div>
-          </div>
-          <hr className="mc-divider" />
-          <div className="mc-fields">
-            <div className="mc-field">
-              <span className="mc-field-label">Ngày sinh</span>
-              <span className="mc-field-value">22/04/1993</span>
-            </div>
-            <div className="mc-field">
-              <span className="mc-field-label">Số điện thoại</span>
-              <span className="mc-field-value">
-                0987 654 321{" "}
-                <span className="verified-badge"><CheckMini /></span>
-              </span>
-            </div>
-            <div className="mc-field">
-              <span className="mc-field-label">Giấy tờ</span>
-              <span className="mc-field-value">
-                <span className="doc-badge doc-cccd">CCCD · 079 193 054 211</span>
-              </span>
-            </div>
-            <div className="mc-field">
-              <span className="mc-field-label">Phương tiện</span>
-              <div className="mc-vehicles">
-                <span className="mc-veh"><BikeMini />51F-338.22</span>
-              </div>
-            </div>
-          </div>
-          <div className="mc-actions">
-            <button className="mc-btn"><EditIcon />Chỉnh sửa</button>
-            <button className="mc-btn primary"><EyeIcon />Xem hồ sơ</button>
-          </div>
-        </div>
-
-        {/* Member 3: Con trai */}
-        <div className="member-card">
-          <div className="mc-top">
-            <div className="mc-avatar" style={{ background: "linear-gradient(135deg,#93c5fd,#3b82f6)", fontSize: 20 }}>TM</div>
-            <div className="mc-info">
-              <div className="mc-name">Trần Hoàng Minh</div>
-              <div className="mc-relation">Con trai · Nam · 7 tuổi</div>
-              <div className="mc-status pending">
-                <span className="mc-status-dot"></span>
-                Chờ xác minh
-              </div>
-            </div>
-          </div>
-          <hr className="mc-divider" />
-          <div className="mc-fields">
-            <div className="mc-field">
-              <span className="mc-field-label">Ngày sinh</span>
-              <span className="mc-field-value">05/03/2017</span>
-            </div>
-            <div className="mc-field">
-              <span className="mc-field-label">Liên hệ</span>
-              <span className="mc-field-value" style={{ color: "#585c7b", fontStyle: "italic" }}>Qua phụ huynh</span>
-            </div>
-            <div className="mc-field">
-              <span className="mc-field-label">Giấy tờ</span>
-              <span className="mc-field-value">
-                <span className="doc-badge doc-ks">Giấy khai sinh</span>
-              </span>
-            </div>
-            <div className="mc-field">
-              <span className="mc-field-label">Ghi chú</span>
-              <span className="mc-field-value" style={{ color: "#c8761b", fontSize: 11 }}>Cần nộp bản sao GCKS để xác minh</span>
-            </div>
-          </div>
-          <div className="mc-actions">
-            <button className="mc-btn"><EditIcon />Chỉnh sửa</button>
-            <button className="mc-btn" style={{ borderColor: "#c8761b", color: "#c8761b" }}>
-              <UploadIcon />Nộp giấy tờ
-            </button>
-          </div>
-        </div>
+          );
+        })}
 
         {/* Empty slots */}
-        {[
-          { label: "Slot 4/6 · Còn trống" },
-          { label: "Slot 5/6 · Còn trống" },
-          { label: "Slot 6/6 · Còn trống" },
-        ].map((s) => (
-          <div className="slot-card" key={s.label}>
-            <div className="slot-circle"><PlusIcon /></div>
-            <div className="slot-label">Thêm thành viên</div>
-            <div className="slot-sub">{s.label}</div>
-          </div>
-        ))}
+        {Array.from({ length: slotsRemaining }).map((_, i) => {
+          const slotNo = stats.total + i + 1;
+          return (
+            <div className="slot-card" key={`slot-${slotNo}`}>
+              <div className="slot-circle"><PlusIcon /></div>
+              <div className="slot-label">Thêm thành viên</div>
+              <div className="slot-sub">Slot {slotNo}/{stats.maxSlots} · Còn trống</div>
+            </div>
+          );
+        })}
       </div>
 
       {/* ── Policy note ── */}
@@ -301,7 +288,7 @@ export default function GiaDinhPage() {
           <line x1="12" y1="16" x2="12.01" y2="16" />
         </svg>
         <div className="policy-text">
-          Mỗi căn hộ được đăng ký tối đa <b>6 thành viên</b> (bao gồm chủ hộ). Thành viên đăng ký sẽ được cấp thẻ từ và quyền ra vào toà nhà. Trẻ em dưới 14 tuổi cần cung cấp giấy khai sinh, từ 14 tuổi trở lên cần CCCD/CMND. Liên hệ BQL để được hỗ trợ thêm.
+          Mỗi căn hộ được đăng ký tối đa <b>{stats.maxSlots} thành viên</b> (bao gồm chủ hộ). Thành viên đăng ký sẽ được cấp thẻ từ và quyền ra vào toà nhà. Trẻ em dưới 14 tuổi cần cung cấp giấy khai sinh, từ 14 tuổi trở lên cần CCCD/CMND. Liên hệ BQL để được hỗ trợ thêm.
         </div>
       </div>
     </div>

@@ -15,8 +15,11 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
-import { currentUser } from "@/data/user";
-import { buildings, activeBuilding } from "@/data/buildings";
+import { currentUser as fallbackUser } from "@/data/user";
+import { buildings as fallbackBuildings, activeBuilding as fallbackActive } from "@/data/buildings";
+import { useAuth } from "@/lib/auth-context";
+import { api } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
 
 interface HeaderNotification {
   id: string;
@@ -62,6 +65,33 @@ export function Header() {
   const [buildingOpen, setBuildingOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
+
+  const { user, logout } = useAuth();
+  const { data: apiBuildings } = useApi(() => api.buildings(), []);
+
+  // Adapt API data into the shape this UI already expects, keeping mock data as fallback.
+  const apartmentCode = user?.apartments?.[0]?.apartment?.code;
+  const buildingFromApt = user?.apartments?.[0]?.apartment?.building;
+  const currentUser = user
+    ? {
+        name: user.fullName,
+        email: user.email,
+        apartment: apartmentCode ? `Căn hộ ${apartmentCode}` : fallbackUser.apartment,
+        avatarUrl: user.avatar ?? `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user.fullName)}`,
+      }
+    : fallbackUser;
+
+  const buildings = (apiBuildings?.length
+    ? apiBuildings.map((b: any, idx: number) => ({
+        id: b.id,
+        name: b.name,
+        apartment: idx === 0 && apartmentCode ? `Căn hộ ${apartmentCode}` : "",
+        location: b.address ?? b.projectName ?? "",
+        isOwned: idx === 0,
+        isActive: buildingFromApt ? b.id === buildingFromApt.id : idx === 0,
+      }))
+    : fallbackBuildings) as typeof fallbackBuildings;
+  const activeBuilding = buildings.find((b) => b.isActive) ?? buildings[0] ?? fallbackActive;
 
   const closeAll = () => { setBuildingOpen(false); setNotifOpen(false); setUserOpen(false); };
 
@@ -319,7 +349,7 @@ export function Header() {
                   </Link>
                 ))}
                 <div style={{ height: 1, background: "#e2e5f1" }} />
-                <button style={{ display: "flex", alignItems: "center", gap: "9px", padding: "9px 16px", fontSize: "13px", fontWeight: 500, color: "#f5222d", width: "100%", background: "transparent", border: 0, cursor: "pointer", textAlign: "left" }}>
+                <button onClick={() => logout()} style={{ display: "flex", alignItems: "center", gap: "9px", padding: "9px 16px", fontSize: "13px", fontWeight: 500, color: "#f5222d", width: "100%", background: "transparent", border: 0, cursor: "pointer", textAlign: "left" }}>
                   <LogOut size={15} color="#f5222d" />
                   Đăng xuất
                 </button>

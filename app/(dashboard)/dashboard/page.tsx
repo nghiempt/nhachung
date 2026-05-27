@@ -1,4 +1,29 @@
+"use client";
+import { api } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
+
+const fmtVND = (n: number | undefined | null) =>
+  n == null ? "—" : `${Math.round(n).toLocaleString("vi-VN")}đ`;
+const fmtDate = (iso?: string) => {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const weekday = ["Chủ Nhật","Thứ 2","Thứ 3","Thứ 4","Thứ 5","Thứ 6","Thứ 7"][d.getDay()];
+  return `${weekday}, ngày ${d.getDate()} tháng ${d.getMonth() + 1} năm ${d.getFullYear()}`;
+};
+const timeAgo = (iso?: string) => {
+  if (!iso) return "";
+  const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (diff < 60) return "Vừa xong";
+  if (diff < 3600) return `${Math.floor(diff / 60)} phút trước`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} giờ trước`;
+  if (diff < 86400 * 2) return "Hôm qua";
+  return new Date(iso).toLocaleDateString("vi-VN");
+};
+
 export default function DashboardPage() {
+  const { data } = useApi(() => api.dashboard(), []);
+  const firstName = data?.user?.fullName?.split(" ").pop() ?? "Chris";
+
   return (
     <div className="db-content">
 
@@ -9,25 +34,25 @@ export default function DashboardPage() {
 
         <div className="hero-left">
           <div className="hero-text">
-            <p className="hero-greeting">Chào buổi sáng, Chris!</p>
-            <p className="hero-date">Hôm nay là thứ 5, ngày 23 tháng 5 năm 2026</p>
+            <p className="hero-greeting">{data?.greeting ?? "Chào buổi sáng"}, {firstName}!</p>
+            <p className="hero-date">Hôm nay là {fmtDate(data?.currentDate) || "thứ 5, ngày 23 tháng 5 năm 2026"}</p>
             <div className="hero-meta">
               <div className="hero-meta-item">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/images/dashboard/img_1.svg" alt="" />
-                Landmark 1
+                {data?.apartment?.building ?? "Landmark 1"}
               </div>
               <div className="hero-meta-item">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/images/dashboard/img_2.svg" alt="" />
-                1389 cư dân
+                {data?.apartment?.code ? `Căn hộ ${data.apartment.code}` : "1389 cư dân"}
               </div>
             </div>
           </div>
           <div className="hero-notif-pill">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/images/dashboard/img_3.svg" alt="" />
-            Bạn có 12 thông báo mới
+            Bạn có {data?.unreadNotifications ?? 12} thông báo mới
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img className="hero-notif-pill-arrow" src="/images/dashboard/hero-notif-pill-arrow.svg" alt="" />
           </div>
@@ -124,8 +149,8 @@ export default function DashboardPage() {
                     <img src="/images/dashboard/img_13.svg" alt="" />
                   </div>
                   <div className="stat-info">
-                    <div className="stat-label">Thu chi tháng 5/2026</div>
-                    <div className="stat-value">128.450.000đ</div>
+                    <div className="stat-label">{data?.stats?.[0]?.label ?? "Thu chi tháng 5/2026"}</div>
+                    <div className="stat-value">{data?.financeMini ? fmtVND(data.financeMini.surplus) : "128.450.000đ"}</div>
                     <div className="stat-change"><span className="pct down">-8.5%</span> so với tháng trước</div>
                   </div>
                 </div>
@@ -149,7 +174,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="stat-info">
                     <div className="stat-label">Phản ánh đang xử lý</div>
-                    <div className="stat-value">24</div>
+                    <div className="stat-value">{data?.stats?.[1]?.value ?? 24}</div>
                     <div className="stat-change"><span className="pct down">-12.5%</span> so với tháng trước</div>
                   </div>
                 </div>
@@ -179,55 +204,27 @@ export default function DashboardPage() {
               </a>
             </div>
             <div className="community-grid">
-
-              <div className="community-card">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="community-photo" src="/images/dashboard/community-1.png" alt="" />
-                <div className="community-body">
-                  <div className="community-title">Cập nhật tiến độ bảo trì thang máy tháng 5/2024</div>
-                  <div className="community-meta">
-                    <span className="community-time">2 giờ trước</span>
-                    <div className="community-views">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/images/dashboard/img_19.svg" alt="" />
-                      284
+              {(data?.communityNews?.length ? data.communityNews : [
+                { id: "f1", title: "Cập nhật tiến độ bảo trì thang máy tháng 5/2024", publishedAt: undefined, viewCount: 284, _photo: "community-1.png" },
+                { id: "f2", title: "Ngày hội cư dân Sunshine Riverside 2024", publishedAt: undefined, viewCount: 256, _photo: "community-2.png" },
+                { id: "f3", title: "Lớp học Yoga miễn phí cho cư dân vào mỗi sáng thứ 7", publishedAt: undefined, viewCount: 89, _photo: "community-3.png" },
+              ]).slice(0, 3).map((post: any, i: number) => (
+                <div key={post.id ?? i} className="community-card">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img className="community-photo" src={`/images/dashboard/${post._photo ?? `community-${(i % 3) + 1}.png`}`} alt="" />
+                  <div className="community-body">
+                    <div className="community-title">{post.title}</div>
+                    <div className="community-meta">
+                      <span className="community-time">{post.publishedAt ? timeAgo(post.publishedAt) : ["2 giờ trước", "1 ngày trước", "2 ngày trước"][i]}</span>
+                      <div className="community-views">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/images/dashboard/img_19.svg" alt="" />
+                        {post.viewCount ?? 0}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-
-              <div className="community-card">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="community-photo" src="/images/dashboard/community-2.png" alt="" />
-                <div className="community-body">
-                  <div className="community-title">Ngày hội cư dân Sunshine Riverside 2024</div>
-                  <div className="community-meta">
-                    <span className="community-time">1 ngày trước</span>
-                    <div className="community-views">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/images/dashboard/img_19.svg" alt="" />
-                      256
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="community-card">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="community-photo" src="/images/dashboard/community-3.png" alt="" />
-                <div className="community-body">
-                  <div className="community-title">Lớp học Yoga miễn phí cho cư dân vào mỗi sáng thứ 7</div>
-                  <div className="community-meta">
-                    <span className="community-time">2 ngày trước</span>
-                    <div className="community-views">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/images/dashboard/img_19.svg" alt="" />
-                      89
-                    </div>
-                  </div>
-                </div>
-              </div>
-
+              ))}
             </div>
           </div>
 
@@ -247,47 +244,26 @@ export default function DashboardPage() {
               </a>
             </div>
             <div className="notif-list-card">
-
-              <div className="notif-row">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="notif-icon" src="/images/dashboard/notif-icon-1.svg" alt="" />
-                <div className="notif-info">
-                  <div className="notif-title">Bảo trì hệ thống PCCC định kỳ</div>
-                  <div className="notif-sub">Ban quản trị</div>
+              {(data?.recentNotifications?.length ? data.recentNotifications : [
+                { id: "ph1", notification: { title: "Bảo trì hệ thống PCCC định kỳ", source: "Ban quản trị", publishedAt: undefined } },
+                { id: "ph2", notification: { title: "Thông báo điều chỉnh phí giữ xe", source: "Ban quản trị", publishedAt: undefined } },
+                { id: "ph3", notification: { title: "Sự kiện: Ngày hội cư dân 2024", source: "Ban quản trị", publishedAt: undefined } },
+                { id: "ph4", notification: { title: "Tạm ngưng cấp nước khu A", source: "Ban quản trị", publishedAt: undefined } },
+              ]).slice(0, 4).map((n: any, i: number) => (
+                <div key={n.id ?? i} className="notif-row">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img className="notif-icon" src={`/images/dashboard/notif-icon-${(i % 4) + 1}.svg`} alt="" />
+                  <div className="notif-info">
+                    <div className="notif-title">{n.notification?.title ?? n.title}</div>
+                    <div className="notif-sub">{n.notification?.source ?? "Ban quản trị"}</div>
+                  </div>
+                  <span className="notif-time">
+                    {n.notification?.publishedAt
+                      ? new Date(n.notification.publishedAt).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })
+                      : ["10:30 AM", "09:15 AM", "Hôm qua", "21/05/2024"][i]}
+                  </span>
                 </div>
-                <span className="notif-time">10:30 AM</span>
-              </div>
-
-              <div className="notif-row">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="notif-icon" src="/images/dashboard/notif-icon-2.svg" alt="" />
-                <div className="notif-info">
-                  <div className="notif-title">Thông báo điều chỉnh phí giữ xe</div>
-                  <div className="notif-sub">Ban quản trị</div>
-                </div>
-                <span className="notif-time">09:15 AM</span>
-              </div>
-
-              <div className="notif-row">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="notif-icon" src="/images/dashboard/notif-icon-3.svg" alt="" />
-                <div className="notif-info">
-                  <div className="notif-title">Sự kiện: Ngày hội cư dân 2024</div>
-                  <div className="notif-sub">Ban quản trị</div>
-                </div>
-                <span className="notif-time">Hôm qua</span>
-              </div>
-
-              <div className="notif-row">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="notif-icon" src="/images/dashboard/notif-icon-4.svg" alt="" />
-                <div className="notif-info">
-                  <div className="notif-title">Tạm ngưng cấp nước khu A</div>
-                  <div className="notif-sub">Ban quản trị</div>
-                </div>
-                <span className="notif-time">21/05/2024</span>
-              </div>
-
+              ))}
             </div>
           </div>
 
@@ -384,39 +360,26 @@ export default function DashboardPage() {
 
               {/* Event cards */}
               <div className="event-grid" style={{ marginTop: '12px' }}>
-
-                <div className="event-card">
-                  <div className="event-title">Ngày hội cư dân 2024</div>
-                  <div className="event-meta">
-                    <div className="event-meta-row">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/images/dashboard/img_30.svg" alt="" />
-                      <span>08:00 - 17:00</span>
-                    </div>
-                    <div className="event-meta-row">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/images/dashboard/img_31.svg" alt="" />
-                      <span>Sảnh chính</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="event-card">
-                  <div className="event-title">Bảo trì hệ thống PCCC</div>
-                  <div className="event-meta">
-                    <div className="event-meta-row">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/images/dashboard/img_30.svg" alt="" />
-                      <span>13:00 - 15:00</span>
-                    </div>
-                    <div className="event-meta-row">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/images/dashboard/img_31.svg" alt="" />
-                      <span>Tòa nhà A</span>
+                {(data?.upcomingEvents?.length ? data.upcomingEvents : [
+                  { id: "pe1", title: "Ngày hội cư dân 2024", startTime: "08:00", endTime: "17:00", location: "Sảnh chính" },
+                  { id: "pe2", title: "Bảo trì hệ thống PCCC", startTime: "13:00", endTime: "15:00", location: "Tòa nhà A" },
+                ]).slice(0, 2).map((ev: any) => (
+                  <div key={ev.id} className="event-card">
+                    <div className="event-title">{ev.title}</div>
+                    <div className="event-meta">
+                      <div className="event-meta-row">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/images/dashboard/img_30.svg" alt="" />
+                        <span>{ev.startTime && ev.endTime ? `${ev.startTime} - ${ev.endTime}` : ev.startTime ?? "—"}</span>
+                      </div>
+                      <div className="event-meta-row">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/images/dashboard/img_31.svg" alt="" />
+                        <span>{ev.location ?? "—"}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-
+                ))}
               </div>
             </div>
           </div>
