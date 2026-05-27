@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s http://localhost:3000/cai-dat -o /tmp/cai-dat-out.html -w \"%{http_code}\\\\n\")",
+      "Bash(curl -s http://localhost:3000/cai-dat -o /dev/null)"
+    ]
+  }
+}

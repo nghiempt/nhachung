@@ -2505,3 +2505,97 @@
 .canho-page .ql-sub { font-size: 12px; color: #585c7b; margin-top: 1px; }
 .canho-page .ql-arrow { color: #b4b7c9; }
 .canho-page .ql-arrow svg { width: 14px; height: 14px; }
+
+/* CAI DAT PAGE (Settings) */
+.caidat-page { padding: 24px 28px 40px; font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #272727; }
+.caidat-page .page-header { margin-bottom: 20px; }
+.caidat-page .page-title { font-size: 20px; font-weight: 700; color: #272727; line-height: 28px; }
+.caidat-page .page-subtitle { font-size: 13px; color: #585c7b; margin-top: 3px; }
+
+.caidat-page .settings-layout { display: flex; gap: 20px; align-items: flex-start; }
+.caidat-page .settings-nav { width: 220px; flex-shrink: 0; background: #fff; border: 1px solid #e2e5f1; border-radius: 20px; overflow: hidden; }
+.caidat-page .sn-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid #e2e5f1; cursor: pointer; font-size: 13px; font-weight: 500; color: #585c7b; transition: background .15s; }
+.caidat-page .sn-item:last-child { border-bottom: 0; }
+.caidat-page .sn-item:hover { background: #fafafa; }
+.caidat-page .sn-item.active { background: #f7f5ff; color: #4137f9; font-weight: 600; }
+.caidat-page .sn-icon { width: 18px; height: 18px; flex: 0 0 18px; }
+.caidat-page .sn-icon-wrap { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.caidat-page .sn-item.active .sn-icon-wrap { background: #f7f5ff; color: #4137f9; }
+
+.caidat-page .settings-content { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+
+/* Section card */
+.caidat-page .sc { background: #fff; border: 1px solid #e2e5f1; border-radius: 20px; overflow: hidden; }
+.caidat-page .sc-hd { display: flex; align-items: center; gap: 6px; padding: 16px 20px 12px; }
+.caidat-page .sc-hd-icon { display: none; }
+.caidat-page .sc-hd-title { font-size: 13px; font-weight: 700; color: #585c7b; text-transform: uppercase; letter-spacing: .5px; flex: 1; }
+.caidat-page .sc-hd-sub { font-size: 12px; color: #b4b7c9; }
+.caidat-page .sc-body { padding: 0 0 4px; }
+
+/* Profile row */
+.caidat-page .profile-row { display: flex; align-items: center; gap: 14px; padding: 18px 20px; }
+.caidat-page .pr-avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; flex: 0 0 52px; }
+.caidat-page .pr-info { flex: 1; }
+.caidat-page .pr-name { font-size: 15px; font-weight: 700; color: #272727; }
+.caidat-page .pr-meta { font-size: 12px; color: #585c7b; margin-top: 2px; }
+.caidat-page .pr-edit { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: #4137f9; border: 1px solid #d3c5fd; border-radius: 8px; padding: 5px 12px; background: #f7f5ff; cursor: pointer; font-family: inherit; }
+
+/* Toggle row */
+.caidat-page .toggle-row { display: flex; align-items: center; gap: 12px; padding: 14px 20px; }
+.caidat-page .tr-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.caidat-page .tr-icon svg { width: 16px; height: 16px; }
+.caidat-page .tr-text { flex: 1; }
+.caidat-page .tr-label { font-size: 13px; font-weight: 600; color: #272727; }
+.caidat-page .tr-sub { font-size: 12px; color: #585c7b; margin-top: 1px; }
+.caidat-page .toggle { width: 40px; height: 22px; background: #d4d7e5; border-radius: 11px; position: relative; cursor: pointer; flex-shrink: 0; transition: background .2s; }
+.caidat-page .toggle.on { background: #4137f9; }
+.caidat-page .toggle::after { content: ''; position: absolute; width: 16px; height: 16px; background: #fff; border-radius: 50%; top: 3px; left: 3px; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+.caidat-page .toggle.on::after { transform: translateX(18px); }
+
+/* Link row */
+.caidat-page .link-row { display: flex; align-items: center; gap: 12px; padding: 13px 20px; cursor: pointer; transition: background .15s; }
+.caidat-page .link-row:hover { background: #fafafa; }
+.caidat-page .lr-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.caidat-page .lr-icon svg { width: 16px; height: 16px; }
+.caidat-page .lr-text { flex: 1; }
+.caidat-page .lr-label { font-size: 13px; font-weight: 600; color: #272727; }
+.caidat-page .lr-sub { font-size: 12px; color: #585c7b; margin-top: 1px; }
+.caidat-page .lr-right { display: flex; align-items: center; gap: 6px; }
+.caidat-page .lr-value { font-size: 12px; color: #585c7b; }
+.caidat-page .lr-arrow svg { width: 14px; height: 14px; color: #b4b7c9; }
+.caidat-page .lr-badge { font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+.caidat-page .badge-on { background: #e3fbed; color: #1c9d5f; }
+.caidat-page .badge-off { background: #f7f7f7; color: #585c7b; border: 1px solid #e2e5f1; }
+.caidat-page .badge-warn { background: #fff8ec; color: #c8761b; }
+
+/* Device row */
+.caidat-page .device-row { display: flex; align-items: center; gap: 12px; padding: 14px 20px; }
+.caidat-page .device-icon { width: 36px; height: 36px; background: #f7f7f7; border: 1px solid #e2e5f1; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.caidat-page .device-icon svg { width: 18px; height: 18px; color: #585c7b; }
+.caidat-page .device-info { flex: 1; }
+.caidat-page .device-name { font-size: 13px; font-weight: 600; color: #272727; }
+.caidat-page .device-meta { font-size: 12px; color: #585c7b; margin-top: 1px; }
+.caidat-page .device-current { font-size: 10.5px; font-weight: 700; color: #4137f9; background: #f7f5ff; padding: 2px 8px; border-radius: 10px; white-space: nowrap; flex-shrink: 0; }
+.caidat-page .device-logout { font-size: 12px; font-weight: 600; color: #f5222d; border: 1px solid #ffd6d8; border-radius: 8px; padding: 4px 10px; background: #fff5f5; white-space: nowrap; flex-shrink: 0; cursor: pointer; font-family: inherit; }
+
+/* Danger zone */
+.caidat-page .danger-zone { background: #fff; border: 1px solid #ffd6d8; border-radius: 20px; overflow: hidden; }
+.caidat-page .dz-hd { padding: 14px 20px; border-bottom: 1px solid #ffd6d8; display: flex; align-items: center; gap: 8px; }
+.caidat-page .dz-hd svg { color: #f5222d; width: 16px; height: 16px; }
+.caidat-page .dz-hd-title { font-size: 14px; font-weight: 700; color: #f5222d; }
+.caidat-page .dz-row { display: flex; align-items: center; gap: 12px; padding: 14px 20px; }
+.caidat-page .dz-text { flex: 1; }
+.caidat-page .dz-label { font-size: 13px; font-weight: 600; color: #272727; }
+.caidat-page .dz-sub { font-size: 12px; color: #585c7b; margin-top: 1px; }
+.caidat-page .btn-danger-outline { font-size: 12px; font-weight: 600; color: #f5222d; border: 1px solid #ffd6d8; border-radius: 8px; padding: 6px 12px; background: #fff5f5; cursor: pointer; font-family: inherit; }
+.caidat-page .btn-danger { font-size: 12px; font-weight: 600; color: #fff; border: 0; border-radius: 8px; padding: 6px 12px; background: #f5222d; cursor: pointer; font-family: inherit; }
+
+/* Language selector */
+.caidat-page .lang-select { display: flex; align-items: center; gap: 8px; border: 1px solid #d4d7e5; border-radius: 8px; padding: 6px 10px; font-size: 13px; font-weight: 500; color: #272727; background: #fff; cursor: pointer; }
+.caidat-page .lang-flag { font-size: 16px; }
+
+/* Theme buttons */
+.caidat-page .theme-btns { display: flex; gap: 6px; }
+.caidat-page .theme-btn { display: flex; align-items: center; gap: 6px; border: 1px solid #d4d7e5; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 600; color: #585c7b; background: #fff; cursor: pointer; font-family: inherit; }
+.caidat-page .theme-btn.active { border-color: #4137f9; background: #f7f5ff; color: #4137f9; }
+.caidat-page .theme-btn svg { width: 13px; height: 13px; }
