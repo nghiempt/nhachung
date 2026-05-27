@@ -2373,3 +2373,135 @@
   padding: 2px 6px; border-radius: 8px;
 }
 .giadinh-page .verified-badge svg { width: 10px; height: 10px; }
+
+/* ─────────────────────────── CĂN HỘ CỦA TÔI ─────────────────────────── */
+.canho-page { padding: 24px 28px 32px; font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #272727; }
+.canho-page .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+.canho-page .page-title { font-size: 20px; font-weight: 700; color: #272727; line-height: 28px; }
+.canho-page .page-subtitle { font-size: 13px; color: #585c7b; margin-top: 3px; }
+.canho-page .btn-primary {
+  display: inline-flex; align-items: center; gap: 7px; background: #4137f9; color: #fff;
+  font-size: 13px; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: 0; cursor: pointer;
+}
+.canho-page .btn-outline {
+  display: inline-flex; align-items: center; gap: 6px; border: 1px solid #d4d7e5; background: #fff;
+  color: #585c7b; font-size: 13px; font-weight: 500; padding: 8px 14px; border-radius: 8px; cursor: pointer;
+}
+
+/* Hero */
+.canho-page .apt-hero {
+  background: linear-gradient(135deg, #3b30e8 0%, #6c5ce7 50%, #a29bfe 100%);
+  border-radius: 20px; padding: 28px; display: flex; align-items: stretch; gap: 24px;
+  margin-bottom: 16px; position: relative; overflow: hidden;
+}
+.canho-page .apt-hero::before {
+  content: ''; position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='500' height='160' viewBox='0 0 500 160' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='420' cy='40' r='100' fill='rgba(255,255,255,0.05)'/%3E%3Ccircle cx='60' cy='120' r='80' fill='rgba(255,255,255,0.04)'/%3E%3Ccircle cx='250' cy='-20' r='120' fill='rgba(255,255,255,0.03)'/%3E%3C/svg%3E") no-repeat center/cover;
+  pointer-events: none;
+}
+.canho-page .apt-hero-left { flex: 1; min-width: 0; position: relative; }
+.canho-page .apt-code { font-size: 11px; font-weight: 700; letter-spacing: 1px; color: rgba(255,255,255,.6); text-transform: uppercase; margin-bottom: 8px; }
+.canho-page .apt-name { font-family: "Manrope","Inter",sans-serif; font-size: 36px; font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 6px; }
+.canho-page .apt-building { font-size: 15px; color: rgba(255,255,255,.8); margin-bottom: 18px; }
+.canho-page .apt-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.canho-page .apt-tag {
+  display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,.15); color: #fff;
+  font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 20px; backdrop-filter: blur(4px);
+}
+.canho-page .apt-tag svg { width: 12px; height: 12px; flex: 0 0 12px; }
+.canho-page .apt-hero-right { width: 200px; flex-shrink: 0; position: relative; display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
+.canho-page .apt-hero-actions { display: flex; gap: 8px; }
+.canho-page .btn-hero-outline {
+  display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.15); color: #fff;
+  font-size: 12px; font-weight: 600; padding: 7px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,.3);
+  backdrop-filter: blur(4px); cursor: pointer;
+}
+.canho-page .apt-status-chip {
+  display: inline-flex; align-items: center; gap: 5px; background: rgba(74,222,128,.2); color: #4ade80;
+  font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px;
+}
+.canho-page .apt-status-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; }
+
+/* Stat row */
+.canho-page .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+.canho-page .stat-card {
+  background: #fff; border: 1px solid #e2e5f1; border-radius: 20px; padding: 16px 20px;
+  display: flex; align-items: center; gap: 14px;
+}
+.canho-page .stat-icon-wrap { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.canho-page .stat-icon-wrap svg { width: 22px; height: 22px; }
+.canho-page .stat-lbl { font-size: 12px; color: #585c7b; font-weight: 500; }
+.canho-page .stat-val { font-family: "Manrope","Inter",sans-serif; font-size: 22px; font-weight: 800; color: #272727; line-height: 30px; }
+.canho-page .stat-sub { font-size: 12px; color: #585c7b; margin-top: 1px; }
+
+/* Body layout */
+.canho-page .body-layout { display: flex; gap: 16px; align-items: flex-start; }
+.canho-page .body-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.canho-page .body-sidebar { width: 272px; flex-shrink: 0; display: flex; flex-direction: column; gap: 14px; }
+
+/* Section card */
+.canho-page .section-card { background: #fff; border: 1px solid #e2e5f1; border-radius: 20px; overflow: hidden; }
+.canho-page .section-hd { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #e2e5f1; }
+.canho-page .section-title { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; color: #272727; }
+.canho-page .section-title-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.canho-page .section-title-icon svg { width: 16px; height: 16px; }
+.canho-page .section-edit {
+  display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: #585c7b;
+  border: 1px solid #d4d7e5; border-radius: 8px; padding: 5px 10px; background: #fff; cursor: pointer;
+}
+.canho-page .section-edit svg { width: 12px; height: 12px; }
+.canho-page .section-body { padding: 16px 20px; }
+
+/* Info grid */
+.canho-page .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; }
+.canho-page .info-label { font-size: 12px; color: #585c7b; font-weight: 500; margin-bottom: 3px; }
+.canho-page .info-value { font-size: 13px; color: #272727; font-weight: 500; }
+
+/* Fees table */
+.canho-page .fee-table { display: flex; flex-direction: column; }
+.canho-page .fee-row { display: grid; grid-template-columns: 1fr 120px auto; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid #e2e5f1; }
+.canho-page .fee-row:last-child { border-bottom: 0; }
+.canho-page .fee-hd .fee-cell { font-size: 12px; font-weight: 700; color: #585c7b; text-transform: uppercase; letter-spacing: .4px; }
+.canho-page .fee-cell { font-size: 13px; color: #272727; }
+.canho-page .fee-cell.name { font-weight: 500; }
+.canho-page .fee-cell.amount { font-family: "Manrope","Inter",sans-serif; font-weight: 700; text-align: right; }
+.canho-page .fee-cell.status { text-align: right; }
+.canho-page .fee-status { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 5px; white-space: nowrap; }
+.canho-page .fee-paid { background: #e3fbed; color: #1c9d5f; }
+.canho-page .fee-due { background: #fff8ec; color: #c8761b; }
+
+/* Resident card */
+.canho-page .resident-card { background: linear-gradient(135deg, #4137f9 0%, #6c5ce7 100%); border-radius: 20px; padding: 20px; position: relative; overflow: hidden; }
+.canho-page .resident-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='280' height='160' viewBox='0 0 280 160' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='240' cy='20' r='80' fill='rgba(255,255,255,0.06)'/%3E%3Ccircle cx='30' cy='130' r='60' fill='rgba(255,255,255,0.04)'/%3E%3C/svg%3E") no-repeat center/cover;
+  pointer-events: none;
+}
+.canho-page .rc-top { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; position: relative; }
+.canho-page .rc-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex: 0 0 44px; border: 2px solid rgba(255,255,255,.4); }
+.canho-page .rc-name { font-size: 13px; font-weight: 700; color: #fff; line-height: 18px; }
+.canho-page .rc-meta { font-size: 11px; color: rgba(255,255,255,.7); margin-top: 2px; }
+.canho-page .rc-apt-icon { margin-left: auto; width: 32px; height: 32px; background: rgba(255,255,255,.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+.canho-page .rc-apt-icon svg { width: 18px; height: 18px; color: #fff; }
+.canho-page .rc-code-label { font-size: 10px; font-weight: 600; color: rgba(255,255,255,.6); text-transform: uppercase; letter-spacing: .5px; position: relative; }
+.canho-page .rc-code { font-family: "Manrope","Inter",sans-serif; font-size: 18px; font-weight: 800; color: #fff; letter-spacing: 1px; margin: 3px 0 12px; position: relative; }
+.canho-page .rc-building-label { font-size: 10px; color: rgba(255,255,255,.6); text-transform: uppercase; letter-spacing: .5px; position: relative; }
+.canho-page .rc-building { font-size: 13px; font-weight: 700; color: #fff; margin-top: 2px; position: relative; }
+.canho-page .rc-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.2); position: relative; }
+.canho-page .rc-active { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: #4ade80; background: rgba(74,222,128,.15); padding: 3px 8px; border-radius: 10px; }
+.canho-page .rc-active-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; }
+.canho-page .rc-since { font-size: 10px; color: rgba(255,255,255,.5); }
+
+/* Quick links */
+.canho-page .quick-links { background: #fff; border: 1px solid #e2e5f1; border-radius: 20px; overflow: hidden; }
+.canho-page .ql-hd { padding: 14px 16px; border-bottom: 1px solid #e2e5f1; font-size: 13px; font-weight: 700; color: #272727; }
+.canho-page .ql-item { display: flex; align-items: center; gap: 12px; padding: 11px 16px; border-bottom: 1px solid #e2e5f1; cursor: pointer; transition: background .15s; }
+.canho-page .ql-item:last-child { border-bottom: 0; }
+.canho-page .ql-item:hover { background: #fafafa; }
+.canho-page .ql-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.canho-page .ql-icon svg { width: 16px; height: 16px; }
+.canho-page .ql-text { flex: 1; }
+.canho-page .ql-name { font-size: 13px; font-weight: 600; color: #272727; }
+.canho-page .ql-sub { font-size: 12px; color: #585c7b; margin-top: 1px; }
+.canho-page .ql-arrow { color: #b4b7c9; }
+.canho-page .ql-arrow svg { width: 14px; height: 14px; }
