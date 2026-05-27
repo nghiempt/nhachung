@@ -1817,3 +1817,128 @@
 .kpi-page .member-score-row { display: flex; align-items: center; gap: 5px; }
 .kpi-page .member-score { font-family: "Manrope","Inter",sans-serif; font-size: 15px; font-weight: 800; color: #272727; }
 .kpi-page .member-badge { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; }
+
+/* ============================================================
+   PAGE: BÁO CÁO ĐỊNH KỲ
+   ============================================================ */
+.bcdk-page { padding: 20px; display: flex; flex-direction: column; gap: 20px; font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+
+.bcdk-page .page-hd { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 0; }
+.bcdk-page .page-title { font-size: 28px; font-weight: 700; line-height: 36px; color: #272727; }
+.bcdk-page .page-sub { font-size: 16px; color: #3e4265; margin-top: 6px; line-height: 24px; font-weight: 500; }
+.bcdk-page .page-actions { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+.bcdk-page .btn-outline {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 16px; background: #ffffff;
+  border: 1px solid #d4d7e5; border-radius: 10px;
+  font-size: 14px; font-weight: 500; color: #272727;
+  cursor: pointer; white-space: nowrap; line-height: 22px;
+}
+.bcdk-page .btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 16px; background: #4137f9; border: 1px solid #4137f9;
+  border-radius: 10px; font-size: 14px; font-weight: 500; color: #fff;
+  cursor: pointer; white-space: nowrap; line-height: 22px;
+}
+
+/* Stat row */
+.bcdk-page .stat-row { display: flex; gap: 16px; }
+.bcdk-page .stat-card {
+  flex: 1; background: #ffffff; border: 1px solid #e2e5f1; border-radius: 20px;
+  padding: 19px 21px; display: flex; flex-direction: column; gap: 12px;
+}
+.bcdk-page .stat-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.bcdk-page .stat-icon svg { width: 20px; height: 20px; }
+.bcdk-page .stat-val { font-family: "Manrope","Inter",sans-serif; font-size: 26px; font-weight: 800; color: #272727; line-height: 32px; }
+.bcdk-page .stat-val.green { color: #1c9d5f; }
+.bcdk-page .stat-val.orange { color: #c8761b; }
+.bcdk-page .stat-val.red { color: #f5222d; }
+.bcdk-page .stat-lbl { font-size: 13px; color: #585c7b; font-weight: 500; }
+.bcdk-page .stat-trend { display: flex; align-items: center; gap: 4px; font-size: 12px; }
+.bcdk-page .trend-up { color: #1c9d5f; }
+.bcdk-page .trend-down { color: #f5222d; }
+.bcdk-page .trend-neu { color: #585c7b; }
+
+/* Filter bar */
+.bcdk-page .filter-bar { display: flex; align-items: center; gap: 10px; }
+.bcdk-page .filter-tab {
+  padding: 7px 18px; border-radius: 20px; font-size: 13px; font-weight: 500;
+  cursor: pointer; border: 1px solid #d4d7e5; white-space: nowrap;
+  color: #585c7b; background: #ffffff;
+}
+.bcdk-page .filter-tab.active { background: #4137f9; color: #fff; border-color: #4137f9; }
+.bcdk-page .filter-tab:not(.active):hover { background: #f7f7f7; }
+.bcdk-page .filter-spacer { flex: 1; }
+.bcdk-page .search-mini {
+  display: flex; align-items: center; gap: 8px;
+  border: 1px solid #d4d7e5; border-radius: 10px;
+  padding: 7px 14px; font-size: 13px; color: #585c7b;
+  cursor: pointer; background: #ffffff;
+}
+
+/* Report grid */
+.bcdk-page .report-section { display: flex; flex-direction: column; gap: 10px; }
+.bcdk-page .section-label { font-size: 12px; font-weight: 700; color: #959595; text-transform: uppercase; letter-spacing: .5px; padding: 0 4px; }
+.bcdk-page .report-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.bcdk-page .report-card {
+  background: #ffffff; border: 1px solid #e2e5f1; border-radius: 20px;
+  padding: 20px 22px; display: flex; flex-direction: column; gap: 14px;
+  transition: box-shadow .15s, border-color .15s; cursor: pointer;
+}
+.bcdk-page .report-card:hover { box-shadow: 0 4px 16px rgba(65,55,249,.08); border-color: #d3c5fd; }
+.bcdk-page .rc-top { display: flex; align-items: flex-start; gap: 14px; }
+.bcdk-page .rc-file-icon { width: 44px; height: 52px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; position: relative; }
+.bcdk-page .rc-file-ext { font-size: 9px; font-weight: 800; letter-spacing: .5px; margin-top: 2px; }
+.bcdk-page .rc-meta { flex: 1; min-width: 0; }
+.bcdk-page .rc-period { font-size: 12px; font-weight: 600; color: #585c7b; margin-bottom: 4px; }
+.bcdk-page .rc-title { font-size: 13px; font-weight: 600; color: #272727; line-height: 18px; }
+.bcdk-page .rc-date { font-size: 12px; color: #585c7b; margin-top: 4px; }
+.bcdk-page .rc-divider { height: 1px; background: #eff2fc; }
+.bcdk-page .rc-bottom { display: flex; align-items: center; justify-content: space-between; }
+.bcdk-page .rc-stats { display: flex; gap: 14px; }
+.bcdk-page .rc-stat { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #585c7b; }
+.bcdk-page .rc-stat svg { flex-shrink: 0; }
+.bcdk-page .rc-actions { display: flex; gap: 6px; }
+.bcdk-page .rc-btn {
+  width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: #f7f7f7; border: 1px solid #d4d7e5;
+  cursor: pointer; transition: background .12s;
+}
+.bcdk-page .rc-btn:hover { background: #f7f5ff; }
+.bcdk-page .rc-btn svg { width: 14px; height: 14px; color: #585c7b; }
+
+.bcdk-page .file-pdf { background: #fff1f0; }
+.bcdk-page .file-pdf .rc-file-ext { color: #f5222d; }
+.bcdk-page .file-doc { background: #e8f0fe; }
+.bcdk-page .file-doc .rc-file-ext { color: #1870c4; }
+.bcdk-page .file-xls { background: #e8f8ee; }
+.bcdk-page .file-xls .rc-file-ext { color: #1c9d5f; }
+
+/* Badges */
+.bcdk-page .badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.bcdk-page .badge-green { background: #e3fbed; color: #1c9d5f; }
+.bcdk-page .badge-orange { background: #fff1de; color: #c8761b; }
+.bcdk-page .badge-gray { background: #f0f0f5; color: #585c7b; }
+.bcdk-page .badge-blue { background: #efeaff; color: #5a3ad9; }
+
+/* Upcoming */
+.bcdk-page .upcoming-card {
+  background: #ffffff; border: 1px solid #e2e5f1; border-radius: 20px;
+  padding: 21px 23px; display: flex; flex-direction: column; gap: 16px;
+}
+.bcdk-page .card-hd { display: flex; align-items: center; justify-content: space-between; }
+.bcdk-page .card-title { font-family: "Manrope","Inter",sans-serif; font-size: 16px; font-weight: 700; color: #272727; }
+.bcdk-page .card-link { font-size: 13px; font-weight: 500; color: #4137f9; cursor: pointer; }
+.bcdk-page .upcoming-list { display: flex; flex-direction: column; gap: 0; }
+.bcdk-page .up-row { display: grid; grid-template-columns: 1fr 130px 120px 100px 80px; align-items: center; padding: 12px 8px; border-bottom: 1px solid #eff2fc; }
+.bcdk-page .up-row:last-child { border-bottom: 0; }
+.bcdk-page .up-row:hover { background: #fafafa; border-radius: 8px; }
+.bcdk-page .up-hd span { font-size: 12px; font-weight: 600; color: #585c7b; text-transform: uppercase; letter-spacing: .4px; }
+.bcdk-page .up-title { font-size: 13px; font-weight: 500; color: #272727; }
+.bcdk-page .up-sub { font-size: 12px; color: #585c7b; margin-top: 2px; }
+.bcdk-page .up-date { font-size: 13px; color: #585c7b; }
+.bcdk-page .up-date.urgent { color: #f5222d; font-weight: 600; }
+.bcdk-page .up-person { font-size: 13px; color: #272727; }
+.bcdk-page .badge-cell { display: flex; }
+.bcdk-page .action-cell { display: flex; justify-content: flex-end; gap: 6px; }

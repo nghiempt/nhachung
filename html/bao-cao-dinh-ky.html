@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nhà Chung — Báo cáo định kỳ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+:root {
+  --primary:#4137f9; --primary-light:#f1f7ff; --primary-border:#d3c5fd; --primary-bg:#f7f5ff;
+  --text:#272727; --text-secondary:#3e4265; --text-gray:#585c7b;
+  --text-placeholder:#b4b7c9; --text-section-label:#959595;
+  --canvas:#ffffff; --surface-hover:#fafafa; --surface-subtle:#f7f7f7;
+  --border:#e2e5f1; --border-input:#d4d7e5; --border-subtle:#eff2fc; --border-divider:#dedede;
+  --success:#1c9d5f; --danger:#f5222d; --warning:#c8761b;
+  --r-xs:4px; --r-sm:8px; --r-md:10px; --r-lg:12px; --r-card:20px;
+  --shadow-sidebar:2px 0 10px rgba(89,89,89,.05); --sidebar-w:268px;
+  --fs-xs:12px; --fs-sm:13px; --fs-body:14px; --fs-md:16px; --fs-3xl:28px;
+  --font-body:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-number:"Manrope","Inter",sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:var(--font-body);background:var(--surface-hover);color:var(--text);display:flex;-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;} button{font:inherit;cursor:pointer;border:0;background:none;} img{display:block;}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--canvas);border-right:1px solid var(--border-subtle);box-shadow:var(--shadow-sidebar);display:flex;flex-direction:column;padding:16px 0 24px;height:100vh;overflow-y:auto;overflow-x:hidden;}
+.sidebar-logo{padding:0 16px 30px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.sidebar-nav-group{display:flex;flex-direction:column;gap:20px;padding:0 16px;}
+.nav-section{display:flex;flex-direction:column;gap:2px;}
+.nav-section-label{font-size:12px;font-weight:700;color:var(--text-section-label);text-transform:uppercase;letter-spacing:.5px;padding:0 8px 6px;line-height:16px;}
+.nav-row{display:flex;align-items:center;border-radius:var(--r-sm);width:100%;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:8px;border-radius:var(--r-sm);cursor:pointer;color:var(--text);font-size:var(--fs-body);font-weight:400;line-height:22px;width:236px;flex-shrink:0;transition:background .15s;}
+.nav-item:hover{background:var(--surface-hover);}
+.nav-item.active{background:var(--primary-light);color:var(--primary);font-weight:600;}
+.nav-item .nav-icon{width:20px;height:20px;flex:0 0 20px;filter:brightness(0) opacity(0.5);}
+.nav-item.active .nav-icon{filter:brightness(0) saturate(100%) invert(22%) sepia(97%) saturate(2000%) hue-rotate(237deg) brightness(107%) contrast(104%);}
+.nav-item span{flex:1;} .nav-item span.nav-badge{flex:none;}
+.nav-badge{background:var(--primary-light);color:var(--primary);font-size:var(--fs-xs);font-weight:700;padding:4px 6px;border-radius:10px;line-height:1;margin-left:auto;white-space:nowrap;}
+.sidebar-footer{margin-top:auto;padding:16px 16px 0;border-top:1px solid var(--border-divider);}
+.sidebar-footer-text{font-size:12px;color:var(--text-gray);line-height:18px;margin-bottom:8px;}
+.sidebar-collapse{display:flex;align-items:center;justify-content:space-between;padding:8px;border-radius:var(--r-sm);cursor:pointer;color:var(--text-gray);}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;min-width:0;}
+.header{position:relative;z-index:200;background:var(--canvas);border-bottom:1px solid var(--border-subtle);padding:10px 20px;display:flex;align-items:center;gap:20px;flex-shrink:0;}
+.building-selector{display:flex;align-items:center;gap:10px;border:1px solid var(--border-input);border-radius:var(--r-sm);padding:8px 12px;width:236px;flex-shrink:0;cursor:pointer;}
+.building-selector .label{flex:1;font-size:14px;font-weight:500;color:var(--text);}
+.search-bar{flex:1;display:flex;align-items:center;gap:8px;border:1px solid var(--border-input);border-radius:var(--r-md);padding:0 12px;height:40px;}
+.search-bar input{flex:1;border:0;outline:0;font:inherit;font-size:var(--fs-body);background:transparent;}
+.search-bar input::placeholder{color:var(--text-placeholder);}
+.header-right{display:flex;align-items:center;gap:14px;margin-left:auto;}
+.notif-btn{position:relative;width:36px;height:36px;background:var(--surface-subtle);border-radius:var(--r-md);display:inline-flex;align-items:center;justify-content:center;padding:6px;cursor:pointer;flex-shrink:0;}
+.notif-btn .notif-dot{position:absolute;top:5px;left:19px;width:10px;height:10px;}
+.user-pill{display:flex;align-items:center;gap:18px;height:32px;cursor:pointer;}
+.user-pill .avatar{width:32px;height:32px;border-radius:50%;object-fit:cover;flex:0 0 32px;}
+.user-info{display:flex;flex-direction:column;gap:2px;}
+.user-name{font-weight:600;font-size:14px;line-height:16px;white-space:nowrap;}
+.user-apt{font-size:12px;color:var(--text-gray);line-height:14px;white-space:nowrap;}
+.content-scroll{flex:1;overflow-y:auto;overflow-x:hidden;background:var(--surface-hover);}
+
+/* PAGE */
+.page{padding:20px;display:flex;flex-direction:column;gap:20px;}
+.page-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;}
+.page-title{font-size:var(--fs-3xl);font-weight:700;line-height:36px;}
+.page-sub{font-size:var(--fs-md);color:var(--text-secondary);margin-top:6px;line-height:24px;font-weight:500;}
+.page-actions{display:flex;gap:10px;align-items:center;flex-shrink:0;}
+.btn-outline{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:var(--canvas);border:1px solid var(--border-input);border-radius:var(--r-md);font-size:var(--fs-body);font-weight:500;color:var(--text);cursor:pointer;white-space:nowrap;line-height:22px;}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:var(--primary);border:1px solid var(--primary);border-radius:var(--r-md);font-size:var(--fs-body);font-weight:500;color:#fff;cursor:pointer;white-space:nowrap;line-height:22px;}
+
+/* STAT ROW */
+.stat-row{display:flex;gap:16px;}
+.stat-card{flex:1;background:var(--canvas);border:1px solid var(--border);border-radius:var(--r-card);padding:19px 21px;display:flex;flex-direction:column;gap:12px;}
+.stat-icon{width:42px;height:42px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.stat-icon svg{width:20px;height:20px;}
+.stat-val{font-family:var(--font-number);font-size:26px;font-weight:800;color:var(--text);line-height:32px;}
+.stat-val.green{color:var(--success);} .stat-val.orange{color:var(--warning);} .stat-val.red{color:var(--danger);}
+.stat-lbl{font-size:var(--fs-sm);color:var(--text-gray);font-weight:500;}
+.stat-trend{display:flex;align-items:center;gap:4px;font-size:var(--fs-xs);}
+.trend-up{color:var(--success);} .trend-down{color:var(--danger);} .trend-neu{color:var(--text-gray);}
+
+/* FILTER BAR */
+.filter-bar{display:flex;align-items:center;gap:10px;}
+.filter-tab{padding:7px 18px;border-radius:20px;font-size:var(--fs-sm);font-weight:500;cursor:pointer;border:1px solid transparent;white-space:nowrap;color:var(--text-gray);background:var(--canvas);border-color:var(--border-input);}
+.filter-tab.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+.filter-tab:not(.active):hover{background:var(--surface-subtle);}
+.filter-spacer{flex:1;}
+.search-mini{display:flex;align-items:center;gap:8px;border:1px solid var(--border-input);border-radius:var(--r-md);padding:7px 14px;font-size:var(--fs-sm);color:var(--text-gray);cursor:pointer;background:var(--canvas);}
+
+/* REPORT GRID */
+.report-section{display:flex;flex-direction:column;gap:10px;}
+.section-label{font-size:var(--fs-xs);font-weight:700;color:var(--text-section-label);text-transform:uppercase;letter-spacing:.5px;padding:0 4px;}
+.report-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.report-card{background:var(--canvas);border:1px solid var(--border);border-radius:var(--r-card);padding:20px 22px;display:flex;flex-direction:column;gap:14px;transition:box-shadow .15s,border-color .15s;cursor:pointer;}
+.report-card:hover{box-shadow:0 4px 16px rgba(65,55,249,.08);border-color:var(--primary-border);}
+.rc-top{display:flex;align-items:flex-start;gap:14px;}
+.rc-file-icon{width:44px;height:52px;border-radius:var(--r-sm);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;position:relative;}
+.rc-file-ext{font-size:9px;font-weight:800;letter-spacing:.5px;margin-top:2px;}
+.rc-meta{flex:1;min-width:0;}
+.rc-period{font-size:var(--fs-xs);font-weight:600;color:var(--text-gray);margin-bottom:4px;}
+.rc-title{font-size:var(--fs-sm);font-weight:600;color:var(--text);line-height:18px;}
+.rc-date{font-size:var(--fs-xs);color:var(--text-gray);margin-top:4px;}
+.rc-divider{height:1px;background:var(--border-subtle);}
+.rc-bottom{display:flex;align-items:center;justify-content:space-between;}
+.rc-stats{display:flex;gap:14px;}
+.rc-stat{display:flex;align-items:center;gap:5px;font-size:var(--fs-xs);color:var(--text-gray);}
+.rc-stat svg{flex-shrink:0;}
+.rc-actions{display:flex;gap:6px;}
+.rc-btn{width:30px;height:30px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;background:var(--surface-subtle);border:1px solid var(--border-input);cursor:pointer;transition:background .12s;}
+.rc-btn:hover{background:var(--primary-bg);}
+.rc-btn svg{width:14px;height:14px;color:var(--text-gray);}
+
+/* File type colors */
+.file-pdf{background:#fff1f0;} .file-pdf .rc-file-ext{color:#f5222d;}
+.file-doc{background:#e8f0fe;} .file-doc .rc-file-ext{color:#1870c4;}
+.file-xls{background:#e8f8ee;} .file-xls .rc-file-ext{color:#1c9d5f;}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:600;white-space:nowrap;}
+.badge-green{background:#e3fbed;color:var(--success);}
+.badge-orange{background:#fff1de;color:var(--warning);}
+.badge-gray{background:#f0f0f5;color:var(--text-gray);}
+.badge-blue{background:#efeaff;color:#5a3ad9;}
+
+/* UPCOMING */
+.upcoming-card{background:var(--canvas);border:1px solid var(--border);border-radius:var(--r-card);padding:21px 23px;display:flex;flex-direction:column;gap:16px;}
+.card-hd{display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-family:var(--font-number);font-size:16px;font-weight:700;color:var(--text);}
+.card-link{font-size:var(--fs-sm);font-weight:500;color:var(--primary);cursor:pointer;}
+.upcoming-list{display:flex;flex-direction:column;gap:0;}
+.up-row{display:grid;grid-template-columns:1fr 130px 120px 100px 80px;align-items:center;padding:12px 8px;border-bottom:1px solid var(--border-subtle);}
+.up-row:last-child{border-bottom:0;}
+.up-row:hover{background:var(--surface-hover);border-radius:var(--r-sm);}
+.up-hd span{font-size:var(--fs-xs);font-weight:600;color:var(--text-gray);text-transform:uppercase;letter-spacing:.4px;}
+.up-title{font-size:var(--fs-sm);font-weight:500;color:var(--text);}
+.up-sub{font-size:var(--fs-xs);color:var(--text-gray);margin-top:2px;}
+.up-date{font-size:var(--fs-sm);color:var(--text-gray);}
+.up-date.urgent{color:var(--danger);font-weight:600;}
+.up-person{font-size:var(--fs-sm);color:var(--text);}
+.badge-cell{display:flex;}
+.action-cell{display:flex;justify-content:flex-end;gap:6px;}
+  
+/* ── Dropdown system ── */
+.building-selector{position:relative;}
+.notif-btn{position:relative;}
+.user-pill{position:relative;}
+.dd{position:fixed;z-index:9999;background:var(--canvas);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:0 8px 32px rgba(0,0,0,.14);display:none;}
+.dd.open{display:block;animation:ddIn .14s ease;}
+@keyframes ddIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+/* Building dropdown */
+.dd-building{min-width:272px;}
+.dd-search{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);}
+.dd-search svg{width:15px;height:15px;color:var(--text-placeholder);flex-shrink:0;}
+.dd-search input{flex:1;border:0;outline:0;font:inherit;font-size:13px;background:transparent;color:var(--text);}
+.dd-search input::placeholder{color:var(--text-placeholder);}
+.dd-sep-label{font-size:11px;font-weight:700;color:var(--text-placeholder);text-transform:uppercase;letter-spacing:.5px;padding:10px 14px 3px;}
+.dd-bld-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;transition:background .15s;}
+.dd-bld-item:hover{background:var(--surface-hover);}
+.dd-bld-item.active{background:var(--primary-bg);}
+.dd-bld-ico{width:30px;height:30px;border-radius:var(--r-sm);background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.dd-bld-ico svg{width:15px;height:15px;color:var(--primary);}
+.dd-bld-ico.muted{background:var(--surface-subtle);}
+.dd-bld-ico.muted svg{color:var(--text-gray);}
+.dd-bld-info{flex:1;}
+.dd-bld-name{font-size:13px;font-weight:600;color:var(--text);}
+.dd-bld-meta{font-size:11px;color:var(--text-gray);margin-top:1px;}
+.dd-bld-check svg{width:14px;height:14px;color:var(--primary);}
+.dd-divider{height:1px;background:var(--border);margin:4px 0;}
+/* Notification dropdown */
+.dd-notif{width:348px;}
+.dd-nt-hd{display:flex;align-items:center;justify-content:space-between;padding:13px 16px 9px;border-bottom:1px solid var(--border);}
+.dd-nt-hd-title{font-size:14px;font-weight:700;color:var(--text);}
+.dd-nt-mark{font-size:12px;font-weight:600;color:var(--primary);cursor:pointer;}
+.dd-nt-grp{font-size:11px;font-weight:700;color:var(--text-placeholder);text-transform:uppercase;letter-spacing:.4px;padding:9px 16px 3px;}
+.dd-nt-item{display:flex;align-items:flex-start;gap:10px;padding:9px 16px;cursor:pointer;transition:background .15s;position:relative;}
+.dd-nt-item:hover{background:var(--surface-hover);}
+.dd-nt-item.unread{background:var(--primary-bg);}
+.dd-nt-item.unread::before{content:'';position:absolute;left:5px;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:var(--primary);}
+.dd-nt-ico{width:30px;height:30px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.dd-nt-ico svg{width:14px;height:14px;}
+.dd-nt-body{flex:1;min-width:0;text-align:left;}
+.dd-nt-title{font-size:13px;font-weight:600;color:var(--text);line-height:1.4;text-align:left;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.dd-nt-meta{font-size:12px;color:var(--text-placeholder);margin-top:3px;text-align:left;}
+.dd-nt-footer{display:block;text-align:center;padding:11px;font-size:12px;font-weight:600;color:var(--primary);border-top:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.dd-nt-footer:hover{background:var(--surface-hover);}
+/* User dropdown */
+.dd-user{min-width:216px;}
+.dd-usr-info{display:flex;align-items:center;gap:10px;padding:13px 16px 16px;}
+.dd-usr-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+.dd-usr-name{font-size:13px;font-weight:700;color:var(--text);}
+.dd-usr-email{font-size:11px;color:var(--text-gray);margin-top:1px;}
+.dd-menu-item{display:flex;align-items:center;gap:9px;padding:9px 16px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text);transition:background .15s;}
+.dd-menu-item:hover{background:var(--surface-hover);}
+.dd-menu-item svg{width:15px;height:15px;color:var(--text-gray);flex-shrink:0;}
+.dd-menu-item.danger{color:var(--danger);}
+.dd-menu-item.danger svg{color:var(--danger);}
+.dd-menu-item.danger:hover{background:#fff5f5;}
+  </style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <svg width="36" height="40" viewBox="0 0 36 40" fill="none"><path d="M0 12.6995V36.7148C0 36.8859 0.0895 37.043 0.2357 37.13L3.584 39.1241C3.7322 39.2122 3.9171 39.2142 4.0673 39.1281L7.6155 37.086C7.7646 37 7.8571 36.8399 7.8571 36.6668V16.7058C7.8571 16.5337 7.7656 16.3736 7.6174 16.2875L0.72 12.2813C0.3998 12.0952 0 12.3273 0 12.6995Z" fill="#4137F9"/><path d="M19.4784 8.91446L27.7512 13.7201C27.8993 13.8062 27.9908 13.9662 27.9908 14.1383V30.0301C27.9908 30.2973 28.2056 30.5134 28.4711 30.5134H35.3676C35.6331 30.5134 35.8479 30.2973 35.8479 30.0301V9.57482C35.8479 9.40273 35.7564 9.24264 35.6082 9.15659L19.9587 0.065573C19.6385 -0.12053 19.2387 0.1116 19.2387 0.4838V8.49523C19.2387 8.66732 19.3302 8.82741 19.4784 8.91346V8.91446Z" fill="#A7A3F7"/><path d="M15.8893 0.065573L1.13768 8.6353C0.817474 8.82141 0.817474 9.28566 1.13768 9.47177L8.03315 13.478C8.18133 13.564 8.3643 13.564 8.51347 13.478L16.3696 8.91446C16.5177 8.82841 16.6092 8.66832 16.6092 8.49623V0.4838C16.6092 0.1116 16.2095 -0.12053 15.8893 0.065573Z" fill="#4137F9"/><path d="M31.9184 40.0005C34.0878 40.0005 35.8464 38.231 35.8464 36.0483C35.8464 33.8656 34.0878 32.0961 31.9184 32.0961C29.749 32.0961 27.9903 33.8656 27.9903 36.0483C27.9903 38.231 29.749 40.0005 31.9184 40.0005Z" fill="#4137F9"/><path d="M17.72 14.6407C15.3164 14.6407 13.3613 16.6068 13.3613 19.0261C13.3613 21.4455 15.206 23.3185 17.6096 23.4016C17.6832 23.3926 17.7568 23.3926 17.8115 23.4016H17.8761C20.225 23.3185 22.0687 21.3985 22.0786 19.0261C22.0786 16.6078 20.1245 14.6407 17.72 14.6407Z" fill="#4137F9"/><path d="M22.3805 25.8569C19.8208 24.1399 15.6461 24.1399 13.0675 25.8569C11.902 26.6413 11.2596 27.7029 11.2596 28.8385C11.2596 29.9742 11.902 31.0267 13.0576 31.8022C14.3424 32.6697 16.03 33.1039 17.7185 33.1039C19.4071 33.1039 21.0947 32.6697 22.3795 31.8022C23.536 31.0177 24.1774 29.9652 24.1774 28.8205C24.1685 27.6849 23.535 26.6323 22.3795 25.8569H22.3805Z" fill="#4137F9"/></svg>
+    <svg width="114" height="23" viewBox="0 0 114 23" fill="none"><path d="M3.08376 0.41618L10.7434 11.7261V0.41618H13.6282V17.0307H10.7932L3.08376 5.72081V17.0307H0V0.666398C0 0.605345 0.079581 0.513264 0 0.41618H3.08376Z" fill="#161A48"/><path d="M111.115 15.3252C108.772 17.8894 104.134 17.0627 102.672 13.962C100.157 8.62835 105.228 2.80527 110.467 6.21925L111.215 6.91786V5.51664H114V17.4771C114 17.8704 113.652 19.0575 113.476 19.4518C111.549 23.7666 103.993 23.5974 102.56 18.9293L105.285 18.0195C106.038 20.5267 110.022 20.6018 110.895 18.1557C110.939 18.0296 111.115 17.449 111.115 17.377V15.3252ZM107.811 7.84667C103.858 8.23001 104.125 14.8558 108.769 14.2152C112.193 13.7428 111.9 7.45033 107.811 7.84667Z" fill="#161A48"/><path d="M51.2667 12.9877C53.4541 15.1626 57.8182 14.8553 59.1074 11.8347L62.1334 12.6174C60.8015 17.3075 54.6399 18.4615 50.7325 16.3777C45.4413 13.5552 45.127 5.19392 49.8481 1.67184C53.7197 -1.21668 59.8515 -0.34792 62.0648 4.16702L59.3213 5.60427C59.1332 5.62129 58.7184 4.81959 58.5453 4.61441C56.6622 2.37946 52.903 2.63969 51.0369 4.76854C49.1866 6.87839 49.2672 10.998 51.2676 12.9877H51.2667Z" fill="#161A48"/><path d="M19.4978 0.0146542V6.72051C21.5023 4.48656 25.6743 4.68773 26.877 7.65332C26.9496 7.83348 27.257 8.75929 27.257 8.87238V17.0295H24.2727V10.2736C24.2727 8.49606 23.0322 7.76442 21.362 8.04566C20.5503 8.18278 19.4978 9.36081 19.4978 10.1735V17.0295H16.613V0.0146542H19.4978Z" fill="#161A48"/><path d="M67.0478 0.0146542V6.72051L68.2475 5.77568C71.0059 4.25435 74.8069 5.89779 74.8069 9.27273V17.0295H71.9221V10.1735C71.9221 9.94732 71.6834 9.26473 71.562 9.03453C70.7473 7.48517 68.14 7.70837 67.395 9.22169C67.3422 9.32978 67.0478 10.2176 67.0478 10.2736V17.0295H64.163V0.0146542H67.0478Z" fill="#161A48"/><path d="M39.5915 17.0319H36.8062C36.8171 16.6846 36.7853 16.3173 36.7047 15.981C36.6003 15.5456 36.4779 16.019 36.3645 16.1331C34.6366 17.8856 30.6217 17.8136 29.427 15.4986C28.0314 12.7962 30.1482 10.1259 32.9763 10.1259H36.5077C36.5286 9.26713 36.6152 8.58053 35.9029 7.982C35.0176 7.23836 33.0649 7.31042 32.3864 8.33131C32.1935 8.62156 32.1228 9.2411 31.8612 9.31216C31.5091 9.25311 29.3932 9.10098 29.3504 8.86878C29.7812 5.48382 33.5881 4.74818 36.3874 5.49383C38.3431 6.01529 39.2911 7.39349 39.4811 9.38723C39.7149 11.8494 39.2523 14.5637 39.5925 17.0319H39.5915ZM36.5077 12.0275H33.5732C33.426 12.0275 32.5854 12.4369 32.4262 12.575C31.3051 13.5499 32.2213 15.0842 33.5712 15.1773C35.6304 15.3184 36.7843 14.0923 36.5077 12.0275Z" fill="#161A48"/><path d="M100.471 17.0268H97.4871V9.77049C97.4871 9.5613 97.0941 8.80665 96.934 8.62549C96.1203 7.70969 94.1466 7.80777 93.3558 8.71657C93.1807 8.91774 92.7122 9.96265 92.7122 10.1708V17.0268H89.8274V5.51677H92.6127V6.81691L93.7766 5.83705C96.3878 4.20063 100.471 5.86308 100.471 9.16996V17.0268Z" fill="#161A48"/><path d="M84.556 5.5178H87.4408V17.0278H84.6555V15.7267C82.7605 18.1318 78.4541 17.8526 77.2167 14.954C77.0784 14.6308 76.7969 13.6889 76.7969 13.3747V5.5178H79.6319L79.7812 5.66793V12.9743C79.7812 13.0414 80.0647 13.6139 80.1353 13.719C81.0843 15.1122 83.3892 14.8139 84.179 13.3957C84.2417 13.2836 84.556 12.4278 84.556 12.3738V5.5178Z" fill="#161A48"/><path d="M31.3356 0.617431H34.4691L35.997 3.7882L35.8618 4.0204H33.4743L31.3903 1.11386L31.3356 0.617431Z" fill="#161A48"/></svg>
+  </div>
+  <div class="sidebar-nav-group">
+    <div class="nav-section">
+      <div class="nav-row"><a href="dashboard.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/948dfd1b-cf10-487e-a625-2f3992055751" alt=""/><span>Dashboard</span></a></div>
+      <div class="nav-row"><a href="notification.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/48c83959-0e4a-4796-92aa-855c591bea09" alt=""/><span>Thông báo</span><span class="nav-badge" style="background:#f9c268;color:#272727;">298</span></a></div>
+      <div class="nav-row"><a href="kho-tai-lieu.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/4d81f87e-d02e-4f11-bbeb-1cbb8bd237cd" alt=""/><span>Kho tài liệu</span></a></div>
+      <div class="nav-row"><a href="gop-y-phan-anh.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/e7a24a0c-9154-4fe5-b775-e28b59efd97b" alt=""/><span>Góp ý / Phản ánh</span></a></div>
+      <div class="nav-row"><a href="tin-tuc-cong-dong.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/88032ed9-c023-453f-ace1-48bac91b8033" alt=""/><span>Tin tức cộng đồng</span></a></div>
+      <div class="nav-row"><a href="ai-assistant.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/2f5f2c4b-c461-4b2b-a016-172f0940c49d" alt=""/><span>AI Assistant</span></a></div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">báo cáo minh bạch</div>
+      <div class="nav-row"><a href="tong-quan-tai-chinh.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/704a494d-6aa9-4050-93d6-8be752cc3e38" alt=""/><span>Tổng quan tài chính</span></a></div>
+      <div class="nav-row"><a href="bao-cao-thu-chi.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/89c6053d-33c3-448d-b8d6-5eaef37341ac" alt=""/><span>Báo cáo thu chi</span></a></div>
+      <div class="nav-row"><a href="quy-bao-tri.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/73832a3c-38ad-496e-b944-0ebb15cb0d62" alt=""/><span>Quỹ bảo trì</span></a></div>
+      <div class="nav-row"><a href="van-hanh-bao-tri.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/82bc45d6-8665-4c78-bac3-f9fbb084e888" alt=""/><span>Vận hành &amp; bảo trì</span></a></div>
+      <div class="nav-row"><a href="kpi-ban-quan-tri.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/4a802188-fa92-4a4d-97e3-f3cf05f15319" alt=""/><span>KPI Ban quản trị</span></a></div>
+      <div class="nav-row"><a href="bao-cao-dinh-ky.html" class="nav-item active"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/6df232ea-f0e0-4733-9c5b-bd32987e6750" alt=""/><span>Báo cáo định kỳ</span></a></div>
+      <div class="nav-row"><a href="lich-su-luu-tru.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/e68588e5-a681-4c29-aeea-03abf1166456" alt=""/><span>Lịch sử &amp; lưu trữ</span></a></div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">cá nhân</div>
+      <div class="nav-row"><a href="ho-so-ca-nhan.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/33744d68-a412-4dd3-aed3-a586e2256f38" alt=""/><span>Hồ sơ cá nhân</span></a></div>
+      <div class="nav-row"><a href="thanh-vien-gia-dinh.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/29317f27-aa9f-46d1-b44e-723d4ca142d1" alt=""/><span>Thành viên gia đình</span></a></div>
+      <div class="nav-row"><a href="can-ho-cua-toi.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/5239243c-3028-423d-a5d8-7983f3bcf2c1" alt=""/><span>Căn hộ của tôi</span></a></div>
+      <div class="nav-row"><a href="cai-dat.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/1effc1b6-c32f-4ad4-8e08-df8f1d1ec6bf" alt=""/><span>Cài đặt</span></a></div>
+    </div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-text">Nhà Chung Platform<br/>Phiên bản 1.0.0</div>
+    <div class="sidebar-collapse"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="header">
+    <div class="building-selector" data-dd="dd-building">
+      <img src="https://www.figma.com/api/mcp/asset/e6f58352-70f9-4da3-97bd-52e295398cd2" alt="" width="20" height="20"/>
+      <span class="label">Landmark 1</span>
+      <img src="https://www.figma.com/api/mcp/asset/923cda87-71a9-4618-97e0-fba047a66ea1" alt="" width="18" height="18"/>
+      <div class="dd dd-building" id="dd-building">
+        <div class="dd-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Tìm kiếm tòa nhà..." />
+        </div>
+        <div class="dd-sep-label">Của tôi</div>
+        <div class="dd-bld-item active">
+          <div class="dd-bld-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="9" y1="22" x2="9" y2="2"/><line x1="15" y1="6" x2="15" y2="2"/><line x1="15" y1="10" x2="19" y2="10"/><line x1="15" y1="14" x2="19" y2="14"/></svg></div>
+          <div class="dd-bld-info">
+            <div class="dd-bld-name">Landmark 1</div>
+            <div class="dd-bld-meta">Căn hộ A-12.05 · Vinhomes Central Park</div>
+          </div>
+          <div class="dd-bld-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        </div>
+        <div class="dd-divider"></div>
+        <div class="dd-sep-label">Khám phá</div>
+        <div class="dd-bld-item">
+          <div class="dd-bld-ico muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="9" y1="22" x2="9" y2="2"/></svg></div>
+          <div class="dd-bld-info">
+            <div class="dd-bld-name">Landmark 2</div>
+            <div class="dd-bld-meta">Vinhomes Central Park</div>
+          </div>
+        </div>
+        <div class="dd-bld-item">
+          <div class="dd-bld-ico muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="9" y1="22" x2="9" y2="2"/></svg></div>
+          <div class="dd-bld-info">
+            <div class="dd-bld-name">The Grand Marina</div>
+            <div class="dd-bld-meta">Quận 1, TP. Hồ Chí Minh</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="search-bar">
+      <img src="https://www.figma.com/api/mcp/asset/1b7094e2-18f3-4a4d-8483-36ebc09553c2" alt="" width="20" height="20" style="flex:0 0 20px;"/>
+      <input placeholder="Tìm kiếm báo cáo theo tên, kỳ, loại..."/>
+    </div>
+    <div class="header-right">
+      <button class="notif-btn" data-dd="dd-notif">
+        <img src="https://www.figma.com/api/mcp/asset/088722b6-433a-4c41-a336-286691d19904" alt="" width="24" height="24"/>
+        <img class="notif-dot" src="https://www.figma.com/api/mcp/asset/b33a6d31-df5d-4121-8e34-e50fe1b0c7e5" alt=""/>
+        <div id="dd-notif" class="dd dd-notif">
+          <div class="dd-nt-hd">
+            <span class="dd-nt-hd-title">Thông báo</span>
+            <span class="dd-nt-mark">Đánh dấu đã đọc</span>
+          </div>
+          <div class="dd-nt-grp">Hôm nay</div>
+          <div class="dd-nt-item unread">
+            <div class="dd-nt-ico" style="background:#fff3e0;">
+              <svg viewBox="0 0 16 16" fill="none" stroke="#c8761b" stroke-width="1.5"><path d="M8 2L2 13h12L8 2z" stroke-linejoin="round"/><path d="M8 6v4M8 11.5v.5" stroke-linecap="round"/></svg>
+            </div>
+            <div class="dd-nt-body">
+              <div class="dd-nt-title">Bảo trì hệ thống PCCC định kỳ — Tầng B1 &amp; B2</div>
+              <div class="dd-nt-meta">Ban quản trị · 10:30 sáng</div>
+            </div>
+          </div>
+          <div class="dd-nt-item unread">
+            <div class="dd-nt-ico" style="background:#e8f4fd;">
+              <svg viewBox="0 0 16 16" fill="none" stroke="#1890ff" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 7v5M8 5.5v.5" stroke-linecap="round"/></svg>
+            </div>
+            <div class="dd-nt-body">
+              <div class="dd-nt-title">Điều chỉnh phí gửi xe ô tô từ tháng 6/2026</div>
+              <div class="dd-nt-meta">Ban quản trị · 09:15 sáng</div>
+            </div>
+          </div>
+          <div class="dd-nt-grp">Hôm qua</div>
+          <div class="dd-nt-item">
+            <div class="dd-nt-ico" style="background:#e6f9f1;">
+              <svg viewBox="0 0 16 16" fill="none" stroke="#1c9d5f" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="1"/><path d="M5 3V1.5M11 3V1.5M2 7h12" stroke-linecap="round"/></svg>
+            </div>
+            <div class="dd-nt-body">
+              <div class="dd-nt-title">Sự kiện: Ngày hội cư dân 1/6/2026 — Đăng ký tham gia</div>
+              <div class="dd-nt-meta">Ban quản trị · Hôm qua</div>
+            </div>
+          </div>
+          <a href="notification.html" class="dd-nt-footer">Xem tất cả thông báo →</a>
+        </div>
+      </button>
+      <div class="user-pill" data-dd="dd-user">
+        <img class="avatar" src="https://www.figma.com/api/mcp/asset/ee21e768-a070-4e15-ad43-73a28943d4ee" alt="" width="32" height="32"/>
+        <div class="user-info"><div class="user-name">Chris Tran</div><div class="user-apt">Căn hộ A-12.05</div></div>
+        <img src="https://www.figma.com/api/mcp/asset/d8416c17-0767-465c-b7db-cbcbe7dc0620" alt="" width="10" height="10" style="flex:0 0 10px;"/>
+        <div class="dd dd-user" id="dd-user">
+          <div class="dd-usr-info">
+            <img class="dd-usr-avatar" src="https://www.figma.com/api/mcp/asset/ee21e768-a070-4e15-ad43-73a28943d4ee" alt="" />
+            <div>
+              <div class="dd-usr-name">Chris Tran</div>
+              <div class="dd-usr-email">chris.tran@gmail.com</div>
+            </div>
+          </div>
+          <a class="dd-menu-item" href="ho-so-ca-nhan.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Hồ sơ cá nhân
+          </a>
+          <a class="dd-menu-item" href="cai-dat.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            Cài đặt
+          </a>
+          <a class="dd-menu-item danger" href="login.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Đăng xuất
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="content-scroll">
+    <div class="page">
+
+      <!-- Page Header -->
+      <div class="page-hd">
+        <div>
+          <h1 class="page-title">Báo cáo định kỳ</h1>
+          <p class="page-sub">Hệ thống báo cáo tháng, quý và năm của Ban quản trị</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn-outline">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Năm 2024
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button class="btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Tạo báo cáo mới
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#e4f1ff;"><svg viewBox="0 0 24 24" fill="none" stroke="#1870c4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div class="stat-val">28</div>
+          <div class="stat-lbl">Tổng báo cáo năm 2024</div>
+          <div class="stat-trend"><span style="color:var(--success);">↑ +4</span><span class="trend-neu"> so với 2023</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#e3fbed;"><svg viewBox="0 0 24 24" fill="none" stroke="#1c9d5f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+          <div class="stat-val green">21</div>
+          <div class="stat-lbl">Đã phát hành</div>
+          <div class="stat-trend"><span class="trend-neu">5 tháng đầu năm</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#fff1de;"><svg viewBox="0 0 24 24" fill="none" stroke="#c8761b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="stat-val orange">3</div>
+          <div class="stat-lbl">Chờ phê duyệt</div>
+          <div class="stat-trend"><span style="color:var(--warning);">● Cần xem xét</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#ffeded;"><svg viewBox="0 0 24 24" fill="none" stroke="#f5222d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+          <div class="stat-val red">2</div>
+          <div class="stat-lbl">Sắp đến hạn nộp</div>
+          <div class="stat-trend"><span style="color:var(--danger);">Trong 7 ngày tới</span></div>
+        </div>
+      </div>
+
+      <!-- Filter -->
+      <div class="filter-bar">
+        <button class="filter-tab active">Tất cả (28)</button>
+        <button class="filter-tab">Báo cáo tháng (20)</button>
+        <button class="filter-tab">Báo cáo quý (5)</button>
+        <button class="filter-tab">Báo cáo năm (3)</button>
+        <div class="filter-spacer"></div>
+        <div class="search-mini">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Lọc &amp; Tìm kiếm
+        </div>
+      </div>
+
+      <!-- Báo cáo tháng -->
+      <div class="report-section">
+        <div class="section-label">Báo cáo tháng — 2024</div>
+        <div class="report-grid">
+
+          <!-- T5/2024 — Chờ duyệt -->
+          <div class="report-card">
+            <div class="rc-top">
+              <div class="rc-file-icon file-pdf">
+                <svg width="22" height="26" viewBox="0 0 24 28" fill="none"><rect x="2" y="0" width="20" height="28" rx="3" fill="#fff1f0"/><path d="M14 0v6h6" stroke="#f5222d" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 0l6 6" stroke="#f5222d" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <div class="rc-file-ext" style="color:#f5222d;">PDF</div>
+              </div>
+              <div class="rc-meta">
+                <div class="rc-period">Báo cáo tháng</div>
+                <div class="rc-title">Báo cáo hoạt động BQT tháng 5/2024</div>
+                <div class="rc-date">Hạn nộp: 10/06/2024</div>
+              </div>
+            </div>
+            <div class="rc-divider"></div>
+            <div class="rc-bottom">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="badge badge-orange">Chờ duyệt</span>
+                <span style="font-size:11px;color:var(--text-gray);">Ô. Nguyễn Thanh Bình</span>
+              </div>
+              <div class="rc-actions">
+                <button class="rc-btn" title="Xem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                <button class="rc-btn" title="Tải xuống"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- T4/2024 — Đã phát hành -->
+          <div class="report-card">
+            <div class="rc-top">
+              <div class="rc-file-icon file-pdf">
+                <svg width="22" height="26" viewBox="0 0 24 28" fill="none"><rect x="2" y="0" width="20" height="28" rx="3" fill="#fff1f0"/><path d="M14 0v6h6" stroke="#f5222d" stroke-width="1.5"/><path d="M14 0l6 6" stroke="#f5222d" stroke-width="1.5"/></svg>
+                <div class="rc-file-ext" style="color:#f5222d;">PDF</div>
+              </div>
+              <div class="rc-meta">
+                <div class="rc-period">Báo cáo tháng</div>
+                <div class="rc-title">Báo cáo hoạt động BQT tháng 4/2024</div>
+                <div class="rc-date">Phát hành: 08/05/2024 · 2.4 MB</div>
+              </div>
+            </div>
+            <div class="rc-divider"></div>
+            <div class="rc-bottom">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="badge badge-green">Đã phát hành</span>
+                <span style="font-size:11px;color:var(--text-gray);">247 lượt xem</span>
+              </div>
+              <div class="rc-actions">
+                <button class="rc-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                <button class="rc-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- T3/2024 -->
+          <div class="report-card">
+            <div class="rc-top">
+              <div class="rc-file-icon file-pdf">
+                <svg width="22" height="26" viewBox="0 0 24 28" fill="none"><rect x="2" y="0" width="20" height="28" rx="3" fill="#fff1f0"/><path d="M14 0v6h6" stroke="#f5222d" stroke-width="1.5"/><path d="M14 0l6 6" stroke="#f5222d" stroke-width="1.5"/></svg>
+                <div class="rc-file-ext" style="color:#f5222d;">PDF</div>
+              </div>
+              <div class="rc-meta">
+                <div class="rc-period">Báo cáo tháng</div>
+                <div class="rc-title">Báo cáo hoạt động BQT tháng 3/2024</div>
+                <div class="rc-date">Phát hành: 05/04/2024 · 2.1 MB</div>
+              </div>
+            </div>
+            <div class="rc-divider"></div>
+            <div class="rc-bottom">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="badge badge-green">Đã phát hành</span>
+                <span style="font-size:11px;color:var(--text-gray);">312 lượt xem</span>
+              </div>
+              <div class="rc-actions">
+                <button class="rc-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                <button class="rc-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- T2/2024 -->
+          <div class="report-card">
+            <div class="rc-top">
+              <div class="rc-file-icon file-doc">
+                <svg width="22" height="26" viewBox="0 0 24 28" fill="none"><rect x="2" y="0" width="20" height="28" rx="3" fill="#e8f0fe"/><path d="M14 0v6h6" stroke="#1870c4" stroke-width="1.5"/><path d="M14 0l6 6" stroke="#1870c4" stroke-width="1.5"/></svg>
+                <div class="rc-file-ext" style="color:#1870c4;">DOC</div>
+              </div>
+              <div class="rc-meta">
+                <div class="rc-period">Báo cáo tháng</div>
+                <div class="rc-title">Báo cáo hoạt động BQT tháng 2/2024</div>
+                <div class="rc-date">Phát hành: 07/03/2024 · 1.8 MB</div>
+              </div>
+            </div>
+            <div class="rc-divider"></div>
+            <div class="rc-bottom">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="badge badge-green">Đã phát hành</span>
+                <span style="font-size:11px;color:var(--text-gray);">198 lượt xem</span>
+              </div>
+              <div class="rc-actions">
+                <button class="rc-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                <button class="rc-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- T1/2024 -->
+          <div class="report-card">
+            <div class="rc-top">
+              <div class="rc-file-icon file-pdf">
+                <svg width="22" height="26" viewBox="0 0 24 28" fill="none"><rect x="2" y="0" width="20" height="28" rx="3" fill="#fff1f0"/><path d="M14 0v6h6" stroke="#f5222d" stroke-width="1.5"/><path d="M14 0l6 6" stroke="#f5222d" stroke-width="1.5"/></svg>
+                <div class="rc-file-ext" style="color:#f5222d;">PDF</div>
+              </div>
+              <div class="rc-meta">
+                <div class="rc-period">Báo cáo tháng</div>
+                <div class="rc-title">Báo cáo hoạt động BQT tháng 1/2024</div>
+                <div class="rc-date">Phát hành: 06/02/2024 · 2.2 MB</div>
+              </div>
+            </div>
+            <div class="rc-divider"></div>
+            <div class="rc-bottom">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="badge badge-green">Đã phát hành</span>
+                <span style="font-size:11px;color:var(--text-gray);">276 lượt xem</span>
+              </div>
+              <div class="rc-actions">
+                <button class="rc-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                <button class="rc-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chờ soạn T6 -->
+          <div class="report-card" style="border-style:dashed;background:var(--surface-hover);">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px 0;text-align:center;">
+              <div style="width:44px;height:44px;border-radius:var(--r-md);background:var(--surface-subtle);border:1.5px dashed var(--border-input);display:flex;align-items:center;justify-content:center;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-placeholder)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </div>
+              <div>
+                <div style="font-size:var(--fs-sm);font-weight:600;color:var(--text-gray);">Báo cáo tháng 6/2024</div>
+                <div style="font-size:var(--fs-xs);color:var(--text-placeholder);margin-top:3px;">Hạn nộp: 10/07/2024</div>
+              </div>
+              <span class="badge badge-gray">Chưa soạn</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Báo cáo quý -->
+      <div class="report-section">
+        <div class="section-label">Báo cáo quý — 2024</div>
+        <div class="report-grid">
+          <!-- Q1/2024 -->
+          <div class="report-card">
+            <div class="rc-top">
+              <div class="rc-file-icon file-pdf">
+                <svg width="22" height="26" viewBox="0 0 24 28" fill="none"><rect x="2" y="0" width="20" height="28" rx="3" fill="#fff1f0"/><path d="M14 0v6h6" stroke="#f5222d" stroke-width="1.5"/><path d="M14 0l6 6" stroke="#f5222d" stroke-width="1.5"/></svg>
+                <div class="rc-file-ext" style="color:#f5222d;">PDF</div>
+              </div>
+              <div class="rc-meta">
+                <div class="rc-period">Báo cáo quý</div>
+                <div class="rc-title">Báo cáo tổng hợp Quý 1/2024</div>
+                <div class="rc-date">Phát hành: 15/04/2024 · 5.8 MB</div>
+              </div>
+            </div>
+            <div class="rc-divider"></div>
+            <div class="rc-bottom">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="badge badge-green">Đã phát hành</span>
+                <span style="font-size:11px;color:var(--text-gray);">531 lượt xem</span>
+              </div>
+              <div class="rc-actions">
+                <button class="rc-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                <button class="rc-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Q2/2024 — chờ duyệt -->
+          <div class="report-card">
+            <div class="rc-top">
+              <div class="rc-file-icon file-xls">
+                <svg width="22" height="26" viewBox="0 0 24 28" fill="none"><rect x="2" y="0" width="20" height="28" rx="3" fill="#e8f8ee"/><path d="M14 0v6h6" stroke="#1c9d5f" stroke-width="1.5"/><path d="M14 0l6 6" stroke="#1c9d5f" stroke-width="1.5"/></svg>
+                <div class="rc-file-ext" style="color:#1c9d5f;">XLS</div>
+              </div>
+              <div class="rc-meta">
+                <div class="rc-period">Báo cáo quý</div>
+                <div class="rc-title">Báo cáo tài chính Quý 2/2024</div>
+                <div class="rc-date">Hạn nộp: 15/07/2024</div>
+              </div>
+            </div>
+            <div class="rc-divider"></div>
+            <div class="rc-bottom">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="badge badge-orange">Chờ duyệt</span>
+                <span style="font-size:11px;color:var(--text-gray);">Bà Trần Thị Lan Anh</span>
+              </div>
+              <div class="rc-actions">
+                <button class="rc-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                <button class="rc-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Năm 2023 annual -->
+          <div class="report-card">
+            <div class="rc-top">
+              <div class="rc-file-icon file-pdf">
+                <svg width="22" height="26" viewBox="0 0 24 28" fill="none"><rect x="2" y="0" width="20" height="28" rx="3" fill="#fff1f0"/><path d="M14 0v6h6" stroke="#f5222d" stroke-width="1.5"/><path d="M14 0l6 6" stroke="#f5222d" stroke-width="1.5"/></svg>
+                <div class="rc-file-ext" style="color:#f5222d;">PDF</div>
+              </div>
+              <div class="rc-meta">
+                <div class="rc-period">Báo cáo năm</div>
+                <div class="rc-title">Báo cáo thường niên BQT năm 2023</div>
+                <div class="rc-date">Phát hành: 20/01/2024 · 12.3 MB</div>
+              </div>
+            </div>
+            <div class="rc-divider"></div>
+            <div class="rc-bottom">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="badge badge-green">Đã phát hành</span>
+                <span style="font-size:11px;color:var(--text-gray);">892 lượt xem</span>
+              </div>
+              <div class="rc-actions">
+                <button class="rc-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                <button class="rc-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upcoming deadlines -->
+      <div class="upcoming-card">
+        <div class="card-hd">
+          <div class="card-title">Lịch nộp báo cáo sắp tới</div>
+          <span class="card-link">Xem lịch đầy đủ →</span>
+        </div>
+        <div class="upcoming-list">
+          <div class="up-row up-hd">
+            <span>Tên báo cáo</span>
+            <span>Hạn nộp</span>
+            <span>Người phụ trách</span>
+            <span>Trạng thái</span>
+            <span style="text-align:right;">Thao tác</span>
+          </div>
+          <div class="up-row">
+            <div><div class="up-title">Báo cáo tháng 6/2024</div><div class="up-sub">Tổng hợp hoạt động BQT</div></div>
+            <div class="up-date urgent">10/07/2024 · 18 ngày</div>
+            <div class="up-person">Ô. Nguyễn Thanh Bình</div>
+            <div class="badge-cell"><span class="badge badge-gray">Chưa soạn</span></div>
+            <div class="action-cell"><button class="rc-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div>
+          </div>
+          <div class="up-row">
+            <div><div class="up-title">Báo cáo tổng hợp Q2/2024</div><div class="up-sub">Tổng hợp hoạt động cả quý</div></div>
+            <div class="up-date urgent">15/07/2024 · 23 ngày</div>
+            <div class="up-person">Bà Trần Thị Lan Anh</div>
+            <div class="badge-cell"><span class="badge badge-orange">Chờ duyệt</span></div>
+            <div class="action-cell"><button class="rc-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div>
+          </div>
+          <div class="up-row">
+            <div><div class="up-title">Báo cáo tài chính Q2/2024</div><div class="up-sub">Thu chi và quỹ bảo trì</div></div>
+            <div class="up-date">20/07/2024 · 28 ngày</div>
+            <div class="up-person">Ô. Phạm Hoàng Nam</div>
+            <div class="badge-cell"><span class="badge badge-gray">Chưa soạn</span></div>
+            <div class="action-cell"><button class="rc-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div>
+          </div>
+          <div class="up-row">
+            <div><div class="up-title">Báo cáo vận hành Q2/2024</div><div class="up-sub">Bảo trì, an ninh, sự cố</div></div>
+            <div class="up-date">20/07/2024 · 28 ngày</div>
+            <div class="up-person">Ô. Lê Văn Đức</div>
+            <div class="badge-cell"><span class="badge badge-gray">Chưa soạn</span></div>
+            <div class="action-cell"><button class="rc-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  function posDD(trigger, dd) {
+    var r = trigger.getBoundingClientRect();
+    var id = dd.id;
+    var ww = window.innerWidth;
+    if (id === 'dd-building') {
+      dd.style.top  = (r.bottom + 8) + 'px';
+      dd.style.left = r.left + 'px';
+      dd.style.right = 'auto';
+    } else if (id === 'dd-notif') {
+      dd.style.top   = (r.bottom + 10) + 'px';
+      dd.style.right = (ww - r.right - 4) + 'px';
+      dd.style.left  = 'auto';
+    } else if (id === 'dd-user') {
+      dd.style.top   = (r.bottom + 10) + 'px';
+      dd.style.right = (ww - r.right) + 'px';
+      dd.style.left  = 'auto';
+    }
+  }
+  document.addEventListener('click', function(e) {
+    var t = e.target.closest('[data-dd]');
+    if (t) {
+      var id = t.getAttribute('data-dd');
+      var dd = document.getElementById(id);
+      if (!dd) return;
+      var wasOpen = dd.classList.contains('open');
+      document.querySelectorAll('.dd').forEach(function(d){ d.classList.remove('open'); });
+      if (!wasOpen) { posDD(t, dd); dd.classList.add('open'); }
+      e.stopPropagation();
+    } else {
+      document.querySelectorAll('.dd').forEach(function(d){ d.classList.remove('open'); });
+    }
+  });
+})();
+</script>
+</body>
+</html>
