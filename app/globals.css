@@ -2069,3 +2069,164 @@
 .lichsu-page .sw-count { font-family: "Manrope","Inter",sans-serif; font-size: 13px; font-weight: 700; color: #272727; }
 .lichsu-page .sw-bar-track { height: 5px; background: #f0f0f5; border-radius: 3px; overflow: hidden; margin-top: 3px; }
 .lichsu-page .sw-bar-fill { height: 100%; border-radius: 3px; }
+
+/* ============================================================
+   PAGE: HỒ SƠ CÁ NHÂN
+   ============================================================ */
+.profile-page { display: flex; flex-direction: column; font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+
+/* Banner */
+.profile-page .profile-banner {
+  background: linear-gradient(135deg, #3b30e8 0%, #6c5ce7 50%, #a29bfe 100%);
+  padding: 32px 28px 28px;
+  display: flex; align-items: center; gap: 24px;
+  position: relative; overflow: hidden;
+}
+.profile-page .banner-avatar-wrap { position: relative; flex-shrink: 0; }
+.profile-page .banner-avatar {
+  width: 88px; height: 88px; border-radius: 50%;
+  border: 4px solid #fff; object-fit: cover; display: block;
+  box-shadow: 0 4px 16px rgba(0,0,0,.18);
+}
+.profile-page .banner-avatar-edit {
+  position: absolute; bottom: 6px; right: 2px;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: #4137f9; border: 2px solid #fff;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.profile-page .banner-avatar-edit svg { width: 12px; height: 12px; color: #fff; }
+.profile-page .banner-info { flex: 1; }
+.profile-page .banner-name { font-family: "Manrope","Inter",sans-serif; font-size: 22px; font-weight: 800; color: #fff; line-height: 28px; margin-bottom: 6px; }
+.profile-page .banner-tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.profile-page .banner-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(255,255,255,.18); border-radius: 20px;
+  padding: 4px 12px; font-size: 12px; font-weight: 600; color: #fff;
+}
+.profile-page .banner-tag svg { width: 12px; height: 12px; }
+.profile-page .banner-actions { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+.profile-page .btn-banner-outline {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 16px; background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.35); border-radius: 10px;
+  font-size: 13px; font-weight: 600; color: #fff; cursor: pointer;
+  transition: background .15s;
+}
+.profile-page .btn-banner-outline:hover { background: rgba(255,255,255,.25); }
+.profile-page .btn-banner-primary {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 18px; background: #fff;
+  border: 1px solid #fff; border-radius: 10px;
+  font-size: 13px; font-weight: 700; color: #4137f9; cursor: pointer;
+}
+
+/* Body */
+.profile-page .profile-body { padding: 24px 28px; display: flex; gap: 20px; align-items: flex-start; }
+.profile-page .profile-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.profile-page .profile-sidebar { width: 272px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
+
+/* Section card */
+.profile-page .section-card {
+  background: #ffffff; border: 1px solid #e2e5f1;
+  border-radius: 20px; padding: 22px 24px;
+  display: flex; flex-direction: column; gap: 18px;
+}
+.profile-page .section-hd { display: flex; align-items: center; justify-content: space-between; }
+.profile-page .section-title {
+  font-family: "Manrope","Inter",sans-serif; font-size: 15px; font-weight: 700; color: #272727;
+  display: flex; align-items: center; gap: 8px;
+}
+.profile-page .section-title-icon {
+  width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.profile-page .section-title-icon svg { width: 15px; height: 15px; }
+.profile-page .section-edit {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 500; color: #4137f9;
+  cursor: pointer; padding: 5px 12px; border-radius: 8px;
+  border: 1px solid #d3c5fd; background: #f7f5ff;
+  transition: background .12s;
+}
+.profile-page .section-edit:hover { background: #f1f7ff; }
+.profile-page .section-edit svg { width: 13px; height: 13px; }
+
+/* Info grid */
+.profile-page .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px; }
+.profile-page .info-full { grid-column: 1 / -1; }
+.profile-page .info-item { display: flex; flex-direction: column; gap: 4px; }
+.profile-page .info-label { font-size: 12px; font-weight: 600; color: #585c7b; text-transform: uppercase; letter-spacing: .4px; }
+.profile-page .info-value { font-size: 14px; font-weight: 500; color: #272727; }
+.profile-page .info-value.primary { color: #4137f9; }
+.profile-page .info-value.mono { font-size: 13px; }
+.profile-page .info-divider { height: 1px; background: #eff2fc; grid-column: 1 / -1; }
+
+.profile-page .verified-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10.5px; font-weight: 700; color: #1c9d5f;
+  background: #e3fbed; padding: 2px 8px; border-radius: 10px; margin-left: 8px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.profile-page .verified-badge svg { width: 10px; height: 10px; }
+
+/* Vehicle list */
+.profile-page .vehicle-list { display: flex; flex-direction: column; gap: 10px; }
+.profile-page .vehicle-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px; border-radius: 12px;
+  background: #fafafa; border: 1px solid #eff2fc;
+}
+.profile-page .vehicle-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.profile-page .vehicle-icon svg { width: 18px; height: 18px; }
+.profile-page .vehicle-body { flex: 1; min-width: 0; }
+.profile-page .vehicle-name { font-size: 13px; font-weight: 600; color: #272727; }
+.profile-page .vehicle-plate { font-size: 12px; color: #585c7b; margin-top: 2px; }
+.profile-page .vehicle-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; white-space: nowrap; flex-shrink: 0; }
+
+/* Contact */
+.profile-page .contact-list { display: flex; flex-direction: column; gap: 10px; }
+.profile-page .contact-item { display: flex; align-items: center; gap: 12px; }
+.profile-page .contact-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: "Manrope","Inter",sans-serif; font-size: 14px; font-weight: 800;
+  flex-shrink: 0;
+}
+.profile-page .contact-body { flex: 1; min-width: 0; }
+.profile-page .contact-name { font-size: 13px; font-weight: 600; color: #272727; }
+.profile-page .contact-rel { font-size: 12px; color: #585c7b; margin-top: 1px; }
+.profile-page .contact-phone { font-size: 12px; font-weight: 500; color: #4137f9; }
+
+/* Activity */
+.profile-page .activity-list { display: flex; flex-direction: column; gap: 0; }
+.profile-page .act-row {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 11px 0; border-bottom: 1px solid #eff2fc;
+}
+.profile-page .act-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.profile-page .act-dot-col { display: flex; flex-direction: column; align-items: center; gap: 0; flex: 0 0 16px; padding-top: 3px; }
+.profile-page .act-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.profile-page .act-body { flex: 1; min-width: 0; }
+.profile-page .act-text { font-size: 13px; color: #272727; line-height: 18px; }
+.profile-page .act-text b { font-weight: 600; }
+.profile-page .act-time { font-size: 12px; color: #585c7b; margin-top: 2px; }
+
+/* Completion */
+.profile-page .completion-wrap { display: flex; flex-direction: column; gap: 6px; }
+.profile-page .completion-hd { display: flex; justify-content: space-between; align-items: center; }
+.profile-page .completion-lbl { font-size: 13px; color: #585c7b; }
+.profile-page .completion-pct { font-family: "Manrope","Inter",sans-serif; font-size: 13px; font-weight: 700; color: #1c9d5f; }
+.profile-page .completion-bar { height: 6px; background: #f0f0f5; border-radius: 3px; overflow: hidden; }
+.profile-page .completion-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg,#22c08a,#1c9d5f); }
+.profile-page .completion-items { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
+.profile-page .comp-item { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.profile-page .comp-item svg { width: 13px; height: 13px; flex-shrink: 0; }
+.profile-page .comp-done { color: #1c9d5f; }
+.profile-page .comp-miss { color: #585c7b; }
+
+/* Badge */
+.profile-page .badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.profile-page .badge-green { background: #e3fbed; color: #1c9d5f; }
+.profile-page .badge-blue { background: #efeaff; color: #5a3ad9; }
+.profile-page .badge-gray { background: #f0f0f5; color: #585c7b; }

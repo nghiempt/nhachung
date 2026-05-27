@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nhà Chung — Hồ sơ cá nhân</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --primary:           #4137f9;
+  --primary-light:     #f1f7ff;
+  --primary-border:    #d3c5fd;
+  --primary-bg:        #f7f5ff;
+
+  --text:              #272727;
+  --text-secondary:    #3e4265;
+  --text-gray:         #585c7b;
+  --text-placeholder:  #b4b7c9;
+  --text-section-label:#959595;
+
+  --canvas:            #ffffff;
+  --surface-hover:     #fafafa;
+  --surface-subtle:    #f7f7f7;
+
+  --border:            #e2e5f1;
+  --border-input:      #d4d7e5;
+  --border-subtle:     #eff2fc;
+  --border-divider:    #dedede;
+
+  --success:           #1c9d5f;
+  --danger:            #f5222d;
+  --warning:           #c8761b;
+
+  --r-xs:   4px;
+  --r-sm:   8px;
+  --r-md:   10px;
+  --r-lg:   12px;
+  --r-card: 20px;
+
+  --shadow-sidebar: 2px 0 10px rgba(89,89,89,.05);
+  --shadow-card:    0 2px 12px rgba(65,55,249,.06);
+  --sidebar-w: 268px;
+
+  --fs-xs:   12px;
+  --fs-sm:   13px;
+  --fs-body: 14px;
+  --fs-md:   16px;
+  --fs-3xl:  28px;
+
+  --font-body:   "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-number: "Manrope", "Inter", sans-serif;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:var(--font-body);background:var(--surface-hover);color:var(--text);display:flex;-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;} button{font:inherit;cursor:pointer;border:0;background:none;} img{display:block;}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--canvas);border-right:1px solid var(--border-subtle);box-shadow:var(--shadow-sidebar);display:flex;flex-direction:column;padding:16px 0 24px;height:100vh;overflow-y:auto;overflow-x:hidden;}
+.sidebar-logo{padding:0 16px 30px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.sidebar-nav-group{display:flex;flex-direction:column;gap:20px;padding:0 16px;}
+.nav-section{display:flex;flex-direction:column;gap:2px;}
+.nav-section-label{font-size:12px;font-weight:700;color:var(--text-section-label);text-transform:uppercase;letter-spacing:.5px;padding:0 8px 6px;line-height:16px;}
+.nav-row{display:flex;align-items:center;border-radius:var(--r-sm);width:100%;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:8px;border-radius:var(--r-sm);cursor:pointer;color:var(--text);font-size:var(--fs-body);font-weight:400;line-height:22px;width:236px;flex-shrink:0;transition:background .15s;}
+.nav-item:hover{background:var(--surface-hover);}
+.nav-item.active{background:var(--primary-light);color:var(--primary);font-weight:600;}
+.nav-item .nav-icon{width:20px;height:20px;flex:0 0 20px;filter:brightness(0) opacity(0.5);}
+.nav-item.active .nav-icon{filter:brightness(0) saturate(100%) invert(22%) sepia(97%) saturate(2000%) hue-rotate(237deg) brightness(107%) contrast(104%);}
+.nav-item span{flex:1;} .nav-item span.nav-badge{flex:none;}
+.nav-badge{background:var(--primary-light);color:var(--primary);font-size:var(--fs-xs);font-weight:700;padding:4px 6px;border-radius:10px;line-height:1;margin-left:auto;white-space:nowrap;}
+.sidebar-footer{margin-top:auto;padding:16px 16px 0;border-top:1px solid var(--border-divider);}
+.sidebar-footer-text{font-size:12px;color:var(--text-gray);line-height:18px;margin-bottom:8px;}
+.sidebar-collapse{display:flex;align-items:center;justify-content:space-between;padding:8px;border-radius:var(--r-sm);cursor:pointer;color:var(--text-gray);}
+
+/* ============================================================
+   MAIN
+   ============================================================ */
+.main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;min-width:0;}
+.header{position:relative;z-index:200;background:var(--canvas);border-bottom:1px solid var(--border-subtle);padding:10px 20px;display:flex;align-items:center;gap:20px;flex-shrink:0;}
+.building-selector{display:flex;align-items:center;gap:10px;border:1px solid var(--border-input);border-radius:var(--r-sm);padding:8px 12px;width:236px;flex-shrink:0;cursor:pointer;}
+.building-selector .label{flex:1;font-size:14px;font-weight:500;color:var(--text);}
+.search-bar{flex:1;display:flex;align-items:center;gap:8px;border:1px solid var(--border-input);border-radius:var(--r-md);padding:0 12px;height:40px;}
+.search-bar input{flex:1;border:0;outline:0;font:inherit;font-size:var(--fs-body);background:transparent;}
+.search-bar input::placeholder{color:var(--text-placeholder);}
+.header-right{display:flex;align-items:center;gap:14px;margin-left:auto;}
+.notif-btn{position:relative;width:36px;height:36px;background:var(--surface-subtle);border-radius:var(--r-md);display:inline-flex;align-items:center;justify-content:center;padding:6px;cursor:pointer;flex-shrink:0;}
+.notif-btn .notif-dot{position:absolute;top:5px;left:19px;width:10px;height:10px;}
+.user-pill{display:flex;align-items:center;gap:18px;height:32px;cursor:pointer;}
+.user-pill .avatar{width:32px;height:32px;border-radius:50%;object-fit:cover;flex:0 0 32px;}
+.user-info{display:flex;flex-direction:column;gap:2px;}
+.user-name{font-weight:600;font-size:14px;line-height:16px;white-space:nowrap;}
+.user-apt{font-size:12px;color:var(--text-gray);line-height:14px;white-space:nowrap;}
+.content-scroll{flex:1;overflow-y:auto;overflow-x:hidden;background:var(--surface-hover);}
+
+/* ============================================================
+   PROFILE PAGE
+   ============================================================ */
+.profile-page{display:flex;flex-direction:column;}
+
+/* ── Banner ── */
+.profile-banner{
+  background: linear-gradient(135deg, #3b30e8 0%, #6c5ce7 50%, #a29bfe 100%);
+  padding: 32px 28px 28px;
+  display: flex; align-items: center; gap: 24px;
+  position: relative; overflow: hidden;
+}
+.profile-banner::before{
+  content:''; position:absolute; inset:0;
+  background: url("data:image/svg+xml,%3Csvg width='400' height='120' viewBox='0 0 400 120' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='350' cy='30' r='80' fill='rgba(255,255,255,0.04)'/%3E%3Ccircle cx='50' cy='90' r='60' fill='rgba(255,255,255,0.04)'/%3E%3Ccircle cx='200' cy='-10' r='100' fill='rgba(255,255,255,0.03)'/%3E%3C/svg%3E") no-repeat center/cover;
+  pointer-events:none;
+}
+.banner-avatar-wrap{position:relative;flex-shrink:0;}
+.banner-avatar{
+  width:88px;height:88px;border-radius:50%;
+  border:4px solid #fff;
+  object-fit:cover;display:block;
+  box-shadow:0 4px 16px rgba(0,0,0,.18);
+}
+.banner-avatar-edit{
+  position:absolute;bottom:6px;right:2px;
+  width:26px;height:26px;border-radius:50%;
+  background:var(--primary);border:2px solid #fff;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+}
+.banner-avatar-edit svg{width:12px;height:12px;color:#fff;}
+.banner-info{flex:1;}
+.banner-name{font-family:var(--font-number);font-size:22px;font-weight:800;color:#fff;line-height:28px;margin-bottom:6px;}
+.banner-tags{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.banner-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(255,255,255,.18);border-radius:20px;
+  padding:4px 12px;font-size:var(--fs-xs);font-weight:600;color:#fff;
+}
+.banner-tag svg{width:12px;height:12px;}
+.banner-actions{display:flex;gap:10px;align-items:center;flex-shrink:0;}
+.btn-banner-outline{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:8px 16px;background:rgba(255,255,255,.15);
+  border:1px solid rgba(255,255,255,.35);border-radius:var(--r-md);
+  font-size:var(--fs-sm);font-weight:600;color:#fff;cursor:pointer;
+  transition:background .15s;
+}
+.btn-banner-outline:hover{background:rgba(255,255,255,.25);}
+.btn-banner-primary{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:8px 18px;background:#fff;
+  border:1px solid #fff;border-radius:var(--r-md);
+  font-size:var(--fs-sm);font-weight:700;color:var(--primary);cursor:pointer;
+}
+
+
+/* ── Content ── */
+.profile-body{padding:24px 28px;display:flex;gap:20px;align-items:flex-start;}
+.profile-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;}
+.profile-sidebar{width:272px;flex-shrink:0;display:flex;flex-direction:column;gap:16px;}
+
+/* Section card */
+.section-card{
+  background:var(--canvas);border:1px solid var(--border);
+  border-radius:var(--r-card);padding:22px 24px;
+  display:flex;flex-direction:column;gap:18px;
+}
+.section-hd{display:flex;align-items:center;justify-content:space-between;}
+.section-title{
+  font-family:var(--font-number);font-size:15px;font-weight:700;color:var(--text);
+  display:flex;align-items:center;gap:8px;
+}
+.section-title-icon{
+  width:30px;height:30px;border-radius:var(--r-sm);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.section-title-icon svg{width:15px;height:15px;}
+.section-edit{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:var(--fs-sm);font-weight:500;color:var(--primary);
+  cursor:pointer;padding:5px 12px;border-radius:var(--r-sm);
+  border:1px solid var(--primary-border);background:var(--primary-bg);
+  transition:background .12s;
+}
+.section-edit:hover{background:var(--primary-light);}
+.section-edit svg{width:13px;height:13px;}
+
+/* Info grid */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 24px;}
+.info-full{grid-column:1/-1;}
+.info-item{display:flex;flex-direction:column;gap:4px;}
+.info-label{font-size:var(--fs-xs);font-weight:600;color:var(--text-gray);text-transform:uppercase;letter-spacing:.4px;}
+.info-value{font-size:var(--fs-body);font-weight:500;color:var(--text);}
+.info-value.primary{color:var(--primary);}
+.info-value.mono{font-size:var(--fs-sm);}
+
+/* Verified badge inline */
+.verified-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10.5px;font-weight:700;color:var(--success);
+  background:#e3fbed;padding:2px 8px;border-radius:10px;margin-left:8px;
+  white-space:nowrap;flex-shrink:0;
+}
+.verified-badge svg{width:10px;height:10px;}
+
+/* Divider */
+.info-divider{height:1px;background:var(--border-subtle);grid-column:1/-1;}
+
+/* ── Resident Card ── */
+.resident-card{
+  background:linear-gradient(135deg,#4137f9 0%,#6c5ce7 100%);
+  border-radius:var(--r-card);padding:20px;
+  display:flex;flex-direction:column;gap:14px;
+  box-shadow:0 6px 20px rgba(65,55,249,.25);
+}
+.rc-top{display:flex;align-items:center;gap:12px;}
+.rc-avatar{width:52px;height:52px;border-radius:50%;border:2px solid rgba(255,255,255,.5);object-fit:cover;flex-shrink:0;}
+.rc-user-info{flex:1;min-width:0;}
+.rc-name{font-family:var(--font-number);font-size:15px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rc-apt{font-size:var(--fs-xs);color:rgba(255,255,255,.75);margin-top:2px;}
+.rc-logo{width:24px;height:24px;flex-shrink:0;opacity:.8;}
+.rc-divider{height:1px;background:rgba(255,255,255,.2);}
+.rc-body{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.rc-field{display:flex;flex-direction:column;gap:3px;}
+.rc-field-label{font-size:10px;color:rgba(255,255,255,.6);font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
+.rc-field-val{font-size:var(--fs-sm);font-weight:700;color:#fff;}
+/* QR code placeholder */
+.rc-qr{width:52px;height:52px;background:rgba(255,255,255,.15);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.rc-qr svg{width:32px;height:32px;color:rgba(255,255,255,.9);}
+.rc-footer{display:flex;align-items:center;justify-content:space-between;}
+.rc-status{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.18);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:700;color:#fff;}
+.rc-status-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;}
+.rc-since{font-size:10.5px;color:rgba(255,255,255,.6);}
+
+/* ── Vehicle list ── */
+.vehicle-list{display:flex;flex-direction:column;gap:10px;}
+.vehicle-item{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 14px;border-radius:var(--r-lg);
+  background:var(--surface-hover);border:1px solid var(--border-subtle);
+}
+.vehicle-icon{
+  width:36px;height:36px;border-radius:var(--r-md);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.vehicle-icon svg{width:18px;height:18px;}
+.vehicle-body{flex:1;min-width:0;}
+.vehicle-name{font-size:var(--fs-sm);font-weight:600;color:var(--text);}
+.vehicle-plate{font-size:var(--fs-xs);color:var(--text-gray);margin-top:2px;}
+.vehicle-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0;}
+
+/* ── Emergency contacts ── */
+.contact-list{display:flex;flex-direction:column;gap:10px;}
+.contact-item{display:flex;align-items:center;gap:12px;}
+.contact-avatar{
+  width:38px;height:38px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-number);font-size:14px;font-weight:800;
+  flex-shrink:0;
+}
+.contact-body{flex:1;min-width:0;}
+.contact-name{font-size:var(--fs-sm);font-weight:600;color:var(--text);}
+.contact-rel{font-size:var(--fs-xs);color:var(--text-gray);margin-top:1px;}
+.contact-phone{font-size:var(--fs-xs);font-weight:500;color:var(--primary);}
+
+/* ── Activity timeline ── */
+.activity-list{display:flex;flex-direction:column;gap:0;}
+.act-row{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:11px 0;border-bottom:1px solid var(--border-subtle);
+}
+.act-row:last-child{border-bottom:0;padding-bottom:0;}
+.act-dot-col{display:flex;flex-direction:column;align-items:center;gap:0;flex:0 0 16px;padding-top:3px;}
+.act-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.act-body{flex:1;min-width:0;}
+.act-text{font-size:var(--fs-sm);color:var(--text);line-height:18px;}
+.act-text b{font-weight:600;}
+.act-time{font-size:var(--fs-xs);color:var(--text-gray);margin-top:2px;}
+
+/* Completion bar */
+.completion-wrap{display:flex;flex-direction:column;gap:6px;}
+.completion-hd{display:flex;justify-content:space-between;align-items:center;}
+.completion-lbl{font-size:var(--fs-sm);color:var(--text-gray);}
+.completion-pct{font-family:var(--font-number);font-size:var(--fs-sm);font-weight:700;color:var(--success);}
+.completion-bar{height:6px;background:#f0f0f5;border-radius:3px;overflow:hidden;}
+.completion-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#22c08a,#1c9d5f);}
+.completion-items{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;}
+.comp-item{display:flex;align-items:center;gap:6px;font-size:var(--fs-xs);}
+.comp-item svg{width:13px;height:13px;flex-shrink:0;}
+.comp-done{color:var(--success);}
+.comp-miss{color:var(--text-gray);}
+
+/* Badge */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:600;white-space:nowrap;}
+.badge-green{background:#e3fbed;color:var(--success);}
+.badge-blue{background:#efeaff;color:#5a3ad9;}
+.badge-gray{background:#f0f0f5;color:var(--text-gray);}
+  
+/* ── Dropdown system ── */
+.building-selector{position:relative;}
+.notif-btn{position:relative;}
+.user-pill{position:relative;}
+.dd{position:fixed;z-index:9999;background:var(--canvas);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:0 8px 32px rgba(0,0,0,.14);display:none;}
+.dd.open{display:block;animation:ddIn .14s ease;}
+@keyframes ddIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+/* Building dropdown */
+.dd-building{min-width:272px;}
+.dd-search{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);}
+.dd-search svg{width:15px;height:15px;color:var(--text-placeholder);flex-shrink:0;}
+.dd-search input{flex:1;border:0;outline:0;font:inherit;font-size:13px;background:transparent;color:var(--text);}
+.dd-search input::placeholder{color:var(--text-placeholder);}
+.dd-sep-label{font-size:11px;font-weight:700;color:var(--text-placeholder);text-transform:uppercase;letter-spacing:.5px;padding:10px 14px 3px;}
+.dd-bld-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;transition:background .15s;}
+.dd-bld-item:hover{background:var(--surface-hover);}
+.dd-bld-item.active{background:var(--primary-bg);}
+.dd-bld-ico{width:30px;height:30px;border-radius:var(--r-sm);background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.dd-bld-ico svg{width:15px;height:15px;color:var(--primary);}
+.dd-bld-ico.muted{background:var(--surface-subtle);}
+.dd-bld-ico.muted svg{color:var(--text-gray);}
+.dd-bld-info{flex:1;}
+.dd-bld-name{font-size:13px;font-weight:600;color:var(--text);}
+.dd-bld-meta{font-size:11px;color:var(--text-gray);margin-top:1px;}
+.dd-bld-check svg{width:14px;height:14px;color:var(--primary);}
+.dd-divider{height:1px;background:var(--border);margin:4px 0;}
+/* Notification dropdown */
+.dd-notif{width:348px;}
+.dd-nt-hd{display:flex;align-items:center;justify-content:space-between;padding:13px 16px 9px;border-bottom:1px solid var(--border);}
+.dd-nt-hd-title{font-size:14px;font-weight:700;color:var(--text);}
+.dd-nt-mark{font-size:12px;font-weight:600;color:var(--primary);cursor:pointer;}
+.dd-nt-grp{font-size:11px;font-weight:700;color:var(--text-placeholder);text-transform:uppercase;letter-spacing:.4px;padding:9px 16px 3px;}
+.dd-nt-item{display:flex;align-items:flex-start;gap:10px;padding:9px 16px;cursor:pointer;transition:background .15s;position:relative;}
+.dd-nt-item:hover{background:var(--surface-hover);}
+.dd-nt-item.unread{background:var(--primary-bg);}
+.dd-nt-item.unread::before{content:'';position:absolute;left:5px;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:var(--primary);}
+.dd-nt-ico{width:30px;height:30px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.dd-nt-ico svg{width:14px;height:14px;}
+.dd-nt-body{flex:1;min-width:0;text-align:left;}
+.dd-nt-title{font-size:13px;font-weight:600;color:var(--text);line-height:1.4;text-align:left;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.dd-nt-meta{font-size:12px;color:var(--text-placeholder);margin-top:3px;text-align:left;}
+.dd-nt-footer{display:block;text-align:center;padding:11px;font-size:12px;font-weight:600;color:var(--primary);border-top:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.dd-nt-footer:hover{background:var(--surface-hover);}
+/* User dropdown */
+.dd-user{min-width:216px;}
+.dd-usr-info{display:flex;align-items:center;gap:10px;padding:13px 16px 16px;}
+.dd-usr-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+.dd-usr-name{font-size:13px;font-weight:700;color:var(--text);}
+.dd-usr-email{font-size:11px;color:var(--text-gray);margin-top:1px;}
+.dd-menu-item{display:flex;align-items:center;gap:9px;padding:9px 16px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text);transition:background .15s;}
+.dd-menu-item:hover{background:var(--surface-hover);}
+.dd-menu-item svg{width:15px;height:15px;color:var(--text-gray);flex-shrink:0;}
+.dd-menu-item.danger{color:var(--danger);}
+.dd-menu-item.danger svg{color:var(--danger);}
+.dd-menu-item.danger:hover{background:#fff5f5;}
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     SIDEBAR
+     ============================================================ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <svg width="36" height="40" viewBox="0 0 36 40" fill="none"><path d="M0 12.6995V36.7148C0 36.8859 0.0895 37.043 0.2357 37.13L3.584 39.1241C3.7322 39.2122 3.9171 39.2142 4.0673 39.1281L7.6155 37.086C7.7646 37 7.8571 36.8399 7.8571 36.6668V16.7058C7.8571 16.5337 7.7656 16.3736 7.6174 16.2875L0.72 12.2813C0.3998 12.0952 0 12.3273 0 12.6995Z" fill="#4137F9"/><path d="M19.4784 8.91446L27.7512 13.7201C27.8993 13.8062 27.9908 13.9662 27.9908 14.1383V30.0301C27.9908 30.2973 28.2056 30.5134 28.4711 30.5134H35.3676C35.6331 30.5134 35.8479 30.2973 35.8479 30.0301V9.57482C35.8479 9.40273 35.7564 9.24264 35.6082 9.15659L19.9587 0.065573C19.6385 -0.12053 19.2387 0.1116 19.2387 0.4838V8.49523C19.2387 8.66732 19.3302 8.82741 19.4784 8.91346V8.91446Z" fill="#A7A3F7"/><path d="M15.8893 0.065573L1.13768 8.6353C0.817474 8.82141 0.817474 9.28566 1.13768 9.47177L8.03315 13.478C8.18133 13.564 8.3643 13.564 8.51347 13.478L16.3696 8.91446C16.5177 8.82841 16.6092 8.66832 16.6092 8.49623V0.4838C16.6092 0.1116 16.2095 -0.12053 15.8893 0.065573Z" fill="#4137F9"/><path d="M31.9184 40.0005C34.0878 40.0005 35.8464 38.231 35.8464 36.0483C35.8464 33.8656 34.0878 32.0961 31.9184 32.0961C29.749 32.0961 27.9903 33.8656 27.9903 36.0483C27.9903 38.231 29.749 40.0005 31.9184 40.0005Z" fill="#4137F9"/><path d="M17.72 14.6407C15.3164 14.6407 13.3613 16.6068 13.3613 19.0261C13.3613 21.4455 15.206 23.3185 17.6096 23.4016C17.6832 23.3926 17.7568 23.3926 17.8115 23.4016H17.8761C20.225 23.3185 22.0687 21.3985 22.0786 19.0261C22.0786 16.6078 20.1245 14.6407 17.72 14.6407Z" fill="#4137F9"/><path d="M22.3805 25.8569C19.8208 24.1399 15.6461 24.1399 13.0675 25.8569C11.902 26.6413 11.2596 27.7029 11.2596 28.8385C11.2596 29.9742 11.902 31.0267 13.0576 31.8022C14.3424 32.6697 16.03 33.1039 17.7185 33.1039C19.4071 33.1039 21.0947 32.6697 22.3795 31.8022C23.536 31.0177 24.1774 29.9652 24.1774 28.8205C24.1685 27.6849 23.535 26.6323 22.3795 25.8569H22.3805Z" fill="#4137F9"/></svg>
+    <svg width="114" height="23" viewBox="0 0 114 23" fill="none"><path d="M3.08376 0.41618L10.7434 11.7261V0.41618H13.6282V17.0307H10.7932L3.08376 5.72081V17.0307H0V0.666398C0 0.605345 0.079581 0.513264 0 0.41618H3.08376Z" fill="#161A48"/><path d="M111.115 15.3252C108.772 17.8894 104.134 17.0627 102.672 13.962C100.157 8.62835 105.228 2.80527 110.467 6.21925L111.215 6.91786V5.51664H114V17.4771C114 17.8704 113.652 19.0575 113.476 19.4518C111.549 23.7666 103.993 23.5974 102.56 18.9293L105.285 18.0195C106.038 20.5267 110.022 20.6018 110.895 18.1557C110.939 18.0296 111.115 17.449 111.115 17.377V15.3252ZM107.811 7.84667C103.858 8.23001 104.125 14.8558 108.769 14.2152C112.193 13.7428 111.9 7.45033 107.811 7.84667Z" fill="#161A48"/><path d="M51.2667 12.9877C53.4541 15.1626 57.8182 14.8553 59.1074 11.8347L62.1334 12.6174C60.8015 17.3075 54.6399 18.4615 50.7325 16.3777C45.4413 13.5552 45.127 5.19392 49.8481 1.67184C53.7197 -1.21668 59.8515 -0.34792 62.0648 4.16702L59.3213 5.60427C59.1332 5.62129 58.7184 4.81959 58.5453 4.61441C56.6622 2.37946 52.903 2.63969 51.0369 4.76854C49.1866 6.87839 49.2672 10.998 51.2676 12.9877H51.2667Z" fill="#161A48"/><path d="M19.4978 0.0146542V6.72051C21.5023 4.48656 25.6743 4.68773 26.877 7.65332C26.9496 7.83348 27.257 8.75929 27.257 8.87238V17.0295H24.2727V10.2736C24.2727 8.49606 23.0322 7.76442 21.362 8.04566C20.5503 8.18278 19.4978 9.36081 19.4978 10.1735V17.0295H16.613V0.0146542H19.4978Z" fill="#161A48"/><path d="M67.0478 0.0146542V6.72051L68.2475 5.77568C71.0059 4.25435 74.8069 5.89779 74.8069 9.27273V17.0295H71.9221V10.1735C71.9221 9.94732 71.6834 9.26473 71.562 9.03453C70.7473 7.48517 68.14 7.70837 67.395 9.22169C67.3422 9.32978 67.0478 10.2176 67.0478 10.2736V17.0295H64.163V0.0146542H67.0478Z" fill="#161A48"/><path d="M39.5915 17.0319H36.8062C36.8171 16.6846 36.7853 16.3173 36.7047 15.981C36.6003 15.5456 36.4779 16.019 36.3645 16.1331C34.6366 17.8856 30.6217 17.8136 29.427 15.4986C28.0314 12.7962 30.1482 10.1259 32.9763 10.1259H36.5077C36.5286 9.26713 36.6152 8.58053 35.9029 7.982C35.0176 7.23836 33.0649 7.31042 32.3864 8.33131C32.1935 8.62156 32.1228 9.2411 31.8612 9.31216C31.5091 9.25311 29.3932 9.10098 29.3504 8.86878C29.7812 5.48382 33.5881 4.74818 36.3874 5.49383C38.3431 6.01529 39.2911 7.39349 39.4811 9.38723C39.7149 11.8494 39.2523 14.5637 39.5925 17.0319H39.5915ZM36.5077 12.0275H33.5732C33.426 12.0275 32.5854 12.4369 32.4262 12.575C31.3051 13.5499 32.2213 15.0842 33.5712 15.1773C35.6304 15.3184 36.7843 14.0923 36.5077 12.0275Z" fill="#161A48"/><path d="M100.471 17.0268H97.4871V9.77049C97.4871 9.5613 97.0941 8.80665 96.934 8.62549C96.1203 7.70969 94.1466 7.80777 93.3558 8.71657C93.1807 8.91774 92.7122 9.96265 92.7122 10.1708V17.0268H89.8274V5.51677H92.6127V6.81691L93.7766 5.83705C96.3878 4.20063 100.471 5.86308 100.471 9.16996V17.0268Z" fill="#161A48"/><path d="M84.556 5.5178H87.4408V17.0278H84.6555V15.7267C82.7605 18.1318 78.4541 17.8526 77.2167 14.954C77.0784 14.6308 76.7969 13.6889 76.7969 13.3747V5.5178H79.6319L79.7812 5.66793V12.9743C79.7812 13.0414 80.0647 13.6139 80.1353 13.719C81.0843 15.1122 83.3892 14.8139 84.179 13.3957C84.2417 13.2836 84.556 12.4278 84.556 12.3738V5.5178Z" fill="#161A48"/><path d="M31.3356 0.617431H34.4691L35.997 3.7882L35.8618 4.0204H33.4743L31.3903 1.11386L31.3356 0.617431Z" fill="#161A48"/></svg>
+  </div>
+
+  <div class="sidebar-nav-group">
+    <div class="nav-section">
+      <div class="nav-row"><a href="dashboard.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/948dfd1b-cf10-487e-a625-2f3992055751" alt=""/><span>Dashboard</span></a></div>
+      <div class="nav-row"><a href="notification.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/48c83959-0e4a-4796-92aa-855c591bea09" alt=""/><span>Thông báo</span><span class="nav-badge" style="background:#f9c268;color:#272727;">298</span></a></div>
+      <div class="nav-row"><a href="kho-tai-lieu.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/4d81f87e-d02e-4f11-bbeb-1cbb8bd237cd" alt=""/><span>Kho tài liệu</span></a></div>
+      <div class="nav-row"><a href="gop-y-phan-anh.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/e7a24a0c-9154-4fe5-b775-e28b59efd97b" alt=""/><span>Góp ý / Phản ánh</span></a></div>
+      <div class="nav-row"><a href="tin-tuc-cong-dong.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/88032ed9-c023-453f-ace1-48bac91b8033" alt=""/><span>Tin tức cộng đồng</span></a></div>
+      <div class="nav-row"><a href="ai-assistant.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/2f5f2c4b-c461-4b2b-a016-172f0940c49d" alt=""/><span>AI Assistant</span></a></div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">báo cáo minh bạch</div>
+      <div class="nav-row"><a href="tong-quan-tai-chinh.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/704a494d-6aa9-4050-93d6-8be752cc3e38" alt=""/><span>Tổng quan tài chính</span></a></div>
+      <div class="nav-row"><a href="bao-cao-thu-chi.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/89c6053d-33c3-448d-b8d6-5eaef37341ac" alt=""/><span>Báo cáo thu chi</span></a></div>
+      <div class="nav-row"><a href="quy-bao-tri.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/73832a3c-38ad-496e-b944-0ebb15cb0d62" alt=""/><span>Quỹ bảo trì</span></a></div>
+      <div class="nav-row"><a href="van-hanh-bao-tri.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/82bc45d6-8665-4c78-bac3-f9fbb084e888" alt=""/><span>Vận hành &amp; bảo trì</span></a></div>
+      <div class="nav-row"><a href="kpi-ban-quan-tri.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/4a802188-fa92-4a4d-97e3-f3cf05f15319" alt=""/><span>KPI Ban quản trị</span></a></div>
+      <div class="nav-row"><a href="bao-cao-dinh-ky.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/6df232ea-f0e0-4733-9c5b-bd32987e6750" alt=""/><span>Báo cáo định kỳ</span></a></div>
+      <div class="nav-row"><a href="lich-su-luu-tru.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/e68588e5-a681-4c29-aeea-03abf1166456" alt=""/><span>Lịch sử &amp; lưu trữ</span></a></div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">cá nhân</div>
+      <div class="nav-row"><a href="ho-so-ca-nhan.html" class="nav-item active"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/33744d68-a412-4dd3-aed3-a586e2256f38" alt=""/><span>Hồ sơ cá nhân</span></a></div>
+      <div class="nav-row"><a href="thanh-vien-gia-dinh.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/29317f27-aa9f-46d1-b44e-723d4ca142d1" alt=""/><span>Thành viên gia đình</span></a></div>
+      <div class="nav-row"><a href="can-ho-cua-toi.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/5239243c-3028-423d-a5d8-7983f3bcf2c1" alt=""/><span>Căn hộ của tôi</span></a></div>
+      <div class="nav-row"><a href="cai-dat.html" class="nav-item"><img class="nav-icon" src="https://www.figma.com/api/mcp/asset/1effc1b6-c32f-4ad4-8e08-df8f1d1ec6bf" alt=""/><span>Cài đặt</span></a></div>
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-text">Nhà Chung Platform<br/>Phiên bản 1.0.0</div>
+    <div class="sidebar-collapse"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
+  </div>
+</aside>
+
+<!-- ============================================================
+     MAIN
+     ============================================================ -->
+<div class="main">
+  <!-- Topbar — đồng bộ với toàn hệ thống -->
+  <header class="header">
+    <div class="building-selector" data-dd="dd-building">
+      <img src="https://www.figma.com/api/mcp/asset/e6f58352-70f9-4da3-97bd-52e295398cd2" alt="" width="20" height="20"/>
+      <span class="label">Landmark 1</span>
+      <img src="https://www.figma.com/api/mcp/asset/923cda87-71a9-4618-97e0-fba047a66ea1" alt="" width="18" height="18"/>
+      <div class="dd dd-building" id="dd-building">
+        <div class="dd-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Tìm kiếm tòa nhà..." />
+        </div>
+        <div class="dd-sep-label">Của tôi</div>
+        <div class="dd-bld-item active">
+          <div class="dd-bld-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="9" y1="22" x2="9" y2="2"/><line x1="15" y1="6" x2="15" y2="2"/><line x1="15" y1="10" x2="19" y2="10"/><line x1="15" y1="14" x2="19" y2="14"/></svg></div>
+          <div class="dd-bld-info">
+            <div class="dd-bld-name">Landmark 1</div>
+            <div class="dd-bld-meta">Căn hộ A-12.05 · Vinhomes Central Park</div>
+          </div>
+          <div class="dd-bld-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        </div>
+        <div class="dd-divider"></div>
+        <div class="dd-sep-label">Khám phá</div>
+        <div class="dd-bld-item">
+          <div class="dd-bld-ico muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="9" y1="22" x2="9" y2="2"/></svg></div>
+          <div class="dd-bld-info">
+            <div class="dd-bld-name">Landmark 2</div>
+            <div class="dd-bld-meta">Vinhomes Central Park</div>
+          </div>
+        </div>
+        <div class="dd-bld-item">
+          <div class="dd-bld-ico muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="9" y1="22" x2="9" y2="2"/></svg></div>
+          <div class="dd-bld-info">
+            <div class="dd-bld-name">The Grand Marina</div>
+            <div class="dd-bld-meta">Quận 1, TP. Hồ Chí Minh</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="search-bar">
+      <img src="https://www.figma.com/api/mcp/asset/1b7094e2-18f3-4a4d-8483-36ebc09553c2" alt="" width="20" height="20" style="flex:0 0 20px;"/>
+      <input placeholder="Tìm kiếm thông tin hồ sơ..."/>
+    </div>
+    <div class="header-right">
+      <button class="notif-btn" data-dd="dd-notif">
+        <img src="https://www.figma.com/api/mcp/asset/088722b6-433a-4c41-a336-286691d19904" alt="" width="24" height="24"/>
+        <img class="notif-dot" src="https://www.figma.com/api/mcp/asset/b33a6d31-df5d-4121-8e34-e50fe1b0c7e5" alt=""/>
+        <div id="dd-notif" class="dd dd-notif">
+          <div class="dd-nt-hd">
+            <span class="dd-nt-hd-title">Thông báo</span>
+            <span class="dd-nt-mark">Đánh dấu đã đọc</span>
+          </div>
+          <div class="dd-nt-grp">Hôm nay</div>
+          <div class="dd-nt-item unread">
+            <div class="dd-nt-ico" style="background:#fff3e0;">
+              <svg viewBox="0 0 16 16" fill="none" stroke="#c8761b" stroke-width="1.5"><path d="M8 2L2 13h12L8 2z" stroke-linejoin="round"/><path d="M8 6v4M8 11.5v.5" stroke-linecap="round"/></svg>
+            </div>
+            <div class="dd-nt-body">
+              <div class="dd-nt-title">Bảo trì hệ thống PCCC định kỳ — Tầng B1 &amp; B2</div>
+              <div class="dd-nt-meta">Ban quản trị · 10:30 sáng</div>
+            </div>
+          </div>
+          <div class="dd-nt-item unread">
+            <div class="dd-nt-ico" style="background:#e8f4fd;">
+              <svg viewBox="0 0 16 16" fill="none" stroke="#1890ff" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 7v5M8 5.5v.5" stroke-linecap="round"/></svg>
+            </div>
+            <div class="dd-nt-body">
+              <div class="dd-nt-title">Điều chỉnh phí gửi xe ô tô từ tháng 6/2026</div>
+              <div class="dd-nt-meta">Ban quản trị · 09:15 sáng</div>
+            </div>
+          </div>
+          <div class="dd-nt-grp">Hôm qua</div>
+          <div class="dd-nt-item">
+            <div class="dd-nt-ico" style="background:#e6f9f1;">
+              <svg viewBox="0 0 16 16" fill="none" stroke="#1c9d5f" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="1"/><path d="M5 3V1.5M11 3V1.5M2 7h12" stroke-linecap="round"/></svg>
+            </div>
+            <div class="dd-nt-body">
+              <div class="dd-nt-title">Sự kiện: Ngày hội cư dân 1/6/2026 — Đăng ký tham gia</div>
+              <div class="dd-nt-meta">Ban quản trị · Hôm qua</div>
+            </div>
+          </div>
+          <a href="notification.html" class="dd-nt-footer">Xem tất cả thông báo →</a>
+        </div>
+      </button>
+      <!-- user-pill khớp 100% với các trang khác -->
+      <div class="user-pill" data-dd="dd-user">
+        <img class="avatar" src="https://www.figma.com/api/mcp/asset/ee21e768-a070-4e15-ad43-73a28943d4ee" alt="Chris Tran" width="32" height="32"/>
+        <div class="user-info">
+          <div class="user-name">Chris Tran</div>
+          <div class="user-apt">Căn hộ A-12.05</div>
+        </div>
+        <img src="https://www.figma.com/api/mcp/asset/d8416c17-0767-465c-b7db-cbcbe7dc0620" alt="" width="10" height="10" style="flex:0 0 10px;"/>
+        <div class="dd dd-user" id="dd-user">
+          <div class="dd-usr-info">
+            <img class="dd-usr-avatar" src="https://www.figma.com/api/mcp/asset/ee21e768-a070-4e15-ad43-73a28943d4ee" alt="" />
+            <div>
+              <div class="dd-usr-name">Chris Tran</div>
+              <div class="dd-usr-email">chris.tran@gmail.com</div>
+            </div>
+          </div>
+          <a class="dd-menu-item" href="ho-so-ca-nhan.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Hồ sơ cá nhân
+          </a>
+          <a class="dd-menu-item" href="cai-dat.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            Cài đặt
+          </a>
+          <a class="dd-menu-item danger" href="login.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Đăng xuất
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="content-scroll">
+    <div class="profile-page">
+
+      <!-- ── Profile Banner ── -->
+      <div class="profile-banner">
+        <div class="banner-avatar-wrap">
+          <!-- Cùng avatar asset với topbar -->
+          <img class="banner-avatar" src="https://www.figma.com/api/mcp/asset/ee21e768-a070-4e15-ad43-73a28943d4ee" alt="Chris Tran"/>
+          <div class="banner-avatar-edit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </div>
+        </div>
+        <div class="banner-info">
+          <!-- Tên đầy đủ — đồng bộ với topbar "Chris Tran" -->
+          <div class="banner-name">Trần Hoàng Chris</div>
+          <div class="banner-tags">
+            <div class="banner-tag">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              Căn hộ A-12.05
+            </div>
+            <div class="banner-tag">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              Landmark 1 · Vinhomes Central Park
+            </div>
+            <div class="banner-tag" style="background:rgba(74,222,128,.2);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span style="color:#4ade80;">Cư dân đã xác minh</span>
+            </div>
+          </div>
+        </div>
+        <div class="banner-actions">
+          <button class="btn-banner-outline">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Tải thẻ cư dân
+          </button>
+          <button class="btn-banner-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Chỉnh sửa hồ sơ
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Body ── -->
+      <div class="profile-body">
+
+        <!-- Left: main info -->
+        <div class="profile-main">
+
+          <!-- Hoàn thiện hồ sơ -->
+          <div class="section-card" style="padding:18px 22px;">
+            <div class="completion-wrap">
+              <div class="completion-hd">
+                <span class="completion-lbl">Độ hoàn thiện hồ sơ</span>
+                <span class="completion-pct">85%</span>
+              </div>
+              <div class="completion-bar"><div class="completion-fill" style="width:85%;"></div></div>
+            </div>
+            <div class="completion-items">
+              <div class="comp-item comp-done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>Thông tin cơ bản</span></div>
+              <div class="comp-item comp-done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>Số điện thoại đã xác minh</span></div>
+              <div class="comp-item comp-done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>CCCD đã tải lên</span></div>
+              <div class="comp-item comp-done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>Phương tiện đã đăng ký</span></div>
+              <div class="comp-item comp-miss" style="color:var(--warning);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>Email chưa xác minh</span></div>
+              <div class="comp-item comp-miss" style="color:var(--text-gray);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Thêm liên hệ khẩn cấp</span></div>
+            </div>
+          </div>
+
+          <!-- Thông tin cơ bản -->
+          <div class="section-card">
+            <div class="section-hd">
+              <div class="section-title">
+                <div class="section-title-icon" style="background:#efeeff;"><svg viewBox="0 0 24 24" fill="none" stroke="#4137f9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+                Thông tin cơ bản
+              </div>
+              <button class="section-edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Chỉnh sửa</button>
+            </div>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">Họ và tên</div>
+                <div class="info-value">Trần Hoàng Chris</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Tên hiển thị</div>
+                <div class="info-value">Chris Tran</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Ngày sinh</div>
+                <div class="info-value">15/08/1990</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Giới tính</div>
+                <div class="info-value">Nam</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Quốc tịch</div>
+                <div class="info-value">Việt Nam</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Nghề nghiệp</div>
+                <div class="info-value">Kỹ sư phần mềm</div>
+              </div>
+              <div class="info-divider"></div>
+              <div class="info-item info-full">
+                <div class="info-label">Địa chỉ thường trú</div>
+                <div class="info-value">123 Nguyễn Văn Linh, Phường Tân Phong, Quận 7, TP. Hồ Chí Minh</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Giấy tờ tùy thân -->
+          <div class="section-card">
+            <div class="section-hd">
+              <div class="section-title">
+                <div class="section-title-icon" style="background:#e4f1ff;"><svg viewBox="0 0 24 24" fill="none" stroke="#1870c4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+                Giấy tờ tùy thân
+              </div>
+              <button class="section-edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Cập nhật</button>
+            </div>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">Số CCCD</div>
+                <div class="info-value mono">079 190 015 820
+                  <span class="verified-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Đã xác minh</span>
+                </div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Ngày cấp</div>
+                <div class="info-value">20/03/2021</div>
+              </div>
+              <div class="info-item info-full">
+                <div class="info-label">Nơi cấp</div>
+                <div class="info-value">Cục Cảnh sát QLHC về TTXH — TP. Hồ Chí Minh</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Thông tin liên hệ -->
+          <div class="section-card">
+            <div class="section-hd">
+              <div class="section-title">
+                <div class="section-title-icon" style="background:#e3fbed;"><svg viewBox="0 0 24 24" fill="none" stroke="#1c9d5f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.39 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.81a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+                Thông tin liên hệ
+              </div>
+              <button class="section-edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Chỉnh sửa</button>
+            </div>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">Số điện thoại</div>
+                <div class="info-value">
+                  0912 345 678
+                  <span class="verified-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Đã xác minh</span>
+                </div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Điện thoại phụ</div>
+                <div class="info-value">—</div>
+              </div>
+              <div class="info-item info-full">
+                <div class="info-label">Email</div>
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                  <div class="info-value">chris.tran@gmail.com</div>
+                  <div style="display:inline-flex;align-items:center;gap:5px;background:#fff1de;border-radius:10px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--warning);white-space:nowrap;flex-shrink:0;">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    Chưa xác minh
+                  </div>
+                  <button style="font-size:var(--fs-xs);color:var(--primary);font-weight:600;cursor:pointer;background:none;border:none;padding:0;">Xác minh ngay →</button>
+                </div>
+              </div>
+              <div class="info-item info-full">
+                <div class="info-label">Zalo</div>
+                <div class="info-value primary">0912 345 678 · Đã liên kết</div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- end profile-main -->
+
+        <!-- Right sidebar -->
+        <div class="profile-sidebar">
+
+          <!-- Phương tiện đã đăng ký -->
+          <div class="section-card" style="gap:14px;">
+            <div class="section-hd">
+              <div class="section-title" style="font-size:var(--fs-body);">
+                <div class="section-title-icon" style="background:#fff1de;"><svg viewBox="0 0 24 24" fill="none" stroke="#c8761b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11l2-5h10l2 5H5z"/><rect x="2" y="11" width="20" height="5" rx="1"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/><line x1="9" y1="16" x2="15" y2="16"/></svg></div>
+                Phương tiện
+              </div>
+              <button class="section-edit" style="font-size:11px;padding:4px 10px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Thêm
+              </button>
+            </div>
+            <div class="vehicle-list">
+              <div class="vehicle-item">
+                <div class="vehicle-icon" style="background:#efeeff;">
+                  <!-- Sedan / ô tô -->
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#4137f9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 11l2-5h10l2 5H5z"/>
+                    <rect x="2" y="11" width="20" height="5" rx="1"/>
+                    <circle cx="7" cy="18" r="2"/>
+                    <circle cx="17" cy="18" r="2"/>
+                    <line x1="9" y1="16" x2="15" y2="16"/>
+                  </svg>
+                </div>
+                <div class="vehicle-body">
+                  <div class="vehicle-name">Toyota Camry 2022</div>
+                  <div class="vehicle-plate">51G-123.45 · Tầng hầm B1-A21</div>
+                </div>
+                <span class="vehicle-badge" style="background:#e3fbed;color:var(--success);">Ô tô</span>
+              </div>
+              <div class="vehicle-item">
+                <div class="vehicle-icon" style="background:#e4f1ff;">
+                  <!-- Xe máy: flaticon_1023397 filled icon -->
+                  <svg viewBox="0 0 512.002 512.002" fill="#1870c4" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M485.747,301.559c3.21-1.054,5.971-3.226,7.772-6.233c2.558-4.27,2.722-9.452,0.437-13.862c0,0,0-0.001-0.001-0.001 c0-0.001-0.001-0.002-0.001-0.003c-0.02-0.039-0.042-0.076-0.062-0.114c-0.413-0.793-0.838-1.577-1.277-2.35 c-0.153-0.269-0.315-0.53-0.471-0.797c-0.315-0.538-0.628-1.076-0.956-1.604c-0.191-0.308-0.392-0.608-0.587-0.912 c-0.305-0.475-0.608-0.951-0.922-1.417c-0.215-0.319-0.439-0.63-0.659-0.945c-0.308-0.441-0.615-0.882-0.931-1.315 c-0.234-0.319-0.475-0.631-0.714-0.946c-0.316-0.416-0.631-0.832-0.954-1.24c-0.251-0.316-0.508-0.625-0.763-0.936 c-0.325-0.395-0.65-0.79-0.982-1.177c-0.265-0.309-0.535-0.612-0.805-0.916c-0.335-0.377-0.671-0.753-1.014-1.123 c-0.278-0.3-0.561-0.596-0.844-0.892c-0.346-0.36-0.693-0.719-1.046-1.071c-0.291-0.292-0.586-0.579-0.882-0.865 c-0.356-0.344-0.715-0.685-1.078-1.021c-0.303-0.281-0.608-0.559-0.916-0.834c-0.368-0.329-0.739-0.655-1.113-0.976 c-0.313-0.269-0.627-0.535-0.944-0.798c-0.381-0.316-0.765-0.626-1.152-0.934c-0.321-0.256-0.643-0.51-0.968-0.76 c-0.394-0.302-0.792-0.598-1.192-0.893c-0.329-0.242-0.657-0.484-0.99-0.721c-0.407-0.289-0.82-0.571-1.233-0.852 c-0.335-0.227-0.668-0.456-1.006-0.678c-0.423-0.278-0.852-0.546-1.281-0.815c-0.338-0.212-0.674-0.426-1.016-0.633 c-0.443-0.268-0.893-0.525-1.341-0.783c-0.335-0.193-0.668-0.39-1.006-0.578c-0.473-0.263-0.953-0.513-1.432-0.766 c-0.323-0.17-0.643-0.345-0.968-0.511c-0.524-0.266-1.056-0.519-1.587-0.773c-0.288-0.138-0.573-0.282-0.863-0.416 c-0.673-0.311-1.354-0.608-2.037-0.899c-0.154-0.066-0.305-0.137-0.46-0.202c-0.845-0.354-1.697-0.693-2.556-1.016 c-0.188-0.071-0.379-0.133-0.567-0.203c-0.67-0.246-1.341-0.489-2.019-0.717c-0.307-0.103-0.618-0.195-0.926-0.295 c-0.567-0.182-1.133-0.366-1.706-0.535c-0.347-0.103-0.698-0.195-1.047-0.293c-0.539-0.151-1.077-0.303-1.62-0.443 c-0.372-0.096-0.746-0.181-1.12-0.272c-0.527-0.127-1.055-0.255-1.586-0.372c-0.386-0.085-0.776-0.161-1.164-0.24 c-0.524-0.106-1.047-0.212-1.575-0.308c-0.398-0.072-0.799-0.137-1.199-0.204c-0.523-0.087-1.046-0.172-1.572-0.248 c-0.408-0.059-0.817-0.112-1.227-0.165c-0.524-0.068-1.048-0.133-1.574-0.19c-0.414-0.045-0.83-0.085-1.246-0.123 c-0.527-0.049-1.055-0.094-1.585-0.133c-0.419-0.03-0.839-0.057-1.26-0.081c-0.53-0.03-1.061-0.055-1.593-0.075 c-0.425-0.016-0.851-0.029-1.278-0.038c-0.531-0.011-1.062-0.016-1.595-0.017c-0.431-0.001-0.862,0-1.294,0.007 c-0.533,0.008-1.067,0.023-1.602,0.041c-0.435,0.015-0.869,0.03-1.305,0.051c-0.186,0.009-0.371,0.011-0.557,0.022l-15.598-27.391 c-2.02-3.546-6.533-4.786-10.082-2.765c-3.548,2.02-4.786,6.535-2.765,10.083l15.025,26.383 c-12.954,12.507-48.467,51.544-47.034,102.371c-4.575,1.131-9.335,1.381-13.467,1.381H219.503V340.89 c0-44.976-36.591-81.566-81.567-81.566h-7.947c-4.083,0-7.392,3.309-7.392,7.392s3.31,7.392,7.392,7.392h7.947 c36.824,0,66.782,29.958,66.782,66.781v11.322H16.75c-0.662,0-1.245-0.331-1.602-0.834c-0.008-0.012-0.019-0.021-0.027-0.033 c-0.016-0.024-0.026-0.051-0.041-0.076c-0.183-0.299-0.295-0.647-0.295-1.022c0-41.982,34.156-76.138,76.139-76.138h4.669 c4.083,0,7.392-3.309,7.392-7.392s-3.31-7.392-7.392-7.392h-4.669c-28.14,0-53.334,12.851-70.025,32.991 c14.908-44.43,55.501-77.174,104.053-80.517c1.25-0.085,2.492-0.149,3.724-0.196c0.204-0.008,0.408-0.017,0.613-0.023 c1.307-0.044,2.603-0.07,3.872-0.07h113.832l-14.813,40.363c-7.04,19.182-4.413,40.777,7.027,57.765 c11.355,16.861,29.411,26.921,49.534,27.601c0.75,0.026,1.502,0.039,2.258,0.039h39.708c14.615,0,27.241-10.347,30.133-24.646 c13.536-50.252-5.695-117.273-16.226-147.789h17.073l15.536,27.281c1.363,2.394,3.86,3.736,6.43,3.736 c1.24,0,2.497-0.312,3.651-0.969c3.548-2.02,4.786-6.535,2.765-10.082l-11.37-19.966h15.332c7.167,0,12.998-5.83,12.998-12.997 v-34.214c0-4.032-1.824-7.768-5.004-10.248c-3.18-2.481-7.249-3.342-11.161-2.357l-60.018,15.08l-1.654-2.008 c-0.176,0.145-0.359,0.28-0.547,0.408c1.081-0.734,1.975-1.747,2.551-2.978c1.207-2.583,0.821-5.63-0.993-7.83l-16.417-19.921 c-2.447-2.968-6.043-4.664-9.885-4.664c-0.043,0-0.087,0-0.13,0l-31.921,0.321c-6.303,0.026-11.422,5.161-11.422,11.47v7.597 c0,9.725,7.912,17.637,17.691,17.637l33.394-0.249l7.226,8.772c-1.287,2.369-2.008,5.074-2.008,7.918v12.951l-30.886,5.815 c-4.012,0.755-6.652,4.62-5.897,8.632c0.668,3.55,3.771,6.026,7.257,6.026c0.453,0,0.914-0.041,1.376-0.129l34.582-6.511 c1.721,0.934,3.688,1.47,5.778,1.479c9.482,26.332,30.946,94.956,17.564,144.167c-0.049,0.179-0.09,0.36-0.126,0.543 c-1.443,7.499-8.034,12.942-15.672,12.942h-39.708c-0.584,0-1.166-0.009-1.752-0.03c-15.333-0.518-29.102-8.202-37.776-21.084 c-8.93-13.261-10.902-29.449-5.41-44.413l18.395-50.125c0.102-0.273,0.186-0.551,0.255-0.831c0.023-0.095,0.037-0.19,0.056-0.285 c0.039-0.186,0.076-0.373,0.1-0.561c0.014-0.113,0.02-0.225,0.029-0.339c0.014-0.173,0.027-0.344,0.029-0.517 c0.001-0.117-0.003-0.234-0.007-0.351c-0.003-0.101,0.001-0.202-0.006-0.303c-0.887-24.753-21.572-44.826-46.292-44.826H109.77 c-9.01,0-16.34,7.33-16.34,16.339c0,9.438,3.634,18.271,9.666,24.979C44.102,213.816,0,266.798,0,329.887v20.364 c0,0.577,0.029,1.148,0.087,1.71C0.946,360.396,8.091,367,16.75,367h25.656c4.826,35.229,34.808,61.889,71.135,61.889 S179.85,402.23,184.677,367h164.128c7.515,0,14.143-0.909,19.904-2.683c3.65,36.211,34.306,64.572,71.464,64.572 c39.607,0,71.829-32.222,71.829-71.829C512,335.19,502.022,314.956,485.747,301.559z M379.523,123.119l12.721-3.196v30.137 h-12.721V123.119z M278.063,105.353c-1.572,0-2.852-1.279-2.852-2.852v-4.315l27.764-0.279l5.946,7.216L278.063,105.353z M331.515,136.579c0-0.822,0.557-1.536,1.355-1.737l31.869-8.007v23.226h-33.224V136.579z M109.77,173.617h108.848 c14.264,0,26.556,9.834,30.339,23.111H133.16c-1.314,0-2.622,0.025-3.926,0.062c-0.176,0.005-0.353,0.014-0.529,0.02 c-1.191,0.039-2.377,0.095-3.56,0.166c-0.07,0.004-0.139,0.005-0.21,0.01c-9.745-2.619-16.72-11.638-16.72-21.814 C108.215,174.314,108.912,173.617,109.77,173.617z M140.971,367c-4.097,11.255-14.929,19.252-27.431,19.252 c-12.502,0-23.334-7.997-27.431-19.252H140.971z M113.54,414.104c-28.142,0-51.476-20.148-56.161-47.104H70.72 c4.546,19.555,22.171,34.036,42.82,34.036c20.648,0,38.273-14.481,42.819-34.036h13.342 C165.017,393.956,141.682,414.104,113.54,414.104z M378.41,338.591c-0.076,0.16-0.151,0.319-0.23,0.475 c-0.242,0.485-0.497,0.956-0.768,1.412c-0.029,0.048-0.06,0.092-0.089,0.14c3.519-43.183,36.668-76.34,44.461-83.577 c0.022-0.002,0.044-0.005,0.066-0.006c0.2-0.016,0.398-0.025,0.597-0.039c0.599-0.043,1.198-0.086,1.795-0.113 c0.122-0.006,0.244-0.006,0.366-0.011c0.672-0.027,1.344-0.048,2.012-0.055c0.079-0.001,0.157,0.001,0.236,0.001 c0.709-0.005,1.416-0.001,2.12,0.017c0.061,0.001,0.122,0.005,0.183,0.007c0.72,0.02,1.438,0.05,2.153,0.094 c0.051,0.003,0.102,0.008,0.153,0.011c0.722,0.046,1.442,0.102,2.159,0.172c0.051,0.005,0.101,0.011,0.151,0.016 c0.714,0.071,1.426,0.152,2.134,0.247c0.056,0.007,0.111,0.016,0.167,0.024c0.701,0.095,1.399,0.2,2.093,0.318 c0.061,0.01,0.122,0.022,0.183,0.033c0.686,0.118,1.369,0.247,2.047,0.387c0.07,0.014,0.139,0.03,0.209,0.045 c0.666,0.14,1.328,0.289,1.987,0.45c0.082,0.02,0.164,0.042,0.247,0.062c0.644,0.16,1.285,0.329,1.921,0.509 c0.092,0.026,0.184,0.053,0.275,0.08c0.623,0.18,1.243,0.368,1.858,0.566c0.102,0.033,0.203,0.067,0.305,0.1 c0.601,0.197,1.198,0.402,1.79,0.617c0.114,0.041,0.227,0.084,0.341,0.126c0.576,0.213,1.149,0.434,1.717,0.663 c0.126,0.051,0.251,0.103,0.377,0.155c0.551,0.227,1.097,0.461,1.64,0.704c0.138,0.062,0.276,0.125,0.414,0.187 c0.526,0.24,1.048,0.488,1.567,0.742c0.147,0.072,0.294,0.145,0.441,0.219c0.502,0.252,1,0.511,1.495,0.777 c0.158,0.085,0.315,0.17,0.472,0.256c0.478,0.262,0.951,0.532,1.421,0.807c0.166,0.097,0.333,0.195,0.498,0.294 c0.455,0.273,0.905,0.552,1.352,0.837c0.173,0.11,0.346,0.219,0.517,0.331c0.432,0.282,0.859,0.57,1.283,0.863 c0.18,0.124,0.36,0.247,0.539,0.374c0.41,0.289,0.814,0.586,1.216,0.886c0.184,0.138,0.37,0.274,0.552,0.414 c0.388,0.297,0.771,0.601,1.151,0.908c0.189,0.152,0.379,0.303,0.566,0.458c0.367,0.303,0.728,0.614,1.087,0.927 c0.192,0.167,0.385,0.332,0.575,0.501c0.347,0.31,0.687,0.628,1.027,0.947c0.192,0.18,0.387,0.359,0.577,0.542 c0.33,0.318,0.652,0.644,0.974,0.97c0.191,0.193,0.384,0.384,0.572,0.58c0.312,0.325,0.616,0.658,0.921,0.991 c0.189,0.206,0.381,0.41,0.566,0.619c0.296,0.333,0.584,0.675,0.872,1.015c0.184,0.218,0.372,0.432,0.553,0.653 c0.282,0.344,0.556,0.696,0.831,1.047c0.177,0.226,0.358,0.449,0.532,0.678c0.272,0.358,0.534,0.725,0.797,1.091 c0.167,0.231,0.338,0.458,0.502,0.692c0.266,0.38,0.521,0.77,0.778,1.157c0.151,0.228,0.307,0.451,0.455,0.681 c0.275,0.428,0.538,0.865,0.802,1.302c0.12,0.198,0.246,0.392,0.363,0.592c0.377,0.64,0.743,1.289,1.097,1.948 c-0.653,0.012-1.322,0.027-2.008,0.047c-10.984,0.321-26.11,1.805-41.986,6.513c-0.008,0.002-0.015,0.004-0.023,0.006 c-0.954,0.283-1.911,0.579-2.87,0.886c-0.043,0.014-0.086,0.026-0.129,0.04c-0.92,0.296-1.842,0.605-2.766,0.923 c-0.083,0.029-0.165,0.055-0.248,0.083c-0.894,0.31-1.789,0.635-2.684,0.967c-0.112,0.041-0.223,0.08-0.335,0.122 c-0.853,0.319-1.707,0.653-2.56,0.993c-0.156,0.062-0.313,0.121-0.469,0.184c-0.821,0.331-1.641,0.677-2.461,1.028 c-0.187,0.08-0.373,0.155-0.56,0.236c-0.787,0.342-1.573,0.699-2.359,1.059c-0.219,0.101-0.439,0.196-0.659,0.298 c-0.754,0.351-1.504,0.718-2.255,1.088c-0.249,0.123-0.5,0.24-0.749,0.364c-0.719,0.36-1.436,0.737-2.152,1.114 c-0.278,0.147-0.558,0.288-0.836,0.437c-0.686,0.369-1.368,0.754-2.05,1.139c-0.305,0.172-0.611,0.338-0.915,0.513 c-0.652,0.376-1.299,0.769-1.947,1.161c-0.33,0.2-0.662,0.393-0.992,0.597c-0.623,0.386-1.241,0.788-1.859,1.189 c-0.348,0.225-0.697,0.444-1.043,0.674c-0.595,0.396-1.185,0.808-1.775,1.218c-0.364,0.253-0.73,0.499-1.092,0.757 c-0.567,0.405-1.128,0.826-1.691,1.245c-0.377,0.281-0.757,0.556-1.132,0.843c-0.542,0.416-1.078,0.848-1.615,1.277 c-0.386,0.309-0.775,0.611-1.159,0.927c-0.521,0.429-1.034,0.874-1.549,1.316c-0.327,0.281-0.66,0.55-0.984,0.837 c-0.045,0.039-0.086,0.083-0.13,0.122c-0.104,0.092-0.212,0.179-0.316,0.272c-5.659,5.048-10.132,11.592-12.937,18.925 C378.914,337.491,378.667,338.045,378.41,338.591z M458.669,343.492l-6.907-13.218c10.345,4.494,17.601,14.807,17.601,26.786 c0,16.097-13.095,29.192-29.191,29.192s-29.191-13.095-29.191-29.192c0-2.429,0.303-4.802,0.875-7.093l7.384,14.13 c3.967,7.591,11.728,11.939,19.753,11.939c3.467,0,6.985-0.812,10.265-2.526C460.128,367.83,464.35,354.363,458.669,343.492z M446.072,356.027c-0.596,1.901-1.897,3.457-3.663,4.38c-3.647,1.903-8.163,0.489-10.068-3.157l-13.957-26.708 c-0.012-0.023-0.024-0.046-0.036-0.069l-5.176-9.906c0.331-0.209,0.662-0.417,0.994-0.622c0.432-0.267,0.865-0.532,1.303-0.794 c0.655-0.389,1.312-0.771,1.973-1.143c0.213-0.121,0.429-0.24,0.644-0.359c2.72-1.503,5.482-2.863,8.26-4.09l19.219,36.779 C446.488,352.105,446.668,354.125,446.072,356.027z M440.171,414.104c-31.454,0-57.045-25.59-57.045-57.044 c0-0.179,0.004-0.368,0.006-0.552c1.568-1.372,2.997-2.879,4.288-4.519c0.075-0.095,0.148-0.191,0.222-0.286 c0.508-0.659,0.996-1.337,1.459-2.038c0.246-0.368,0.487-0.74,0.72-1.119c0.196-0.322,0.392-0.644,0.579-0.974 c0.4-0.7,0.78-1.419,1.14-2.156c0.096-0.199,0.188-0.402,0.282-0.604c0.398-0.853,0.778-1.721,1.122-2.621 c1.817-4.751,4.678-9.047,8.3-12.525l1.923,3.68c-4.519,7.048-6.974,15.302-6.974,23.715c0,24.248,19.728,43.977,43.976,43.977 c24.248,0,43.976-19.728,43.976-43.977c0-23.357-18.306-42.512-41.323-43.889l-2.479-4.745c7.229-2.163,14.247-3.577,20.584-4.5 c21.778,8.509,36.286,29.631,36.286,53.134C497.215,388.514,471.626,414.104,440.171,414.104z"/>
+                  </svg>
+                </div>
+                <div class="vehicle-body">
+                  <div class="vehicle-name">Honda Air Blade</div>
+                  <div class="vehicle-plate">59K-999.00 · Tầng hầm B2-M14</div>
+                </div>
+                <span class="vehicle-badge" style="background:#e4f1ff;color:#1870c4;">Xe máy</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Liên hệ -->
+          <div class="section-card" style="gap:14px;">
+            <div class="section-hd">
+              <div class="section-title" style="font-size:var(--fs-body);">
+                <div class="section-title-icon" style="background:#ffeded;"><svg viewBox="0 0 24 24" fill="none" stroke="#f5222d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.39 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.81a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+                Liên hệ
+              </div>
+              <button class="section-edit" style="font-size:11px;padding:4px 10px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Thêm
+              </button>
+            </div>
+            <div class="contact-list">
+              <div class="contact-item">
+                <div class="contact-avatar" style="background:#efeeff;color:#4137f9;">TH</div>
+                <div class="contact-body">
+                  <div class="contact-name">Trần Thị Hoa</div>
+                  <div class="contact-rel">Vợ · Cùng căn hộ A-12.05</div>
+                  <div class="contact-phone">0987 654 321</div>
+                </div>
+              </div>
+              <div class="contact-item">
+                <div class="contact-avatar" style="background:#e3fbed;color:var(--success);">TV</div>
+                <div class="contact-body">
+                  <div class="contact-name">Trần Văn Bình</div>
+                  <div class="contact-rel">Bố · Quận 1, TP.HCM</div>
+                  <div class="contact-phone">0901 234 567</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hoạt động gần đây -->
+          <div class="section-card" style="gap:14px;">
+            <div class="section-hd">
+              <div class="section-title" style="font-size:var(--fs-body);">
+                <div class="section-title-icon" style="background:#f0f0f5;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text-gray)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                Hoạt động gần đây
+              </div>
+            </div>
+            <div class="activity-list">
+              <div class="act-row">
+                <div class="act-dot-col"><div class="act-dot" style="background:#4137f9;"></div></div>
+                <div class="act-body">
+                  <div class="act-text">Gửi <b>góp ý về tiếng ồn</b> hành lang tầng 12</div>
+                  <div class="act-time">Hôm nay, 09:14</div>
+                </div>
+              </div>
+              <div class="act-row">
+                <div class="act-dot-col"><div class="act-dot" style="background:var(--success);"></div></div>
+                <div class="act-body">
+                  <div class="act-text">Đóng <b>phí quản lý</b> tháng 5/2024 thành công</div>
+                  <div class="act-time">22/05/2024, 14:30</div>
+                </div>
+              </div>
+              <div class="act-row">
+                <div class="act-dot-col"><div class="act-dot" style="background:var(--warning);"></div></div>
+                <div class="act-body">
+                  <div class="act-text">Đăng ký <b>thẻ từ phụ</b> cho khách</div>
+                  <div class="act-time">18/05/2024, 10:05</div>
+                </div>
+              </div>
+              <div class="act-row">
+                <div class="act-dot-col"><div class="act-dot" style="background:#b4b7c9;"></div></div>
+                <div class="act-body">
+                  <div class="act-text">Tải báo cáo <b>Quý 1/2024</b></div>
+                  <div class="act-time">15/04/2024, 08:22</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- end profile-sidebar -->
+      </div><!-- end profile-body -->
+    </div><!-- end profile-page -->
+  </div><!-- end content-scroll -->
+</div><!-- end main -->
+
+<script>
+(function(){
+  function posDD(trigger, dd) {
+    var r = trigger.getBoundingClientRect();
+    var id = dd.id;
+    var ww = window.innerWidth;
+    if (id === 'dd-building') {
+      dd.style.top  = (r.bottom + 8) + 'px';
+      dd.style.left = r.left + 'px';
+      dd.style.right = 'auto';
+    } else if (id === 'dd-notif') {
+      dd.style.top   = (r.bottom + 10) + 'px';
+      dd.style.right = (ww - r.right - 4) + 'px';
+      dd.style.left  = 'auto';
+    } else if (id === 'dd-user') {
+      dd.style.top   = (r.bottom + 10) + 'px';
+      dd.style.right = (ww - r.right) + 'px';
+      dd.style.left  = 'auto';
+    }
+  }
+  document.addEventListener('click', function(e) {
+    var t = e.target.closest('[data-dd]');
+    if (t) {
+      var id = t.getAttribute('data-dd');
+      var dd = document.getElementById(id);
+      if (!dd) return;
+      var wasOpen = dd.classList.contains('open');
+      document.querySelectorAll('.dd').forEach(function(d){ d.classList.remove('open'); });
+      if (!wasOpen) { posDD(t, dd); dd.classList.add('open'); }
+      e.stopPropagation();
+    } else {
+      document.querySelectorAll('.dd').forEach(function(d){ d.classList.remove('open'); });
+    }
+  });
+})();
+</script>
+</body>
+</html>
