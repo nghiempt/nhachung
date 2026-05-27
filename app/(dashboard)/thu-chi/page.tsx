@@ -1,5 +1,36 @@
+"use client";
 /* eslint-disable @next/next/no-img-element */
+import { api } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
+
+const fmtVNDfullTC = (n?: number) => (n != null ? `${Math.round(n).toLocaleString("vi-VN")}đ` : "—");
+const fmtVNDfullTCSpace = (n?: number) => (n != null ? `${Math.round(n).toLocaleString("vi-VN")} đ` : "—");
+const fmtVNDshortTC = (n?: number) => {
+  if (n == null) return "—";
+  if (n >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(2).replace(".", ",")}B`;
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(".", ",")}M`;
+  return `${n.toLocaleString("vi-VN")}đ`;
+};
+const fmtMonthLabelTC = (key: string) => {
+  const [y, m] = key.split("-");
+  return `T${Number(m)}/${y.slice(2)}`;
+};
+
 export default function ThuChiPage() {
+  const { data } = useApi(() => api.incomeExpense(6), []);
+  const kpis = data?.kpis ?? { totalIncome: 2_845_600_000, totalExpense: 2_138_900_000, surplus: 706_700_000, collectionRate: 98.6 };
+  const monthly: any[] = data?.monthly ?? [];
+  const aiSummary = data?.aiSummary;
+  const lastMonth = monthly[monthly.length - 1];
+  const incomeMonth = lastMonth?.income ?? kpis.totalIncome;
+  const expenseMonth = lastMonth?.expense ?? kpis.totalExpense;
+  const surplusMonth = lastMonth?.surplus ?? kpis.surplus;
+  const ratio = incomeMonth ? ((expenseMonth / incomeMonth) * 100).toFixed(1) : "75.2";
+  const periodTitleTC = lastMonth ? `Tháng ${lastMonth.month.split("-")[1]}/${lastMonth.month.split("-")[0]}` : "Tháng 5/2024";
+  const expenseBreakdown: any[] = data?.expenseBreakdown ?? [];
+  const totalExpense = kpis.totalExpense || 1;
+  const recentTx: any[] = data?.recentTransactions ?? [];
+
   return (
     <div className="tc-page">
       {/* ── Page Header ── */}
@@ -11,7 +42,7 @@ export default function ThuChiPage() {
         <div className="tc-actions">
           <button className="tc-btn">
             <img src="https://www.figma.com/api/mcp/asset/bb824f87-1b0e-4c71-ba99-09a0e1da7f1e" alt="" width="16" height="16" />
-            Tháng 5/2024
+            {periodTitleTC}
             <img src="https://www.figma.com/api/mcp/asset/f68a73a3-66a4-4714-b40e-bd14e282faef" alt="" width="14" height="14" />
           </button>
           <button className="tc-btn">
@@ -33,7 +64,7 @@ export default function ThuChiPage() {
           </div>
           <div className="kpi-body">
             <div className="kpi-label">Tổng thu trong tháng</div>
-            <div className="kpi-value">2.845.600.000 đ</div>
+            <div className="kpi-value">{fmtVNDfullTCSpace(incomeMonth)}</div>
             <div className="kpi-trend">
               <img src="https://www.figma.com/api/mcp/asset/533d51cd-ada2-4e1e-9195-c963cd036668" alt="" width="11" height="11" />
               <span className="kpi-pct up">+12.4%</span>
@@ -47,7 +78,7 @@ export default function ThuChiPage() {
           </div>
           <div className="kpi-body">
             <div className="kpi-label">Tổng chi trong tháng</div>
-            <div className="kpi-value">2.138.900.000 đ</div>
+            <div className="kpi-value">{fmtVNDfullTCSpace(expenseMonth)}</div>
             <div className="kpi-trend">
               <img src="https://www.figma.com/api/mcp/asset/7e266243-494f-485c-afcc-77d8e7a3f69a" alt="" width="11" height="11" />
               <span className="kpi-pct down">+8.7%</span>
@@ -61,7 +92,7 @@ export default function ThuChiPage() {
           </div>
           <div className="kpi-body">
             <div className="kpi-label">Thặng dư / thâm hụt</div>
-            <div className="kpi-value">706.700.000 đ</div>
+            <div className="kpi-value">{fmtVNDfullTCSpace(surplusMonth)}</div>
             <div className="kpi-trend">
               <img src="https://www.figma.com/api/mcp/asset/533d51cd-ada2-4e1e-9195-c963cd036668" alt="" width="11" height="11" />
               <span className="kpi-pct up">+28.6%</span>
@@ -75,7 +106,7 @@ export default function ThuChiPage() {
           </div>
           <div className="kpi-body">
             <div className="kpi-label">Tỉ lệ chi / thu</div>
-            <div className="kpi-value">75.2%</div>
+            <div className="kpi-value">{ratio}%</div>
             <div className="kpi-trend">
               <img src="https://www.figma.com/api/mcp/asset/7e266243-494f-485c-afcc-77d8e7a3f69a" alt="" width="11" height="11" />
               <span className="kpi-pct down">+3.1%</span>
@@ -93,7 +124,16 @@ export default function ThuChiPage() {
         <div className="ai-sum-body">
           <div className="ai-sum-label">AI Phân tích nhanh</div>
           <div className="ai-sum-text">
-            Tháng 5/2024, tòa nhà ghi nhận thặng dư <span className="hl-green">dương 706.7 triệu đồng</span>, cải thiện <span className="hl-green">28.6%</span> so với tháng trước. Tỉ lệ thu phí quản lý đạt <span className="hl-green">98.6%</span>, rất tốt. Khoản chi tăng chủ yếu từ <span className="hl-red">Bảo trì & sửa chữa</span> (+14.2%) do thay thế thiết bị PCCC định kỳ.
+            {aiSummary?.headline ? (
+              <>
+                {aiSummary.headline}{" "}
+                {aiSummary.highlights?.map((h: any, i: number) => (
+                  <span key={i} className={h.tone === "positive" ? "hl-green" : "hl-red"} style={{ marginRight: 6 }}>{h.text}</span>
+                ))}
+              </>
+            ) : (
+              <>{periodTitleTC}, tòa nhà ghi nhận thặng dư <span className="hl-green">dương {fmtVNDshortTC(surplusMonth)}</span>, cải thiện <span className="hl-green">28.6%</span> so với tháng trước. Tỉ lệ thu phí quản lý đạt <span className="hl-green">{kpis.collectionRate ?? 98.6}%</span>, rất tốt. Khoản chi tăng chủ yếu từ <span className="hl-red">Bảo trì & sửa chữa</span> (+14.2%) do thay thế thiết bị PCCC định kỳ.</>
+            )}
           </div>
         </div>
         <button className="ai-sum-btn">
@@ -167,30 +207,31 @@ export default function ThuChiPage() {
               <circle cx="439" cy="132" r="4" fill="#22c08a" stroke="#fff" strokeWidth="2" />
               <circle cx="539" cy="100" r="6" fill="#22c08a" stroke="#fff" strokeWidth="2.5" />
 
-              <text x="39" y="278" textAnchor="middle" fontSize="12" fill="#585c7b" fontFamily="Inter,sans-serif">T12/23</text>
-              <text x="139" y="278" textAnchor="middle" fontSize="12" fill="#585c7b" fontFamily="Inter,sans-serif">T1/24</text>
-              <text x="239" y="278" textAnchor="middle" fontSize="12" fill="#585c7b" fontFamily="Inter,sans-serif">T2/24</text>
-              <text x="339" y="278" textAnchor="middle" fontSize="12" fill="#585c7b" fontFamily="Inter,sans-serif">T3/24</text>
-              <text x="439" y="278" textAnchor="middle" fontSize="12" fill="#585c7b" fontFamily="Inter,sans-serif">T4/24</text>
-              <text x="539" y="278" textAnchor="middle" fontSize="12" fill="#4137f9" fontWeight="600" fontFamily="Inter,sans-serif">T5/24</text>
+              {(monthly.length >= 6 ? monthly.slice(-6) : [{month:"2023-12"},{month:"2024-01"},{month:"2024-02"},{month:"2024-03"},{month:"2024-04"},{month:"2024-05"}]).map((m: any, i: number) => {
+                const xs = [39, 139, 239, 339, 439, 539];
+                const isLast = i === 5;
+                return (
+                  <text key={m.month ?? i} x={xs[i]} y="278" textAnchor="middle" fontSize="12" fill={isLast ? "#4137f9" : "#585c7b"} fontWeight={isLast ? "600" : "400"} fontFamily="Inter,sans-serif">{fmtMonthLabelTC(m.month)}</text>
+                );
+              })}
             </svg>
 
             <div className="chart-tooltip" style={{ top: "30px", left: "60%" }}>
-              <div className="tt-title">T5/2024</div>
+              <div className="tt-title">{periodTitleTC}</div>
               <div className="tt-row">
                 <div className="tt-dot" style={{ background: "#8b80f9" }}></div>
                 <span className="tt-name">Tổng thu</span>
-                <span className="tt-val">2.845.600.000đ</span>
+                <span className="tt-val">{fmtVNDfullTC(incomeMonth)}</span>
               </div>
               <div className="tt-row">
                 <div className="tt-dot" style={{ background: "#ef6b7c" }}></div>
                 <span className="tt-name">Tổng chi</span>
-                <span className="tt-val">2.138.900.000đ</span>
+                <span className="tt-val">{fmtVNDfullTC(expenseMonth)}</span>
               </div>
               <div className="tt-row">
                 <div className="tt-dot" style={{ background: "#22c08a" }}></div>
                 <span className="tt-name">Thặng dư</span>
-                <span className="tt-val">706.700.000đ</span>
+                <span className="tt-val">{fmtVNDfullTC(surplusMonth)}</span>
               </div>
             </div>
           </div>
@@ -217,19 +258,24 @@ export default function ThuChiPage() {
           <div className="donut-wrap">
             <img src="https://www.figma.com/api/mcp/asset/b5288dca-c5ba-442d-9c20-ddaf75ae7faf" alt="Cơ cấu chi phí" />
             <div className="donut-center">
-              <div className="donut-cval">2.138,9M</div>
+              <div className="donut-cval">{fmtVNDshortTC(kpis.totalExpense)}</div>
               <div className="donut-clbl">Tổng chi</div>
             </div>
           </div>
           <div className="donut-legend">
-            {[
+            {(expenseBreakdown.length ? expenseBreakdown.slice(0, 6).map((c: any, i: number) => ({
+              color: ["#7a6dff","#ff9d6a","#3ddcb6","#a99cff","#c7d3ff","#f5b5d4"][i % 6],
+              name: c.name,
+              pct: `${Math.round((c.amount / totalExpense) * 100)}%`,
+              amt: fmtVNDshortTC(c.amount),
+            })) : [
               { color: "#7a6dff", name: "Vận hành", pct: "35%", amt: "748,6M" },
               { color: "#ff9d6a", name: "Điện nước", pct: "22%", amt: "470,8M" },
               { color: "#3ddcb6", name: "Bảo trì", pct: "18%", amt: "385,2M" },
               { color: "#a99cff", name: "Dịch vụ", pct: "12%", amt: "256,6M" },
               { color: "#c7d3ff", name: "Nhân sự", pct: "8%", amt: "171,1M" },
               { color: "#f5b5d4", name: "Khác", pct: "5%", amt: "106,6M" },
-            ].map((r) => (
+            ]).map((r: any) => (
               <div className="donut-row" key={r.name}>
                 <div className="donut-left">
                   <div className="donut-dot" style={{ background: r.color }}></div>
@@ -248,7 +294,7 @@ export default function ThuChiPage() {
         <div className="breakdown-card">
           <div className="breakdown-hd">
             <div className="breakdown-title">Chi tiết khoản thu</div>
-            <div className="breakdown-total"><span>Tổng:</span>2.845.600.000đ</div>
+            <div className="breakdown-total"><span>Tổng:</span>{fmtVNDfullTC(kpis.totalIncome)}</div>
           </div>
           <div className="bd-table">
             {[
@@ -280,7 +326,7 @@ export default function ThuChiPage() {
         <div className="breakdown-card">
           <div className="breakdown-hd">
             <div className="breakdown-title">Chi tiết khoản chi</div>
-            <div className="breakdown-total"><span>Tổng:</span>2.138.900.000đ</div>
+            <div className="breakdown-total"><span>Tổng:</span>{fmtVNDfullTC(kpis.totalExpense)}</div>
           </div>
           <div className="bd-table">
             {[
@@ -329,7 +375,23 @@ export default function ThuChiPage() {
           <span style={{ textAlign: "right" }}>SỐ TIỀN</span>
         </div>
 
-        {[
+        {(recentTx.length ? recentTx.slice(0, 8).map((t: any, i: number) => {
+          const isIncome = t.type === "INCOME";
+          return {
+            id: `#GD-${new Date(t.transactionDate).toISOString().slice(2, 10).replace(/-/g, "")}-${String(i + 30).padStart(3, "0")}`,
+            iconBg: isIncome ? "#e3fbed" : "#ffeded",
+            icon: isIncome ? "https://www.figma.com/api/mcp/asset/47f9e73d-0043-419f-8ee5-ba6a7ecba22e" : "https://www.figma.com/api/mcp/asset/608266b7-1e25-4466-a5f3-68a8ebf94ae6",
+            main: t.description,
+            sub: t.category?.name ?? (isIncome ? "Khoản thu" : "Khoản chi"),
+            catBg: isIncome ? "#e3fbed" : "#fff1de",
+            catColor: isIncome ? "#1c9d5f" : "#c8761b",
+            cat: t.category?.name ?? (isIncome ? "Thu" : "Chi"),
+            date: new Date(t.transactionDate).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" }),
+            method: t.paymentMethod ?? "Chuyển khoản",
+            amount: `${isIncome ? "+" : "-"} ${Number(t.amount).toLocaleString("vi-VN")}đ`,
+            type: isIncome ? "income" : "expense",
+          };
+        }) : [
           {
             id: "#GD-240525-038", iconBg: "#e3fbed", icon: "https://www.figma.com/api/mcp/asset/47f9e73d-0043-419f-8ee5-ba6a7ecba22e",
             main: "Thu phí quản lý kỳ T5/2024 — A-12.05", sub: "76 căn hộ Block A",
@@ -378,7 +440,7 @@ export default function ThuChiPage() {
             catBg: "#e3fbed", catColor: "#1c9d5f", cat: "Lãi tiền gửi",
             date: "15/05", method: "Chuyển khoản", amount: "+ 56.912.000đ", type: "income",
           },
-        ].map((t) => (
+        ]).map((t: any) => (
           <div className="txn-row" key={t.id}>
             <div className="txn-id-col">
               <span className="txn-id">{t.id}</span>
@@ -402,7 +464,7 @@ export default function ThuChiPage() {
         ))}
 
         <div className="txn-pagination">
-          <span className="txn-pag-label">Hiển thị 1 - 8 của 64 giao dịch trong tháng 5/2024</span>
+          <span className="txn-pag-label">Hiển thị 1 - {Math.min(8, recentTx.length || 8)} của {recentTx.length || 64} giao dịch trong {periodTitleTC.toLowerCase()}</span>
           <div className="txn-pag-btns">
             <button className="pag-btn">‹</button>
             <button className="pag-btn active">1</button>

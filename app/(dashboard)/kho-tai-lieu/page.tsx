@@ -1,4 +1,40 @@
+"use client";
+import { api } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
+
+const FILE_BADGE: Record<string, { bg: string; txt: string }> = {
+  PDF: { bg: "#ef4444", txt: "PDF" },
+  DOCX: { bg: "#2f7bf6", txt: "DOC" },
+  XLSX: { bg: "#1cbf6a", txt: "XLS" },
+  JPG: { bg: "#c8761b", txt: "IMG" },
+  PNG: { bg: "#c8761b", txt: "IMG" },
+  MP4: { bg: "#5a3ad9", txt: "MP4" },
+  OTHER: { bg: "#585c7b", txt: "FILE" },
+};
+const CAT_TO_STYLE = (cat?: string) => {
+  if (!cat) return "gray";
+  const c = cat.toLowerCase();
+  if (c.includes("quy")) return "purple";
+  if (c.includes("biên") || c.includes("bqt")) return "green";
+  if (c.includes("hợp đồng")) return "orange";
+  if (c.includes("kỹ thuật") || c.includes("hướng dẫn")) return "blue";
+  if (c.includes("tài chính")) return "green";
+  return "gray";
+};
+const fmtSize = (bytes?: number) => {
+  if (!bytes) return "—";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+};
+const FOLDER_ICON = "https://www.figma.com/api/mcp/asset/430b1f39-fd7a-43af-8049-f1a595a7eb12";
+
 export default function KhoTaiLieuPage() {
+  const { data } = useApi(() => api.documents(), []);
+  const folders: any[] = data?.folders ?? [];
+  const documents: any[] = data?.documents ?? [];
+  const totalDocs = data?.total ?? 128;
+
   return (
     <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
 
@@ -73,13 +109,13 @@ export default function KhoTaiLieuPage() {
           <span style={{ fontSize: "18px", fontWeight: 700, color: "#272727", lineHeight: "26px" }}>Danh mục</span>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "12px" }}>
-          {[
+          {(folders.length ? folders.slice(0, 5).map((f: any) => ({ name: f.name, count: `${f.fileCount ?? 0} tài liệu` })) : [
             { name: "Nội quy - Quy định", count: "12 tài liệu" },
             { name: "Biên bản họp", count: "28 tài liệu" },
             { name: "Hợp đồng - Biểu mẫu", count: "15 tài liệu" },
             { name: "Hướng dẫn sử dụng", count: "8 tài liệu" },
             { name: "Tài liệu khác", count: "6 tài liệu" },
-          ].map((folder) => (
+          ]).map((folder: any) => (
             <div key={folder.name} style={{
               display: "flex", alignItems: "center", gap: "12px",
               padding: "15px", border: "1px solid #e2e5f1", borderRadius: "12px",
@@ -124,50 +160,28 @@ export default function KhoTaiLieuPage() {
             </tr>
           </thead>
           <tbody>
-            {[
-              {
-                badgeBg: "#ef4444", badgeTxt: "PDF",
-                name: "Nội quy quản lý và sử dụng chung cư Sunshine Riverside", ext: "PDF",
-                catClass: "purple", catLabel: "Nội quy - Quy định",
-                date: "20/05/2024", size: "2.4 MB", views: "1.256",
-              },
-              {
-                badgeBg: "#ef4444", badgeTxt: "PDF",
-                name: "Biên bản họp BQT tháng 5/2024", ext: "PDF",
-                catClass: "green", catLabel: "Biên bản họp",
-                date: "18/05/2024", size: "1.8 MB", views: "892",
-              },
-              {
-                badgeBg: "#2f7bf6", badgeTxt: "DOC",
-                name: "Mẫu đăng ký thẻ từ thang máy", ext: "DOCX",
-                catClass: "orange", catLabel: "Hợp đồng - Biểu mẫu",
-                date: "16/05/2024", size: "456 KB", views: "745",
-              },
-              {
-                badgeBg: "#ef4444", badgeTxt: "PDF",
-                name: "Hướng dẫn sử dụng ứng dụng Nhà Chung", ext: "PDF",
-                catClass: "blue", catLabel: "Hướng dẫn sử dụng",
-                date: "15/05/2024", size: "3.1 MB", views: "1.102",
-              },
-              {
-                badgeBg: "#ef4444", badgeTxt: "PDF",
-                name: "Thông báo về việc điều chỉnh phí dịch vụ", ext: "PDF",
-                catClass: "gray", catLabel: "Tài liệu khác",
-                date: "14/05/2024", size: "1.2 MB", views: "634",
-              },
-              {
-                badgeBg: "#1cbf6a", badgeTxt: "XLS",
-                name: "Báo cáo thu chi Quỹ bảo trì tháng 4/2024", ext: "XLSX",
-                catClass: "gray", catLabel: "Tài liệu khác",
-                date: "12/05/2024", size: "892 KB", views: "523",
-              },
-              {
-                badgeBg: "#ef4444", badgeTxt: "PDF",
-                name: "Quy định về giữ gìn vệ sinh và môi trường", ext: "PDF",
-                catClass: "purple", catLabel: "Nội quy - Quy định",
-                date: "10/05/2024", size: "1.5 MB", views: "987",
-              },
-            ].map((row, i) => {
+            {(documents.length ? documents.slice(0, 8).map((d: any) => {
+              const badge = FILE_BADGE[d.fileType] ?? FILE_BADGE.OTHER;
+              return {
+                badgeBg: badge.bg,
+                badgeTxt: badge.txt,
+                name: d.name,
+                ext: d.fileType ?? "FILE",
+                catClass: CAT_TO_STYLE(d.category),
+                catLabel: d.category ?? "Tài liệu khác",
+                date: new Date(d.createdAt).toLocaleDateString("vi-VN"),
+                size: fmtSize(d.fileSize),
+                views: (d.viewCount ?? 0).toLocaleString("vi-VN"),
+              };
+            }) : [
+              { badgeBg: "#ef4444", badgeTxt: "PDF", name: "Nội quy quản lý và sử dụng chung cư Sunshine Riverside", ext: "PDF", catClass: "purple", catLabel: "Nội quy - Quy định", date: "20/05/2024", size: "2.4 MB", views: "1.256" },
+              { badgeBg: "#ef4444", badgeTxt: "PDF", name: "Biên bản họp BQT tháng 5/2024", ext: "PDF", catClass: "green", catLabel: "Biên bản họp", date: "18/05/2024", size: "1.8 MB", views: "892" },
+              { badgeBg: "#2f7bf6", badgeTxt: "DOC", name: "Mẫu đăng ký thẻ từ thang máy", ext: "DOCX", catClass: "orange", catLabel: "Hợp đồng - Biểu mẫu", date: "16/05/2024", size: "456 KB", views: "745" },
+              { badgeBg: "#ef4444", badgeTxt: "PDF", name: "Hướng dẫn sử dụng ứng dụng Nhà Chung", ext: "PDF", catClass: "blue", catLabel: "Hướng dẫn sử dụng", date: "15/05/2024", size: "3.1 MB", views: "1.102" },
+              { badgeBg: "#ef4444", badgeTxt: "PDF", name: "Thông báo về việc điều chỉnh phí dịch vụ", ext: "PDF", catClass: "gray", catLabel: "Tài liệu khác", date: "14/05/2024", size: "1.2 MB", views: "634" },
+              { badgeBg: "#1cbf6a", badgeTxt: "XLS", name: "Báo cáo thu chi Quỹ bảo trì tháng 4/2024", ext: "XLSX", catClass: "gray", catLabel: "Tài liệu khác", date: "12/05/2024", size: "892 KB", views: "523" },
+              { badgeBg: "#ef4444", badgeTxt: "PDF", name: "Quy định về giữ gìn vệ sinh và môi trường", ext: "PDF", catClass: "purple", catLabel: "Nội quy - Quy định", date: "10/05/2024", size: "1.5 MB", views: "987" },
+            ]).map((row: any, i: number) => {
               const catStyles: Record<string, React.CSSProperties> = {
                 purple: { background: "#efeaff", color: "#5a3ad9" },
                 green:  { background: "#e3fbed", color: "#1c9d5f" },
@@ -252,7 +266,7 @@ export default function KhoTaiLieuPage() {
           paddingTop: "18px", marginTop: "8px",
           borderTop: "1px solid #eff2fc",
         }}>
-          <span style={{ fontSize: "12.5px", color: "#3e4265" }}>Hiển thị 1 - 8 của 128 tài liệu</span>
+          <span style={{ fontSize: "12.5px", color: "#3e4265" }}>Hiển thị 1 - {Math.min(8, documents.length || 8)} của {totalDocs} tài liệu</span>
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <button style={{
               minWidth: "32px", height: "32px", borderRadius: "8px",

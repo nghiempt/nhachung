@@ -1,3 +1,41 @@
+"use client";
+import { api } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
+
+const WO_CAT_BADGE: Record<string, { class: string; text: string; style?: any }> = {
+  ELECTRIC: { class: "badge badge-sky", text: "Điện" },
+  WATER: { class: "badge badge-sky", text: "Nước", style: { background: "#e4f1ff", color: "#1870c4" } },
+  ELEVATOR: { class: "badge badge-blue", text: "Thang máy" },
+  PCCC: { class: "badge badge-red", text: "PCCC", style: { background: "#ffeded", color: "#f5222d" } },
+  HVAC: { class: "badge badge-blue", text: "HVAC" },
+  GENERAL: { class: "badge badge-gray", text: "Khu chung" },
+  CIVIL: { class: "badge badge-gray", text: "Dân dụng" },
+  SECURITY: { class: "badge badge-red", text: "An ninh" },
+};
+const WO_CAT_LABEL_VN: Record<string, { color: string; label: string }> = {
+  ELECTRIC: { color: "#f5a623", label: "Điện & chiếu sáng" },
+  WATER: { color: "#1870c4", label: "Cấp & thoát nước" },
+  ELEVATOR: { color: "#5a3ad9", label: "Thang máy & thang bộ" },
+  PCCC: { color: "#f5222d", label: "PCCC & an ninh" },
+  HVAC: { color: "#1c9d5f", label: "Điều hòa & thông gió" },
+  GENERAL: { color: "#1c9d5f", label: "Khu vực chung" },
+  CIVIL: { color: "#585c7b", label: "Dân dụng" },
+  SECURITY: { color: "#f5222d", label: "An ninh" },
+};
+const WO_STAT: Record<string, { class: string; text: string }> = {
+  OPEN: { class: "badge badge-orange", text: "Đang xử lý" },
+  IN_PROGRESS: { class: "badge badge-orange", text: "Đang xử lý" },
+  DONE: { class: "badge badge-green", text: "Hoàn thành" },
+  OVERDUE: { class: "badge badge-red", text: "Quá hạn" },
+  CANCELLED: { class: "badge badge-gray", text: "Đã hủy" },
+};
+const WO_PRI: Record<string, { class: string; text: string }> = {
+  HIGH: { class: "pri-dot pri-high", text: "Khẩn cấp" },
+  MEDIUM: { class: "pri-dot pri-medium", text: "Trung bình" },
+  LOW: { class: "pri-dot pri-low", text: "Thấp" },
+};
+const initialsWO = (name: string) => name.split(" ").slice(-2).map((p) => p[0]).join("").toUpperCase();
+
 const ArrowUp = () => (
   <svg className="arrow-up" viewBox="0 0 12 12" fill="none">
     <path d="M6 10V2M2 6l4-4 4 4" stroke="#1c9d5f" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
@@ -96,6 +134,40 @@ const workOrders: WorkOrder[] = [
 ];
 
 export default function VanHanhPage() {
+  const { data } = useApi(() => api.operations(), []);
+  const kpis = data?.kpis ?? { open: 12, inProgress: 12, done: 32, overdue: 3, avgResponseHours: 3.5 };
+  const tabs = data?.tabs ?? { all: 47, OPEN: 12, IN_PROGRESS: 12, DONE: 32, OVERDUE: 3 };
+  const breakdown: any[] = data?.breakdown ?? [];
+  const totalOpen = tabs.all ?? 47;
+  const totalDone = kpis.done ?? 32;
+  const completionRate = totalOpen ? ((totalDone / totalOpen) * 100).toFixed(1) : "68.1";
+  const apiWorkOrders: WorkOrder[] = (data?.workOrders ?? []).slice(0, 8).map((w: any) => {
+    const cat = WO_CAT_BADGE[w.category] ?? WO_CAT_BADGE.GENERAL;
+    const stat = WO_STAT[w.status] ?? WO_STAT.IN_PROGRESS;
+    const pri = WO_PRI[w.priority] ?? WO_PRI.MEDIUM;
+    const isOverdue = w.status === "OVERDUE";
+    const reqName = w.requester?.fullName ?? "—";
+    return {
+      id: isOverdue ? `#${w.code} · Quá hạn` : `#${w.code}`,
+      idStyle: isOverdue ? { color: "#f5222d" } : undefined,
+      rowStyle: isOverdue ? { background: "#fff8f8" } : undefined,
+      name: w.title,
+      date: new Date(w.createdAt).toLocaleDateString("vi-VN"),
+      dateStyle: isOverdue ? { color: "#f5222d" } : undefined,
+      avatar: initialsWO(reqName),
+      requester: reqName,
+      catBadge: cat.class,
+      catText: cat.text,
+      catStyle: cat.style,
+      statBadge: stat.class,
+      statText: stat.text,
+      priClass: pri.class,
+      priText: pri.text,
+    };
+  });
+  const workOrdersToRender = apiWorkOrders.length ? apiWorkOrders : workOrders;
+  const systems: any[] = data?.systems ?? [];
+
   return (
     <div className="vhbt-page">
       {/* ── Page Header ── */}
@@ -147,7 +219,7 @@ export default function VanHanhPage() {
           </div>
           <div>
             <div className="kpi-label">Tổng yêu cầu tháng này</div>
-            <div className="kpi-value">47</div>
+            <div className="kpi-value">{tabs.all ?? 47}</div>
             <div className="kpi-trend">
               <ArrowUp />
               <span className="kpi-pct up">+15.2%</span>
@@ -165,7 +237,7 @@ export default function VanHanhPage() {
           </div>
           <div>
             <div className="kpi-label">Đang xử lý</div>
-            <div className="kpi-value warning">12</div>
+            <div className="kpi-value warning">{(kpis.open ?? 0) + (kpis.inProgress ?? 0)}</div>
             <div className="kpi-trend">
               <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="3" fill="#c8761b" /></svg>
               <span className="kpi-pct neutral" style={{ color: "#c8761b" }}>Đang tiến hành</span>
@@ -183,7 +255,7 @@ export default function VanHanhPage() {
           </div>
           <div>
             <div className="kpi-label">Hoàn thành tháng này</div>
-            <div className="kpi-value">32</div>
+            <div className="kpi-value">{kpis.done}</div>
             <div className="kpi-trend">
               <ArrowUp />
               <span className="kpi-pct up">+8.3%</span>
@@ -202,7 +274,7 @@ export default function VanHanhPage() {
           </div>
           <div>
             <div className="kpi-label">Quá hạn xử lý</div>
-            <div className="kpi-value danger">3</div>
+            <div className="kpi-value danger">{kpis.overdue}</div>
             <div className="kpi-trend">
               <ArrowDown />
               <span className="kpi-pct up">−2</span>
@@ -217,16 +289,19 @@ export default function VanHanhPage() {
         <div className="cat-card">
           <div className="card-hd">
             <div className="card-title">Yêu cầu theo hạng mục</div>
-            <span className="card-sub">Tháng 5/2024 · 47 yêu cầu</span>
+            <span className="card-sub">Tháng {new Date().getMonth() + 1}/{new Date().getFullYear()} · {tabs.all ?? 47} yêu cầu</span>
           </div>
           <div className="cat-list">
-            {[
+            {(breakdown.length ? breakdown.slice(0, 6).map((c: any) => {
+              const meta = WO_CAT_LABEL_VN[c.category] ?? { color: "#585c7b", label: c.category };
+              return { color: meta.color, name: meta.label, count: c.count, pct: `${c.percent}%`, width: `${c.percent}%` };
+            }) : [
               { color: "#f5a623", name: "Điện & chiếu sáng", count: 18, pct: "38%", width: "38%" },
               { color: "#1870c4", name: "Cấp & thoát nước", count: 12, pct: "26%", width: "26%" },
               { color: "#5a3ad9", name: "Thang máy & thang bộ", count: 6, pct: "13%", width: "13%" },
               { color: "#f5222d", name: "PCCC & an ninh", count: 5, pct: "11%", width: "11%" },
               { color: "#1c9d5f", name: "Khu vực chung", count: 6, pct: "13%", width: "13%" },
-            ].map((c) => (
+            ]).map((c: any) => (
               <div className="cat-row" key={c.name}>
                 <div className="cat-row-hd">
                   <div className="cat-name">
@@ -249,15 +324,15 @@ export default function VanHanhPage() {
             <div style={{ flex: 1 }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
                 <span style={{ fontSize: 12, color: "#585c7b", fontWeight: 500 }}>Tỉ lệ hoàn thành tháng này</span>
-                <span style={{ fontFamily: '"Manrope","Inter",sans-serif', fontSize: 13, fontWeight: 700, color: "#1c9d5f" }}>68.1%</span>
+                <span style={{ fontFamily: '"Manrope","Inter",sans-serif', fontSize: 13, fontWeight: 700, color: "#1c9d5f" }}>{completionRate}%</span>
               </div>
               <div style={{ height: 8, background: "#f0f0f5", borderRadius: 4, overflow: "hidden" }}>
-                <div style={{ height: "100%", width: "68.1%", borderRadius: 4, background: "linear-gradient(90deg,#22c08a,#1c9d5f)" }}></div>
+                <div style={{ height: "100%", width: `${completionRate}%`, borderRadius: 4, background: "linear-gradient(90deg,#22c08a,#1c9d5f)" }}></div>
               </div>
             </div>
             <div style={{ textAlign: "center", flexShrink: 0 }}>
               <div style={{ fontFamily: '"Manrope","Inter",sans-serif', fontSize: 18, fontWeight: 700, color: "#272727", lineHeight: "22px" }}>
-                32<span style={{ fontSize: 13, color: "#585c7b", fontWeight: 500 }}>/47</span>
+                {totalDone}<span style={{ fontSize: 13, color: "#585c7b", fontWeight: 500 }}>/{totalOpen}</span>
               </div>
               <div style={{ fontSize: 12, color: "#585c7b", marginTop: 2 }}>yêu cầu</div>
             </div>
@@ -396,10 +471,10 @@ export default function VanHanhPage() {
         </div>
 
         <div className="wo-filters">
-          <button className="filter-tab active">Tất cả (47)</button>
-          <button className="filter-tab">Đang xử lý (12)</button>
-          <button className="filter-tab">Hoàn thành (32)</button>
-          <button className="filter-tab">Quá hạn (3)</button>
+          <button className="filter-tab active">Tất cả ({tabs.all ?? 47})</button>
+          <button className="filter-tab">Đang xử lý ({(kpis.open ?? 0) + (kpis.inProgress ?? 0)})</button>
+          <button className="filter-tab">Hoàn thành ({kpis.done ?? 32})</button>
+          <button className="filter-tab">Quá hạn ({kpis.overdue ?? 3})</button>
           <div className="filter-spacer"></div>
           <div className="search-mini">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -420,7 +495,7 @@ export default function VanHanhPage() {
             <span style={{ textAlign: "right" }}>Ưu tiên</span>
           </div>
 
-          {workOrders.map((w) => (
+          {workOrdersToRender.map((w) => (
             <div className="wo-row" key={w.id} style={w.rowStyle}>
               <div className="wo-info">
                 <div className="wo-id" style={w.idStyle}>{w.id}</div>
@@ -439,7 +514,7 @@ export default function VanHanhPage() {
         </div>
 
         <div className="table-foot">
-          <span className="table-count">Hiển thị 1–8 / 47 yêu cầu</span>
+          <span className="table-count">Hiển thị 1–{Math.min(8, workOrdersToRender.length || 8)} / {tabs.all ?? 47} yêu cầu</span>
           <div className="pagination">
             <button className="pg-btn">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

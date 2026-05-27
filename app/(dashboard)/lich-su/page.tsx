@@ -1,3 +1,32 @@
+"use client";
+import { useState } from "react";
+import { api } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
+
+const ARCHIVE_FILE_EXT: Record<string, "PDF" | "DOC" | "XLS"> = {
+  PDF: "PDF", DOCX: "DOC", XLSX: "XLS",
+};
+const guessCatKey = (cat?: string): "fin" | "ops" | "sec" | "bqt" | "maint" => {
+  if (!cat) return "bqt";
+  const c = cat.toLowerCase();
+  if (c.includes("tài chính") || c.includes("thu chi")) return "fin";
+  if (c.includes("vận hành")) return "ops";
+  if (c.includes("an ninh") || c.includes("pccc") || c.includes("bảo mật")) return "sec";
+  if (c.includes("bảo trì") || c.includes("kỹ thuật")) return "maint";
+  return "bqt";
+};
+const fmtArchSize = (bytes?: number) => {
+  if (!bytes) return "—";
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+};
+const fmtGB = (bytes?: number) => {
+  if (!bytes) return "0 KB";
+  if (bytes >= 1024 ** 3) return `${(bytes / 1024 ** 3).toFixed(1)} GB`;
+  if (bytes >= 1024 ** 2) return `${(bytes / 1024 ** 2).toFixed(1)} MB`;
+  return `${(bytes / 1024).toFixed(0)} KB`;
+};
+
 const EyeIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
@@ -110,7 +139,40 @@ function MonthBlock({ m }: { m: MonthGroup }) {
   );
 }
 
+const VI_MONTH = ["", "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"];
+
 export default function LichSuPage() {
+  const [year, setYear] = useState<number | undefined>(undefined);
+  const { data } = useApi(() => api.archive(year), [year]);
+
+  const stats = data?.stats ?? { totalDocuments: 347, totalSizeBytes: 2_800_000_000, years: 4 };
+  const years: number[] = data?.years?.length ? data.years : [2024, 2023, 2022, 2021];
+  const currentYear = data?.currentYear ?? years[0] ?? 2024;
+  const byMonth: Record<number, any[]> = data?.byMonth ?? {};
+  const categoryStats: any[] = data?.categoryStats ?? [];
+
+  const sortedMonthEntries = Object.entries(byMonth)
+    .map(([m, docs]) => [Number(m), docs as any[]] as const)
+    .sort((a, b) => b[0] - a[0]);
+
+  const totalDocsInYear = sortedMonthEntries.reduce((s, [, docs]) => s + docs.length, 0);
+
+  const apiMonths: MonthGroup[] = sortedMonthEntries.map(([monthNum, docs]) => ({
+    name: `${VI_MONTH[monthNum] || `Tháng ${monthNum}`} / ${currentYear}`,
+    count: `${docs.length} tài liệu`,
+    docs: docs.map((d: any): Doc => ({
+      ext: ARCHIVE_FILE_EXT[d.fileType] ?? "PDF",
+      name: d.name,
+      cat: guessCatKey(d.category),
+      date: new Date(d.createdAt).toLocaleDateString("vi-VN"),
+      size: fmtArchSize(d.fileSize),
+      dl: String(d.downloadCount ?? 0),
+    })),
+  }));
+
+  const monthsToRender = apiMonths.length ? apiMonths : months2024;
+  const totalDownloads = monthsToRender.reduce((s, m) => s + m.docs.reduce((ss, d) => ss + Number(d.dl), 0), 0);
+
   return (
     <div className="lichsu-page">
       {/* ── Page Header ── */}
@@ -148,7 +210,7 @@ export default function LichSuPage() {
             </svg>
           </div>
           <div className="stat-body">
-            <div className="stat-val">347</div>
+            <div className="stat-val">{stats.totalDocuments}</div>
             <div className="stat-lbl">Tổng tài liệu lưu trữ</div>
           </div>
         </div>
@@ -161,7 +223,7 @@ export default function LichSuPage() {
             </svg>
           </div>
           <div className="stat-body">
-            <div className="stat-val">2.8 GB</div>
+            <div className="stat-val">{fmtGB(stats.totalSizeBytes)}</div>
             <div className="stat-lbl">Dung lượng lưu trữ</div>
           </div>
         </div>
@@ -175,8 +237,8 @@ export default function LichSuPage() {
             </svg>
           </div>
           <div className="stat-body">
-            <div className="stat-val">4</div>
-            <div className="stat-lbl">Năm lưu trữ (2021–2024)</div>
+            <div className="stat-val">{stats.years}</div>
+            <div className="stat-lbl">Năm lưu trữ ({years.length ? `${years[years.length - 1]}–${years[0]}` : "2021–2024"})</div>
           </div>
         </div>
         <div className="stat-card">
@@ -188,7 +250,7 @@ export default function LichSuPage() {
             </svg>
           </div>
           <div className="stat-body">
-            <div className="stat-val">5,842</div>
+            <div className="stat-val">{totalDownloads.toLocaleString("en-US")}</div>
             <div className="stat-lbl">Tổng lượt tải xuống</div>
           </div>
         </div>
@@ -222,10 +284,9 @@ export default function LichSuPage() {
           </svg>
         </div>
         <div className="year-tabs">
-          <button className="year-tab active">2024</button>
-          <button className="year-tab">2023</button>
-          <button className="year-tab">2022</button>
-          <button className="year-tab">2021</button>
+          {years.map((y) => (
+            <button key={y} className={`year-tab${y === currentYear ? " active" : ""}`} onClick={() => setYear(y)}>{y}</button>
+          ))}
         </div>
       </div>
 
@@ -233,14 +294,14 @@ export default function LichSuPage() {
       <div className="archive-layout">
         {/* Main */}
         <div className="archive-main">
-          {/* 2024 */}
+          {/* Current year */}
           <div className="year-section">
             <div className="year-header">
-              <span className="year-tag">2024</span>
-              <span className="year-count">28 tài liệu · 5 tháng</span>
+              <span className="year-tag">{currentYear}</span>
+              <span className="year-count">{totalDocsInYear || 28} tài liệu · {monthsToRender.length || 5} tháng</span>
               <div className="year-line"></div>
             </div>
-            {months2024.map((m) => <MonthBlock key={m.name} m={m} />)}
+            {monthsToRender.map((m) => <MonthBlock key={m.name} m={m} />)}
           </div>
 
           {/* 2023 preview */}
@@ -276,13 +337,18 @@ export default function LichSuPage() {
           <div className="sw-card">
             <div className="sw-title">Tài liệu theo danh mục</div>
             <div className="sw-list">
-              {[
+              {(categoryStats.length ? categoryStats.slice(0, 5).map((c: any, i: number) => {
+                const max = categoryStats[0]?._count?._all ?? categoryStats[0]?.count ?? 124;
+                const count = c.count ?? c._count?._all ?? 0;
+                const colors = ["#5a3ad9", "#1c9d5f", "#c8761b", "#f5222d", "#1870c4"];
+                return { color: colors[i % colors.length], label: c.category ?? "Khác", count: String(count), width: `${Math.max(10, Math.round((count / Math.max(max, 1)) * 100))}%` };
+              }) : [
                 { color: "#5a3ad9", label: "Ban quản trị", count: "124", width: "72%" },
                 { color: "#1c9d5f", label: "Tài chính", count: "89", width: "52%" },
                 { color: "#c8761b", label: "Bảo trì", count: "71", width: "42%" },
                 { color: "#f5222d", label: "An ninh & PCCC", count: "38", width: "22%" },
                 { color: "#1870c4", label: "Vận hành", count: "25", width: "15%" },
-              ].map((c) => (
+              ]).map((c: any) => (
                 <div key={c.label}>
                   <div className="sw-row">
                     <span className="sw-dot" style={{ background: c.color }}></span>

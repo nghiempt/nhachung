@@ -1,4 +1,78 @@
+"use client";
+import { useState } from "react";
+import { api } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
+
+const FB_CAT_LABEL: Record<string, string> = {
+  ELECTRIC: "Kỹ thuật - Hạ tầng", WATER: "Kỹ thuật - Hạ tầng", NOISE: "Tiếng ồn",
+  SECURITY: "An ninh", CLEANLINESS: "Vệ sinh - Môi trường", ELEVATOR: "Thang máy",
+  PARKING: "Bãi xe", SERVICE: "Tiện ích - Dịch vụ", OTHER: "Khác",
+};
+const FB_STATUS: Record<string, { bg: string; color: string; label: string; dot: string }> = {
+  OPEN: { bg: "#fff1de", color: "#c87a13", label: "Chờ phản hồi", dot: "#f5a623" },
+  IN_PROGRESS: { bg: "#e7eeff", color: "#2f7bf6", label: "Đang xử lý", dot: "#2f7bf6" },
+  RESOLVED: { bg: "#e3fbed", color: "#1c9d5f", label: "Đã hoàn thành", dot: "#1cbf6a" },
+  CLOSED: { bg: "#ffeded", color: "#ef4444", label: "Từ chối", dot: "#ef4444" },
+};
+const FB_PRIORITY_VI: Record<string, string> = { LOW: "Thấp", MEDIUM: "Trung bình", HIGH: "Cao", URGENT: "Khẩn" };
+const FB_PRIORITY_COLOR: Record<string, string> = { LOW: "#1cbf6a", MEDIUM: "#f5a623", HIGH: "#ef4444", URGENT: "#ef4444" };
+
+const CARD_ICONS = [
+  "https://www.figma.com/api/mcp/asset/ec541bd5-fad0-4e4f-8433-b90771929e65",
+  "https://www.figma.com/api/mcp/asset/9363a7be-87de-4f19-9dd6-071e4dff1672",
+  "https://www.figma.com/api/mcp/asset/ce3d1932-a120-413f-9915-8ed3c62226f6",
+  "https://www.figma.com/api/mcp/asset/cf7184bf-d98a-417b-97b3-a823a07f9355",
+  "https://www.figma.com/api/mcp/asset/b4a15126-3fb5-4f75-9541-4a3fff306493",
+];
+
+const fmtMoment = (iso?: string) => {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  const now = new Date();
+  const time = d.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", hour12: true });
+  if (d.toDateString() === now.toDateString()) return `${time} · Hôm nay`;
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  if (d.toDateString() === yesterday.toDateString()) return `${time} · Hôm qua`;
+  const diffDays = Math.floor((now.getTime() - d.getTime()) / 86400_000);
+  if (diffDays < 7) return `${time} · ${diffDays} ngày trước`;
+  return `${time} · ${d.toLocaleDateString("vi-VN")}`;
+};
+const fmtFull = (iso?: string) => {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  return `${d.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", hour12: true })} • ${d.toLocaleDateString("vi-VN")}`;
+};
+
 export default function GopYPage() {
+  const { data, refresh } = useApi(() => api.feedback(), []);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [reply, setReply] = useState("");
+  const [posting, setPosting] = useState(false);
+
+  const items: any[] = data?.items ?? [];
+  const tabs = data?.tabs ?? {};
+  const selectedId = activeId ?? items[0]?.id;
+  const { data: detail } = useApi(
+    () => (selectedId ? api.feedbackById(selectedId) : Promise.resolve(null)),
+    [selectedId]
+  );
+
+  async function submitReply() {
+    if (!reply.trim() || !selectedId) return;
+    setPosting(true);
+    try {
+      await api.feedbackReply(selectedId, { content: reply });
+      setReply("");
+      refresh();
+    } finally {
+      setPosting(false);
+    }
+  }
+
+  const detailStatus = detail?.status ?? "IN_PROGRESS";
+  const detailStatusInfo = FB_STATUS[detailStatus] ?? FB_STATUS.IN_PROGRESS;
+
   return (
     <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
 
@@ -28,11 +102,11 @@ export default function GopYPage() {
         {/* Tabs */}
         <nav style={{ display: "flex", borderBottom: "1px solid #e2e5f1" }}>
           {[
-            { label: "Tất cả", count: "24", active: true },
-            { label: "Đang xử lý", count: "6" },
-            { label: "Chờ phản hồi", count: "3" },
-            { label: "Đã hoàn thành", count: "12" },
-            { label: "Từ chối", count: "3" },
+            { label: "Tất cả", count: String(tabs.all ?? 24), active: true },
+            { label: "Đang xử lý", count: String(tabs.IN_PROGRESS ?? 6) },
+            { label: "Chờ phản hồi", count: String(tabs.OPEN ?? 3) },
+            { label: "Đã hoàn thành", count: String(tabs.RESOLVED ?? 12) },
+            { label: "Từ chối", count: String(tabs.CLOSED ?? 3) },
           ].map((tab) => (
             <a key={tab.label} href="#" style={{
               display: "inline-flex", alignItems: "center", gap: "6px",
@@ -74,14 +148,29 @@ export default function GopYPage() {
           </div>
 
           {/* Cards */}
-          {[
-            { active: true, icon: "https://www.figma.com/api/mcp/asset/ec541bd5-fad0-4e4f-8433-b90771929e65", category: "Vệ sinh - Môi trường", title: "Rác thải không được dọn dẹp ở tầng hầm B2", dotColor: "#2f7bf6", id: "#PA-240525-0012 · 10:30 · Hôm nay", badgeBg: "#e7eeff", badgeColor: "#2f7bf6", badgeText: "Đang xử lý" },
-            { icon: "https://www.figma.com/api/mcp/asset/9363a7be-87de-4f19-9dd6-071e4dff1672", category: "Thang máy", title: "Thang máy số 2 bị kẹt và dừng đột ngột", dotColor: "#f5a623", id: "#PA-240524-0011 · 16:45 · Hôm qua", badgeBg: "#fff1de", badgeColor: "#c87a13", badgeText: "Chờ phản hồi" },
-            { icon: "https://www.figma.com/api/mcp/asset/ce3d1932-a120-413f-9915-8ed3c62226f6", category: "Kỹ thuật - Hạ tầng", title: "Đèn hành lang tầng 15 không hoạt động", dotColor: "#1cbf6a", id: "#PA-240524-0010 · 09:15 · 2 ngày trước", badgeBg: "#e3fbed", badgeColor: "#1c9d5f", badgeText: "Đã hoàn thành" },
-            { icon: "https://www.figma.com/api/mcp/asset/cf7184bf-d98a-417b-97b3-a823a07f9355", category: "An ninh", title: "Xe lạ thường xuyên ra vào khu vực căn hộ", dotColor: "#2f7bf6", id: "#PA-240523-0009 · 21:30 · 2 ngày trước", badgeBg: "#e7eeff", badgeColor: "#2f7bf6", badgeText: "Đang xử lý" },
-            { icon: "https://www.figma.com/api/mcp/asset/b4a15126-3fb5-4f75-9541-4a3fff306493", category: "Tiện ích - Dịch vụ", title: "Phòng gym thiếu máy và thiết bị hỏng", dotColor: "#ef4444", id: "#PA-240523-0008 · 18:20 · 3 ngày trước", badgeBg: "#ffeded", badgeColor: "#ef4444", badgeText: "Từ chối" },
-          ].map((card, i) => (
-            <div key={i} style={{ background: card.active ? "#f7f5ff" : "#ffffff", border: `1px solid ${card.active ? "#d3c5fd" : "#e2e5f1"}`, borderRadius: "20px", padding: "16px", cursor: "pointer", boxShadow: card.active ? "0 2px 5px rgba(65,55,249,.12)" : "none" }}>
+          {(items.length ? items.slice(0, 5).map((f: any, i: number) => {
+            const st = FB_STATUS[f.status] ?? FB_STATUS.IN_PROGRESS;
+            const code = `#PA-${f.createdAt ? new Date(f.createdAt).toISOString().slice(2, 10).replace(/-/g, "") : "240525"}-${f.id.slice(0, 4)}`;
+            return {
+              _id: f.id,
+              active: f.id === selectedId,
+              icon: CARD_ICONS[i % CARD_ICONS.length],
+              category: FB_CAT_LABEL[f.category] ?? f.category,
+              title: f.title,
+              dotColor: st.dot,
+              id: `${code} · ${fmtMoment(f.createdAt)}`,
+              badgeBg: st.bg,
+              badgeColor: st.color,
+              badgeText: st.label,
+            };
+          }) : [
+            { _id: "p1", active: true, icon: CARD_ICONS[0], category: "Vệ sinh - Môi trường", title: "Rác thải không được dọn dẹp ở tầng hầm B2", dotColor: "#2f7bf6", id: "#PA-240525-0012 · 10:30 · Hôm nay", badgeBg: "#e7eeff", badgeColor: "#2f7bf6", badgeText: "Đang xử lý" },
+            { _id: "p2", icon: CARD_ICONS[1], category: "Thang máy", title: "Thang máy số 2 bị kẹt và dừng đột ngột", dotColor: "#f5a623", id: "#PA-240524-0011 · 16:45 · Hôm qua", badgeBg: "#fff1de", badgeColor: "#c87a13", badgeText: "Chờ phản hồi" },
+            { _id: "p3", icon: CARD_ICONS[2], category: "Kỹ thuật - Hạ tầng", title: "Đèn hành lang tầng 15 không hoạt động", dotColor: "#1cbf6a", id: "#PA-240524-0010 · 09:15 · 2 ngày trước", badgeBg: "#e3fbed", badgeColor: "#1c9d5f", badgeText: "Đã hoàn thành" },
+            { _id: "p4", icon: CARD_ICONS[3], category: "An ninh", title: "Xe lạ thường xuyên ra vào khu vực căn hộ", dotColor: "#2f7bf6", id: "#PA-240523-0009 · 21:30 · 2 ngày trước", badgeBg: "#e7eeff", badgeColor: "#2f7bf6", badgeText: "Đang xử lý" },
+            { _id: "p5", icon: CARD_ICONS[4], category: "Tiện ích - Dịch vụ", title: "Phòng gym thiếu máy và thiết bị hỏng", dotColor: "#ef4444", id: "#PA-240523-0008 · 18:20 · 3 ngày trước", badgeBg: "#ffeded", badgeColor: "#ef4444", badgeText: "Từ chối" },
+          ]).map((card: any, i: number) => (
+            <div key={card._id ?? i} onClick={() => card._id && setActiveId(card._id)} style={{ background: card.active ? "#f7f5ff" : "#ffffff", border: `1px solid ${card.active ? "#d3c5fd" : "#e2e5f1"}`, borderRadius: "20px", padding: "16px", cursor: "pointer", boxShadow: card.active ? "0 2px 5px rgba(65,55,249,.12)" : "none" }}>
               <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", marginBottom: "10px" }}>
                 <div style={{ width: "44px", height: "44px", borderRadius: "10px", background: card.active ? "#ffffff" : "#f7f8fc", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <img src={card.icon} alt="" width={22} height={22} />
@@ -101,7 +190,7 @@ export default function GopYPage() {
 
           {/* Pagination */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px", paddingBottom: "4px", marginTop: "2px" }}>
-            <span style={{ fontSize: "12px", color: "#3e4265", whiteSpace: "nowrap" }}>Hiển thị 1 - 5 của 24 phản ánh</span>
+            <span style={{ fontSize: "12px", color: "#3e4265", whiteSpace: "nowrap" }}>Hiển thị 1 - {Math.min(5, items.length || 5)} của {tabs.all ?? 24} phản ánh</span>
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
               <button style={{ minWidth: "32px", height: "32px", borderRadius: "8px", display: "inline-flex", alignItems: "center", justifyContent: "center", border: "1px solid #d4d7e5", background: "#ffffff", cursor: "pointer" }}>
                 <img src="https://www.figma.com/api/mcp/asset/f1006bab-257c-4f10-9b0f-708a766e554a" alt="" width={10} height={10} />
@@ -136,31 +225,31 @@ export default function GopYPage() {
           </div>
 
           {/* Status */}
-          <div><span style={{ display: "inline-flex", alignItems: "center", padding: "4px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: 600, background: "#e7eeff", color: "#2f7bf6" }}>Đang xử lý</span></div>
+          <div><span style={{ display: "inline-flex", alignItems: "center", padding: "4px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: 600, background: detailStatusInfo.bg, color: detailStatusInfo.color }}>{detailStatusInfo.label}</span></div>
 
           {/* Title */}
-          <h2 style={{ fontSize: "22px", fontWeight: 700, color: "#272727", lineHeight: 1.3 }}>Rác thải không được dọn dẹp ở tầng hầm B2</h2>
+          <h2 style={{ fontSize: "22px", fontWeight: 700, color: "#272727", lineHeight: 1.3 }}>{detail?.title ?? "Rác thải không được dọn dẹp ở tầng hầm B2"}</h2>
 
           {/* Author */}
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <div style={{ width: "36px", height: "36px", borderRadius: "50%", flexShrink: 0, background: "linear-gradient(180deg, #d7e0ee 0%, #c0cadb 100%)" }} />
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: "13.5px", fontWeight: 600, color: "#272727" }}>Nguyễn Hoàng Nam</div>
+              <div style={{ fontSize: "13.5px", fontWeight: 600, color: "#272727" }}>{detail?.user?.fullName ?? "Nguyễn Hoàng Nam"}</div>
               <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", marginTop: "3px" }}>
                 <span style={{ fontSize: "11.5px", color: "#585c7b" }}>Căn hộ A-12.05</span>
                 <div style={{ width: "3px", height: "3px", borderRadius: "50%", background: "#b4b7c9" }} />
-                <span style={{ fontSize: "11.5px", color: "#585c7b" }}>10:30 AM</span>
+                <span style={{ fontSize: "11.5px", color: "#585c7b" }}>{detail?.createdAt ? new Date(detail.createdAt).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", hour12: true }) : "10:30 AM"}</span>
                 <div style={{ width: "3px", height: "3px", borderRadius: "50%", background: "#b4b7c9" }} />
                 <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
                   <img src="https://www.figma.com/api/mcp/asset/2fa24cfe-7563-4730-822f-99db41075e63" alt="" width={11} height={11} />
-                  <span style={{ fontSize: "11.5px", color: "#585c7b" }}>25/05/2024</span>
+                  <span style={{ fontSize: "11.5px", color: "#585c7b" }}>{detail?.createdAt ? new Date(detail.createdAt).toLocaleDateString("vi-VN") : "25/05/2024"}</span>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Description */}
-          <p style={{ fontSize: "14px", color: "#3e4265", lineHeight: 1.65 }}>Khu vực gần thang thoát hiểm và cột B2-07 có nhiều rác thải sinh hoạt, mùi hôi khó chịu. Đề nghị ban quản lý kiểm tra và xử lý sớm.</p>
+          <p style={{ fontSize: "14px", color: "#3e4265", lineHeight: 1.65 }}>{detail?.description ?? "Khu vực gần thang thoát hiểm và cột B2-07 có nhiều rác thải sinh hoạt, mùi hôi khó chịu. Đề nghị ban quản lý kiểm tra và xử lý sớm."}</p>
 
           {/* Attachments */}
           <div style={{ fontSize: "15px", fontWeight: 700, color: "#272727" }}>Hình ảnh đính kèm (3)</div>
@@ -178,10 +267,18 @@ export default function GopYPage() {
           {/* History */}
           <div style={{ fontSize: "15px", fontWeight: 700, color: "#272727" }}>Lịch sử xử lý</div>
           <div>
-            {[
+            {(detail?.replies?.length ? detail.replies.map((r: any, i: number) => ({
+              borderColor: i === 0 ? "#1cbf6a" : "#2f7bf6",
+              icon: i === 0 ? "https://www.figma.com/api/mcp/asset/3feab6cf-60ec-4e5b-adff-84aa994169bc" : "https://www.figma.com/api/mcp/asset/74849f66-a1f0-4144-9eb2-4f014d1ca1ee",
+              label: r.user?.fullName ?? "Ban quản lý",
+              time: fmtFull(r.createdAt),
+              text: r.content,
+              hasLine: true,
+              labelColor: "#272727",
+            })) : [
               { borderColor: "#1cbf6a", icon: "https://www.figma.com/api/mcp/asset/3feab6cf-60ec-4e5b-adff-84aa994169bc", label: "Ban quản lý đã tiếp nhận phản ánh", time: "10:45 AM • 25/05/2024", text: "Cảm ơn Anh/Chị đã phản ánh. Chúng tôi đã tiếp nhận và sẽ kiểm tra ngay.", hasLine: true, labelColor: "#272727" },
               { borderColor: "#2f7bf6", icon: "https://www.figma.com/api/mcp/asset/74849f66-a1f0-4144-9eb2-4f014d1ca1ee", label: "Đang xử lý", time: "11:20 AM • 25/05/2024", text: "Bộ phận vệ sinh đã được thông báo và đang tiến hành xử lý.", hasLine: true, labelColor: "#272727" },
-            ].map((step, i) => (
+            ]).map((step: any, i: number) => (
               <div key={i} style={{ position: "relative", paddingLeft: "36px", paddingBottom: "22px", display: "flex", flexDirection: "column", gap: "4px" }}>
                 <div style={{ position: "absolute", left: 0, top: 0, width: "24px", height: "24px", borderRadius: "12px", border: `2px solid ${step.borderColor}`, background: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1 }}>
                   <img src={step.icon} alt="" width={12} height={12} />
@@ -210,9 +307,15 @@ export default function GopYPage() {
           {/* Comment */}
           <div style={{ borderTop: "1px solid #eff2fc", paddingTop: "19px", display: "flex", gap: "10px", alignItems: "center" }}>
             <div style={{ flex: 1, height: "44px", border: "1px solid #d4d7e5", borderRadius: "10px", background: "#ffffff", display: "flex", alignItems: "center", padding: "0 15px", minWidth: 0 }}>
-              <input placeholder="Viết bình luận..." style={{ flex: 1, border: 0, outline: 0, fontSize: "16px", background: "transparent", color: "#222", minWidth: 0 }} />
+              <input
+                placeholder="Viết bình luận..."
+                value={reply}
+                onChange={(e) => setReply(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter" && !posting) submitReply(); }}
+                style={{ flex: 1, border: 0, outline: 0, fontSize: "16px", background: "transparent", color: "#222", minWidth: 0 }}
+              />
             </div>
-            <button style={{ width: "44px", height: "44px", background: "#4137f9", borderRadius: "10px", border: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
+            <button onClick={submitReply} disabled={posting || !reply.trim()} style={{ width: "44px", height: "44px", background: "#4137f9", borderRadius: "10px", border: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, opacity: posting ? 0.6 : 1 }}>
               <img src="https://www.figma.com/api/mcp/asset/e8ea7b01-bd93-42b6-968b-6b6f97ebe7e6" alt="" width={18} height={18} />
             </button>
           </div>
@@ -223,12 +326,12 @@ export default function GopYPage() {
           <div style={{ background: "#ffffff", border: "1px solid #e2e5f1", borderRadius: "20px", padding: "17px 19px" }}>
             <div style={{ fontSize: "14.5px", fontWeight: 700, color: "#272727", marginBottom: "14px" }}>Thông tin phản ánh</div>
             {[
-              { label: "Danh mục", value: "Vệ sinh - Môi trường", dot: "#2f7bf6" },
-              { label: "Ưu tiên", value: "Trung bình", dot: "#f5a623" },
-              { label: "Địa điểm", value: "Tầng hầm B2 - Gần cột B2-07" },
-              { label: "Ngày tạo", value: "10:30 AM • 25/05/2024" },
-              { label: "Cập nhật cuối", value: "11:20 AM • 25/05/2024" },
-            ].map((row, i) => (
+              { label: "Danh mục", value: FB_CAT_LABEL[detail?.category] ?? "Vệ sinh - Môi trường", dot: detailStatusInfo.dot },
+              { label: "Ưu tiên", value: FB_PRIORITY_VI[detail?.priority] ?? "Trung bình", dot: FB_PRIORITY_COLOR[detail?.priority] ?? "#f5a623" },
+              { label: "Địa điểm", value: detail?.location ?? "Tầng hầm B2 - Gần cột B2-07" },
+              { label: "Ngày tạo", value: fmtFull(detail?.createdAt) ?? "10:30 AM • 25/05/2024" },
+              { label: "Cập nhật cuối", value: fmtFull(detail?.updatedAt ?? detail?.replies?.[detail.replies.length - 1]?.createdAt) ?? "11:20 AM • 25/05/2024" },
+            ].map((row: any, i: number) => (
               <div key={i} style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: i > 0 ? "14px" : 0 }}>
                 <div style={{ fontSize: "11.5px", color: "#585c7b" }}>{row.label}</div>
                 <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", fontWeight: 500, color: "#272727" }}>

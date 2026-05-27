@@ -1,6 +1,54 @@
 "use client";
+import { useState } from "react";
+import { api } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
+
+const timeAgoChat = (iso?: string) => {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const now = new Date();
+  if (d.toDateString() === now.toDateString()) return d.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", hour12: true });
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  if (d.toDateString() === yesterday.toDateString()) return "Hôm qua";
+  const diffDays = Math.floor((now.getTime() - d.getTime()) / 86400_000);
+  if (diffDays < 7) return `${diffDays} ngày trước`;
+  return d.toLocaleDateString("vi-VN");
+};
 
 export default function AIAssistantPage() {
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [input, setInput] = useState("");
+  const [sending, setSending] = useState(false);
+  const { data: convs, refresh: refreshConvs } = useApi(() => api.aiConversations(), []);
+  const { data: thread, refresh: refreshThread } = useApi(
+    () => (activeId ? api.aiConversation(activeId) : Promise.resolve(null)),
+    [activeId]
+  );
+
+  const conversations = convs ?? [];
+  const messages = thread?.messages ?? [];
+
+  async function send(text?: string) {
+    const content = (text ?? input).trim();
+    if (!content) return;
+    setSending(true);
+    try {
+      if (!activeId) {
+        const c = await api.aiCreate(content);
+        setActiveId(c.id);
+        refreshConvs();
+      } else {
+        await api.aiSend(activeId, content);
+        refreshThread();
+        refreshConvs();
+      }
+      setInput("");
+    } finally {
+      setSending(false);
+    }
+  }
+
   return (
     <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "16px", height: "100%", overflow: "hidden" }}>
 
@@ -20,7 +68,7 @@ export default function AIAssistantPage() {
           padding: "15px", display: "flex", flexDirection: "column", gap: "16px",
           overflowY: "auto",
         }}>
-          <button style={{
+          <button onClick={() => { setActiveId(null); setInput(""); }} style={{
             display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
             background: "#4137f9", color: "#fff", border: 0,
             borderRadius: "10px", padding: "10px 18px", width: "100%",
@@ -33,21 +81,22 @@ export default function AIAssistantPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             <div style={{ fontSize: "15px", fontWeight: 700, color: "#272727", whiteSpace: "nowrap" }}>Câu hỏi gần đây</div>
             <div>
-              {[
-                { q: "Quy định về giờ yên tĩnh?", time: "10:30 AM" },
-                { q: "Phí gửi xe ô tô hiện tại?", time: "Hôm qua" },
-                { q: "Cách đăng ký thẻ từ cho người thân?", time: "2 ngày trước" },
-                { q: "Quy định về nuôi thú cưng?", time: "3 ngày trước" },
-              ].map((item, i) => (
-                <div key={i} style={{
+              {(conversations.length ? conversations : [
+                { id: "pc1", title: "Quy định về giờ yên tĩnh?", lastMessageAt: null, _time: "10:30 AM" },
+                { id: "pc2", title: "Phí gửi xe ô tô hiện tại?", lastMessageAt: null, _time: "Hôm qua" },
+                { id: "pc3", title: "Cách đăng ký thẻ từ cho người thân?", lastMessageAt: null, _time: "2 ngày trước" },
+                { id: "pc4", title: "Quy định về nuôi thú cưng?", lastMessageAt: null, _time: "3 ngày trước" },
+              ]).slice(0, 6).map((item: any, i: number) => (
+                <div key={item.id ?? i} onClick={() => setActiveId(item.id?.startsWith("pc") ? null : item.id)} style={{
                   display: "flex", flexDirection: "column", gap: "4px",
                   padding: "8px 0",
                   borderTop: i === 0 ? "none" : "1px solid #eff2fc",
                   paddingTop: i === 0 ? 0 : "8px",
                   cursor: "pointer",
+                  background: activeId && activeId === item.id ? "#f7f5ff" : "transparent",
                 }}>
-                  <div style={{ fontSize: "13px", fontWeight: 500, color: "#272727", lineHeight: "18px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.q}</div>
-                  <div style={{ fontSize: "11px", color: "#585c7b" }}>{item.time}</div>
+                  <div style={{ fontSize: "13px", fontWeight: 500, color: "#272727", lineHeight: "18px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.title}</div>
+                  <div style={{ fontSize: "11px", color: "#585c7b" }}>{item._time ?? timeAgoChat(item.lastMessageAt)}</div>
                 </div>
               ))}
             </div>
@@ -60,6 +109,32 @@ export default function AIAssistantPage() {
           {/* Chat thread */}
           <div style={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "hidden", display: "flex", flexDirection: "column", gap: "16px", padding: "12px 0 4px" }}>
 
+            {messages.length > 0 ? (
+              messages.map((m: any) => m.role === "USER" ? (
+                <div key={m.id} style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <div style={{ background: "#f7f5ff", borderRadius: "18px 18px 4px 18px", padding: "14px 18px", maxWidth: "60%", display: "flex", flexDirection: "column", gap: "6px" }}>
+                    <div style={{ fontSize: "14px", color: "#272727", lineHeight: "22px", whiteSpace: "pre-wrap" }}>{m.content}</div>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "6px" }}>
+                      <span style={{ fontSize: "11px", color: "#585c7b" }}>{timeAgoChat(m.createdAt)}</span>
+                      <img src="https://www.figma.com/api/mcp/asset/95b35bbb-f566-4de4-85cd-b69410f4bcd7" alt="" width={12} height={12} style={{ flex: "0 0 12px" }} />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div key={m.id} style={{ display: "flex", gap: "12px", alignItems: "flex-start", paddingRight: "60px" }}>
+                  <div style={{ width: "36px", height: "36px", borderRadius: "50%", flex: "0 0 36px", overflow: "hidden" }}>
+                    <img src="https://www.figma.com/api/mcp/asset/9de1c74d-1a93-4cf2-b5c9-01642fdf9c12" alt="AI" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0, background: "#ffffff", border: "1px solid #e2e5f1", borderRadius: "4px 18px 18px 18px", padding: "16px 20px", display: "flex", flexDirection: "column", gap: "12px" }}>
+                    <div style={{ fontSize: "14px", color: "#272727", lineHeight: "22px", whiteSpace: "pre-wrap" }}>{m.content}</div>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+                      <span style={{ fontSize: "11.5px", color: "#585c7b" }}>{timeAgoChat(m.createdAt)}</span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <>
             {/* User message */}
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               <div style={{ background: "#f7f5ff", borderRadius: "18px 18px 4px 18px", padding: "14px 18px", maxWidth: "60%", display: "flex", flexDirection: "column", gap: "6px" }}>
@@ -136,6 +211,8 @@ export default function AIAssistantPage() {
 
               </div>
             </div>
+              </>
+            )}
           </div>
 
           {/* Bottom: chips + composer */}
@@ -148,12 +225,13 @@ export default function AIAssistantPage() {
                 "Phí quản lý hàng tháng là bao nhiêu?",
                 "Quy trình xử lý khi mất thẻ từ?",
               ].map((chip) => (
-                <button key={chip} style={{
+                <button key={chip} onClick={() => send(chip)} disabled={sending} style={{
                   display: "inline-flex", alignItems: "center", gap: "8px",
                   background: "#ffffff", border: "1px solid #d4d7e5",
                   borderRadius: "999px", padding: "12px 19px",
                   fontSize: "13.5px", fontWeight: 500, color: "#272727",
                   cursor: "pointer", whiteSpace: "nowrap",
+                  opacity: sending ? 0.6 : 1,
                 }}>
                   {chip}
                   <img src="https://www.figma.com/api/mcp/asset/3d28ab7d-a463-41ba-9fec-99bfafa1e674" alt="" width={14} height={14} style={{ flex: "0 0 14px" }} />
@@ -175,9 +253,12 @@ export default function AIAssistantPage() {
                 <input
                   type="text"
                   placeholder="Nhập câu hỏi của bạn..."
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter" && !sending) send(); }}
                   style={{ flex: 1, minWidth: 0, border: 0, outline: 0, fontSize: "14px", color: "#272727", background: "transparent" }}
                 />
-                <div style={{ width: "42px", height: "42px", background: "#4137f9", borderRadius: "10px", flex: "0 0 42px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+                <div onClick={() => !sending && send()} style={{ width: "42px", height: "42px", background: "#4137f9", borderRadius: "10px", flex: "0 0 42px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", opacity: sending ? 0.6 : 1 }}>
                   <img src="https://www.figma.com/api/mcp/asset/a6760d5c-5a20-4458-8da9-508da214bd0c" alt="" width={18} height={18} />
                 </div>
               </div>

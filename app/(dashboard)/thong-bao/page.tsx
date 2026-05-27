@@ -1,6 +1,53 @@
+"use client";
 /* eslint-disable @next/next/no-img-element */
+import { useState } from "react";
+import { api } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
+
+const THUMB_COLOR: Record<string, string> = {
+  URGENT: "red", MANAGEMENT: "blue", FINANCE: "orange", EVENT: "green", SYSTEM: "violet",
+};
+const THUMB_ASSET: Record<string, string> = {
+  URGENT: "https://www.figma.com/api/mcp/asset/9880ed18-5587-436d-8cd0-060f6b9bcd51",
+  MANAGEMENT: "https://www.figma.com/api/mcp/asset/045ba488-25e3-4537-b659-d178f2895cd6",
+  FINANCE: "https://www.figma.com/api/mcp/asset/abd52cb0-2d6f-4e72-bd40-b6f409b70e84",
+  SYSTEM: "https://www.figma.com/api/mcp/asset/b66c0343-b44f-4bbd-ad9c-1b849b4299fb",
+  EVENT: "https://www.figma.com/api/mcp/asset/adef0138-8229-4f3a-8366-2ffa23a3f374",
+};
+const KICKER: Record<string, string> = {
+  URGENT: "THÔNG BÁO KHẨN", MANAGEMENT: "THÔNG BÁO", FINANCE: "TÀI CHÍNH",
+  EVENT: "SỰ KIỆN", SYSTEM: "HỆ THỐNG",
+};
+
+const fmtNotifTime = (iso: string) => {
+  const d = new Date(iso);
+  const now = new Date();
+  const sameDay = d.toDateString() === now.toDateString();
+  if (sameDay) return d.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", hour12: true });
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  if (d.toDateString() === yesterday.toDateString()) return "Hôm qua";
+  return d.toLocaleDateString("vi-VN");
+};
 
 export default function ThongBaoPage() {
+  const { data, refresh } = useApi(() => api.notifications(), []);
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  const items: any[] = data?.items ?? [];
+  const tabs = data?.tabs ?? { all: 24, urgent: 3, unread: 8 };
+  const unreadCount = data?.unreadCount ?? 8;
+  const totalCount = (tabs as any).all ?? items.length ?? 24;
+  const urgentCount = items.filter((i: any) => i.notification?.type === "URGENT").length;
+
+  const selectedItem = items.find((i: any) => i.id === activeId) ?? items[0];
+  const selected = selectedItem?.notification;
+
+  async function markAll() {
+    await api.notificationsMarkAll();
+    refresh();
+  }
+
   return (
     <div className="thongbao-page">
       <div className="col-main">
@@ -9,7 +56,7 @@ export default function ThongBaoPage() {
             <h1 className="page-title">Thông báo</h1>
             <div className="page-sub">Cập nhật những thông tin mới nhất từ Ban quản trị</div>
           </div>
-          <button className="mark-all">
+          <button className="mark-all" onClick={markAll}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             Đánh dấu đã đọc tất cả
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#585c7b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
@@ -17,9 +64,9 @@ export default function ThongBaoPage() {
         </div>
 
         <div className="tabs">
-          <div className="tab active">Tất cả <span className="count">24</span></div>
-          <div className="tab urgent">Thông báo khẩn <span className="count">3</span></div>
-          <div className="tab">Chưa đọc <span className="count">8</span></div>
+          <div className="tab active">Tất cả <span className="count">{totalCount}</span></div>
+          <div className="tab urgent">Thông báo khẩn <span className="count">{urgentCount || 3}</span></div>
+          <div className="tab">Chưa đọc <span className="count">{unreadCount}</span></div>
           <div className="tab">Đã đọc</div>
         </div>
 
@@ -37,68 +84,31 @@ export default function ThongBaoPage() {
             </div>
 
             <div className="list">
-              <div className="item active">
-                <div className="thumb red">
-                  <img src="https://www.figma.com/api/mcp/asset/9880ed18-5587-436d-8cd0-060f6b9bcd51" alt="" width={20} height={20} />
-                </div>
-                <div className="body">
-                  <div className="eyebrow">THÔNG BÁO</div>
-                  <div className="title">Thông báo về việc bảo trì hệ thống PCCC định kỳ</div>
-                  <div className="meta">10:30 AM</div>
-                </div>
-                <span className="status-dot red"></span>
-              </div>
-
-              <div className="item">
-                <div className="thumb blue">
-                  <img src="https://www.figma.com/api/mcp/asset/045ba488-25e3-4537-b659-d178f2895cd6" alt="" width={20} height={20} />
-                </div>
-                <div className="body">
-                  <div className="eyebrow">THÔNG BÁO</div>
-                  <div className="title">Thông báo điều chỉnh phí giữ xe tháng 6/2024</div>
-                  <div className="meta">09:15 AM</div>
-                </div>
-                <span className="status-dot red"></span>
-              </div>
-
-              <div className="item">
-                <div className="thumb orange">
-                  <img src="https://www.figma.com/api/mcp/asset/abd52cb0-2d6f-4e72-bd40-b6f409b70e84" alt="" width={20} height={20} />
-                </div>
-                <div className="body">
-                  <div className="eyebrow">THÔNG BÁO</div>
-                  <div className="title">Lịch cắt điện khu vực Block A</div>
-                  <div className="meta">Hôm qua</div>
-                </div>
-                <span className="status-dot blue"></span>
-              </div>
-
-              <div className="item">
-                <div className="thumb violet">
-                  <img src="https://www.figma.com/api/mcp/asset/b66c0343-b44f-4bbd-ad9c-1b849b4299fb" alt="" width={20} height={20} />
-                </div>
-                <div className="body">
-                  <div className="eyebrow">THÔNG BÁO</div>
-                  <div className="title">Kết quả họp BQT tháng 5/2024</div>
-                  <div className="meta">22/05/2024</div>
-                </div>
-                <span className="status-dot blue"></span>
-              </div>
-
-              <div className="item">
-                <div className="thumb green">
-                  <img src="https://www.figma.com/api/mcp/asset/adef0138-8229-4f3a-8366-2ffa23a3f374" alt="" width={20} height={20} />
-                </div>
-                <div className="body">
-                  <div className="eyebrow">SỰ KIỆN</div>
-                  <div className="title">Ngày hội cư dân Sunshine Riverside 2024</div>
-                  <div className="meta">18/05/2024</div>
-                </div>
-              </div>
+              {items.slice(0, 5).map((it: any, idx: number) => {
+                const n = it.notification;
+                const type = n?.type ?? "MANAGEMENT";
+                const color = THUMB_COLOR[type] ?? "blue";
+                const asset = THUMB_ASSET[type] ?? THUMB_ASSET.MANAGEMENT;
+                const isActive = activeId ? it.id === activeId : idx === 0;
+                const dotColor = !it.readAt ? "red" : "blue";
+                return (
+                  <div key={it.id} className={`item${isActive ? " active" : ""}`} onClick={() => setActiveId(it.id)}>
+                    <div className={`thumb ${color}`}>
+                      <img src={asset} alt="" width={20} height={20} />
+                    </div>
+                    <div className="body">
+                      <div className="eyebrow">{KICKER[type] ?? "THÔNG BÁO"}</div>
+                      <div className="title">{n?.title}</div>
+                      <div className="meta">{n?.publishedAt ? fmtNotifTime(n.publishedAt) : ""}</div>
+                    </div>
+                    {!it.readAt && <span className={`status-dot ${dotColor}`}></span>}
+                  </div>
+                );
+              })}
             </div>
 
             <div className="pager">
-              <div>Hiển thị 1 - 5 của 23 thông báo</div>
+              <div>Hiển thị 1 - {Math.min(5, items.length || 5)} của {totalCount} thông báo</div>
               <div className="pages">
                 <button className="page-btn" aria-label="Trang trước">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -134,10 +144,10 @@ export default function ThongBaoPage() {
 
             <div className="title-row">
               <div>
-                <span className="kicker">THÔNG BÁO</span>
-                <h2 className="h1">Thông báo về việc bảo trì hệ thống PCCC định kỳ</h2>
+                <span className="kicker">{KICKER[selected?.type ?? "MANAGEMENT"] ?? "THÔNG BÁO"}</span>
+                <h2 className="h1">{selected?.title ?? "Thông báo về việc bảo trì hệ thống PCCC định kỳ"}</h2>
               </div>
-              <span className="urgent-badge">Khẩn cấp</span>
+              {selected?.priority === "URGENT" && <span className="urgent-badge">Khẩn cấp</span>}
             </div>
 
             <div className="author">
@@ -146,15 +156,15 @@ export default function ThongBaoPage() {
               </div>
               <div>
                 <div className="author-name">
-                  Ban quản trị
+                  {selected?.source ?? "Ban quản trị"}
                   <span className="verified">
                     <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                   </span>
                 </div>
                 <div className="author-meta">
-                  10:30 AM
+                  {selected?.publishedAt ? new Date(selected.publishedAt).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", hour12: true }) : "10:30 AM"}
                   <span className="dot"></span>
-                  23/05/2024
+                  {selected?.publishedAt ? new Date(selected.publishedAt).toLocaleDateString("vi-VN") : "23/05/2024"}
                   <span className="dot"></span>
                   <span className="views">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -165,8 +175,14 @@ export default function ThongBaoPage() {
             </div>
 
             <div className="prose">
-              <p>Kính gửi Quý cư dân,</p>
-              <p>Ban quản trị thông báo về việc bảo trì hệ thống phòng cháy chữa cháy định kỳ toàn bộ khu căn hộ Sunshine Riverside.</p>
+              {selected?.body ? (
+                selected.body.split("\n").map((para: string, i: number) => <p key={i}>{para}</p>)
+              ) : (
+                <>
+                  <p>Kính gửi Quý cư dân,</p>
+                  <p>Ban quản trị thông báo về việc bảo trì hệ thống phòng cháy chữa cháy định kỳ toàn bộ khu căn hộ Sunshine Riverside.</p>
+                </>
+              )}
             </div>
 
             <div className="time-card">
@@ -193,7 +209,7 @@ export default function ThongBaoPage() {
 
             <div className="signoff">
               <div>Trân trọng,</div>
-              <div><strong>Ban quản trị Sunshine Riverside</strong></div>
+              <div><strong>{selected?.source ?? "Ban quản trị Sunshine Riverside"}</strong></div>
             </div>
 
             <div className="attach-title">Tài liệu đính kèm (2)</div>

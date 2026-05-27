@@ -1,3 +1,10 @@
+"use client";
+import { api } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
+
+const fmtVNDqbt = (n?: number) => (n != null ? `${Math.round(n).toLocaleString("vi-VN")} đ` : "—");
+const fmtVNDqbtNoSpace = (n?: number) => (n != null ? `${Math.round(n).toLocaleString("vi-VN")}đ` : "—");
+
 const ArrowUp = () => (
   <svg className="arrow-up" viewBox="0 0 12 12" fill="none">
     <path d="M6 10V2M2 6l4-4 4 4" stroke="#1c9d5f" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
@@ -11,6 +18,18 @@ const ArrowDown = () => (
 );
 
 export default function QuyBaoTriPage() {
+  const { data } = useApi(() => api.maintenanceFund(), []);
+  const kpis = data?.kpis ?? { currentBalance: 8_265_000_000, totalIncome: 12_450_000_000, totalExpense: 4_185_000_000, interestRate: 6.5, collectionRate: 98.6 };
+  const fundInfo = data?.fundInfo ?? { bank: "Vietcombank", accountNumber: "0700-***-4521", foundedDate: null, legalBasis: "" };
+  const transactions: any[] = data?.transactions ?? [];
+  const plans: any[] = data?.plans ?? [];
+  const blockRates: any[] = data?.blockRates ?? [];
+
+  const expenses = transactions.filter((t: any) => t.type === "EXPENSE" && t.status === "DONE").slice(0, 5);
+  const totalApt = blockRates.reduce((s, b) => s + (b.totalUnits ?? 0), 0) || 868;
+  const paidApt = blockRates.reduce((s, b) => s + (b.paidUnits ?? 0), 0) || 856;
+  const interestYear = (kpis.currentBalance ?? 0) * ((Number(kpis.interestRate) || 6.5) / 100);
+
   return (
     <div className="qbt-page">
       {/* ── Page Header ── */}
@@ -56,7 +75,7 @@ export default function QuyBaoTriPage() {
           </div>
           <div>
             <div className="kpi-label">Số dư quỹ hiện tại</div>
-            <div className="kpi-value">8.265.000.000 đ</div>
+            <div className="kpi-value">{fmtVNDqbt(kpis.currentBalance)}</div>
             <div className="kpi-trend">
               <ArrowUp />
               <span className="kpi-pct up">+3.2%</span>
@@ -73,7 +92,7 @@ export default function QuyBaoTriPage() {
           </div>
           <div>
             <div className="kpi-label">Tổng đã thu</div>
-            <div className="kpi-value">12.450.000.000 đ</div>
+            <div className="kpi-value">{fmtVNDqbt(kpis.totalIncome)}</div>
             <div className="kpi-trend">
               <ArrowUp />
               <span className="kpi-pct up">+8.4%</span>
@@ -91,7 +110,7 @@ export default function QuyBaoTriPage() {
           </div>
           <div>
             <div className="kpi-label">Tổng đã chi</div>
-            <div className="kpi-value">4.185.000.000 đ</div>
+            <div className="kpi-value">{fmtVNDqbt(kpis.totalExpense)}</div>
             <div className="kpi-trend">
               <ArrowDown />
               <span className="kpi-pct down">+12.1%</span>
@@ -108,11 +127,11 @@ export default function QuyBaoTriPage() {
             </svg>
           </div>
           <div>
-            <div className="kpi-label">Lãi tiền gửi 2024</div>
-            <div className="kpi-value">538.225.000 đ</div>
+            <div className="kpi-label">Lãi tiền gửi {new Date().getFullYear()}</div>
+            <div className="kpi-value">{fmtVNDqbt(interestYear)}</div>
             <div className="kpi-trend">
               <ArrowUp />
-              <span className="kpi-pct up">+6.5%</span>
+              <span className="kpi-pct up">+{Number(kpis.interestRate ?? 6.5)}%</span>
               <span className="kpi-tlabel">lãi suất / năm</span>
             </div>
           </div>
@@ -217,12 +236,12 @@ export default function QuyBaoTriPage() {
 
           <div className="fund-info-list">
             {[
-              { k: "Ngân hàng", v: "Vietcombank" },
-              { k: "Số tài khoản", v: "0700-***-4521" },
-              { k: "Lãi suất tiền gửi", v: "6.5% / năm", cls: "green" },
+              { k: "Ngân hàng", v: fundInfo.bank ?? "Vietcombank" },
+              { k: "Số tài khoản", v: fundInfo.accountNumber ?? "0700-***-4521" },
+              { k: "Lãi suất tiền gửi", v: `${Number(kpis.interestRate ?? 6.5)}% / năm`, cls: "green" },
               { k: "Mức đóng quỹ", v: "2% giá trị HĐ" },
-              { k: "Cập nhật lần cuối", v: "25/05/2024" },
-            ].map((r) => (
+              { k: "Cập nhật lần cuối", v: new Date().toLocaleDateString("vi-VN") },
+            ].map((r: any) => (
               <div className="fund-info-row" key={r.k}>
                 <span className="fund-info-key">{r.k}</span>
                 <span className={`fund-info-val ${r.cls ?? ""}`}>{r.v}</span>
@@ -233,12 +252,12 @@ export default function QuyBaoTriPage() {
           <div className="collect-rate-wrap">
             <div className="collect-rate-hd">
               <span className="collect-rate-label">Tỉ lệ thu quỹ</span>
-              <span className="collect-rate-val">98.6%</span>
+              <span className="collect-rate-val">{(kpis.collectionRate ?? 98.6).toFixed(1)}%</span>
             </div>
             <div className="collect-bar-track">
-              <div className="collect-bar-fill" style={{ width: "98.6%" }}></div>
+              <div className="collect-bar-fill" style={{ width: `${kpis.collectionRate ?? 98.6}%` }}></div>
             </div>
-            <span className="collect-sub">856 / 868 căn hộ đã đóng quỹ — còn 12 căn chưa đóng</span>
+            <span className="collect-sub">{paidApt} / {totalApt} căn hộ đã đóng quỹ — còn {totalApt - paidApt} căn chưa đóng</span>
           </div>
         </div>
       </div>
@@ -257,13 +276,18 @@ export default function QuyBaoTriPage() {
               <span>Số tiền</span>
               <span style={{ textAlign: "center" }}>Trạng thái</span>
             </div>
-            {[
+            {(expenses.length ? expenses.map((t: any) => ({
+              name: t.description,
+              date: new Date(t.transactionDate).toLocaleDateString("vi-VN"),
+              contractor: t.vendor ?? t.category ?? "—",
+              amount: fmtVNDqbtNoSpace(Number(t.amount)),
+            })) : [
               { name: "Thay thiết bị PCCC", date: "20/05/2024", contractor: "PCCC Sài Gòn", amount: "385.002.000đ" },
               { name: "Sơn lại hành lang Block B", date: "12/05/2024", contractor: "XD Việt Nam", amount: "124.500.000đ" },
               { name: "Bảo dưỡng thang máy Otis", date: "05/05/2024", contractor: "OTIS Vietnam", amount: "86.800.000đ" },
               { name: "Thay bơm nước tầng hầm B1", date: "28/04/2024", contractor: "Cơ điện lạnh BK", amount: "215.000.000đ" },
               { name: "Sửa hệ thống điện tầng 1–5", date: "15/04/2024", contractor: "Điện lực Sunrise", amount: "54.300.000đ" },
-            ].map((r) => (
+            ]).map((r: any) => (
               <div className="exp-row" key={r.name}>
                 <div>
                   <div className="exp-name">{r.name}</div>
@@ -283,13 +307,24 @@ export default function QuyBaoTriPage() {
             <span className="table-link">Chi tiết →</span>
           </div>
           <div className="plan-list">
-            {[
+            {(plans.length ? plans.slice(0, 5).map((p: any) => {
+              const isPlanned = p.status === "PLANNED";
+              const isTentative = p.status === "TENTATIVE";
+              return {
+                dot: isPlanned ? "planned" : isTentative ? "tentative" : "planned",
+                name: p.item,
+                meta: `${p.vendor ?? "Đang chọn nhà thầu"} • ${new Date(p.plannedDate).toLocaleDateString("vi-VN")}`,
+                amount: fmtVNDqbtNoSpace(Number(p.estimatedCost)),
+                badge: isTentative ? "gray" : "blue",
+                badgeText: isTentative ? "Dự kiến" : p.status === "DONE" ? "Hoàn thành" : "Đã lên KH",
+              };
+            }) : [
               { dot: "planned", name: "Bảo dưỡng điều hòa trung tâm", meta: "Công ty Lạnh Sunshine • Tháng 6/2024", amount: "320.000.000đ", badge: "blue", badgeText: "Đã lên KH" },
               { dot: "planned", name: "Kiểm tra PCCC định kỳ Q3", meta: "PCCC Sài Gòn • Tháng 7/2024", amount: "45.000.000đ", badge: "blue", badgeText: "Đã lên KH" },
               { dot: "planned", name: "Tổng vệ sinh bể ngầm", meta: "Công ty MT Xanh • Tháng 8/2024", amount: "28.500.000đ", badge: "blue", badgeText: "Đã lên KH" },
               { dot: "tentative", name: "Sơn lại mặt tiền tòa nhà", meta: "Đang chọn nhà thầu • Tháng 9/2024", amount: "486.000.000đ", badge: "gray", badgeText: "Dự kiến" },
               { dot: "tentative", name: "Nâng cấp hệ thống camera", meta: "Đang chọn nhà thầu • Q4/2024", amount: "210.000.000đ", badge: "gray", badgeText: "Dự kiến" },
-            ].map((r) => (
+            ]).map((r: any) => (
               <div className="plan-row" key={r.name}>
                 <div className="plan-dot-col"><div className={`plan-dot ${r.dot}`}></div></div>
                 <div className="plan-body">
@@ -310,14 +345,24 @@ export default function QuyBaoTriPage() {
       <div className="block-card">
         <div className="block-card-hd">
           <div className="block-card-title">Tình hình thu quỹ theo Block</div>
-          <span className="block-card-meta">Cập nhật: 25/05/2024 • Tổng 856 / 868 căn hộ</span>
+          <span className="block-card-meta">Cập nhật: {new Date().toLocaleDateString("vi-VN")} • Tổng {paidApt} / {totalApt} căn hộ</span>
         </div>
         <div className="block-grid">
-          {[
+          {(blockRates.length ? blockRates.map((b: any) => {
+            const missing = (b.totalUnits ?? 0) - (b.paidUnits ?? 0);
+            const pct = `${Number(b.rate ?? 0).toFixed(1)}%`;
+            return {
+              name: `Block ${b.block}`,
+              count: `${b.paidUnits} / ${b.totalUnits} căn hộ`,
+              width: pct,
+              pct,
+              missing: `Còn ${missing} căn chưa đóng`,
+            };
+          }) : [
             { name: "Block A", count: "236 / 240 căn hộ", width: "98.3%", pct: "98.3%", missing: "Còn 4 căn chưa đóng" },
             { name: "Block B", count: "218 / 220 căn hộ", width: "99.1%", pct: "99.1%", missing: "Còn 2 căn chưa đóng" },
             { name: "Block C", count: "402 / 408 căn hộ", width: "98.5%", pct: "98.5%", missing: "Còn 6 căn chưa đóng" },
-          ].map((b) => (
+          ]).map((b: any) => (
             <div className="block-item" key={b.name}>
               <div className="block-item-hd">
                 <span className="block-name">{b.name}</span>

@@ -1,5 +1,29 @@
+"use client";
 /* eslint-disable @next/next/no-img-element */
+import { api } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
+
+const fmtVNDfull = (n?: number) => (n != null ? `${Math.round(n).toLocaleString("vi-VN")} đ` : "—");
+const fmtMonthLabel = (key: string) => {
+  const [y, m] = key.split("-");
+  return `T${Number(m)}/${y.slice(2)}`;
+};
+
 export default function FinanceOverviewPage() {
+  const { data } = useApi(() => api.finance(6), []);
+  const kpis = data?.kpis ?? { totalIncome: 2_845_600_000, totalExpense: 2_138_900_000, surplus: 706_700_000, maintenanceFundBalance: 8_265_000_000, collectionRate: 98.6 };
+  const monthly: any[] = data?.monthly ?? [];
+  const expenseBreakdown: any[] = data?.expenseBreakdown ?? [];
+  const latestReport: any = data?.latestReport;
+  const totalExpense = kpis.totalExpense || 1;
+  const DONUT_COLORS = ["#7a6dff", "#ff9d6a", "#3ddcb6", "#a99cff", "#c7d3ff", "#f5b5d4"];
+  const lastMonth = monthly[monthly.length - 1];
+  const incomeMonth = lastMonth?.income ?? kpis.totalIncome;
+  const expenseMonth = lastMonth?.expense ?? kpis.totalExpense;
+  const surplusMonth = lastMonth?.surplus ?? kpis.surplus;
+  const monthLabelShort = lastMonth ? fmtMonthLabel(lastMonth.month).replace("T", "Tháng ") + lastMonth.month.slice(0, 4).replace(/^.*?(\d{4})$/, "/$1") : "Tháng 5/2024";
+  const periodTitle = lastMonth ? `Tháng ${lastMonth.month.split("-")[1]}/${lastMonth.month.split("-")[0]}` : "Tháng 5/2024";
+
   return (
     <div className="fin-page">
       {/* ── Page header ── */}
@@ -11,7 +35,7 @@ export default function FinanceOverviewPage() {
         <div className="fin-actions">
           <button className="fin-btn">
             <img src="https://www.figma.com/api/mcp/asset/bb824f87-1b0e-4c71-ba99-09a0e1da7f1e" alt="" width="16" height="16" />
-            Tháng 5/2024
+            {periodTitle}
             <img src="https://www.figma.com/api/mcp/asset/68ffcd0e-3438-4ca4-9d64-847b5ccf5b79" alt="" width="14" height="14" />
           </button>
           <button className="fin-btn">
@@ -29,7 +53,7 @@ export default function FinanceOverviewPage() {
           </div>
           <div className="kpi-body">
             <div className="kpi-label">Tổng thu trong tháng</div>
-            <div className="kpi-value">2.845.600.000 đ</div>
+            <div className="kpi-value">{fmtVNDfull(incomeMonth)}</div>
             <div className="kpi-trend">
               <img src="https://www.figma.com/api/mcp/asset/07b679db-3ec2-4a70-acb0-a92326a51f04" alt="" width="11" height="11" />
               <span className="kpi-pct up">12.4%</span>
@@ -43,7 +67,7 @@ export default function FinanceOverviewPage() {
           </div>
           <div className="kpi-body">
             <div className="kpi-label">Tổng chi trong tháng</div>
-            <div className="kpi-value">2.138.900.000 đ</div>
+            <div className="kpi-value">{fmtVNDfull(expenseMonth)}</div>
             <div className="kpi-trend">
               <img src="https://www.figma.com/api/mcp/asset/39450053-803f-485d-803e-0750a3c14591" alt="" width="11" height="11" />
               <span className="kpi-pct down">8.7%</span>
@@ -57,7 +81,7 @@ export default function FinanceOverviewPage() {
           </div>
           <div className="kpi-body">
             <div className="kpi-label">Thặng dư/thâm hụt</div>
-            <div className="kpi-value">706.700.000 đ</div>
+            <div className="kpi-value">{fmtVNDfull(surplusMonth)}</div>
             <div className="kpi-trend">
               <img src="https://www.figma.com/api/mcp/asset/07b679db-3ec2-4a70-acb0-a92326a51f04" alt="" width="11" height="11" />
               <span className="kpi-pct up">28.6%</span>
@@ -71,7 +95,7 @@ export default function FinanceOverviewPage() {
           </div>
           <div className="kpi-body">
             <div className="kpi-label">Quỹ bảo trì hiện tại</div>
-            <div className="kpi-value">8.265.000.000 đ</div>
+            <div className="kpi-value">{fmtVNDfull(kpis.maintenanceFundBalance)}</div>
             <div className="kpi-trend">
               <img src="https://www.figma.com/api/mcp/asset/07b679db-3ec2-4a70-acb0-a92326a51f04" alt="" width="11" height="11" />
               <span className="kpi-pct up">3.2%</span>
@@ -146,29 +170,26 @@ export default function FinanceOverviewPage() {
             <div className="chart-y-lbl" style={{ top: "197px" }}>1B</div>
             <div className="chart-y-lbl" style={{ top: "260px" }}>0</div>
 
-            <div className="chart-x-lbl" style={{ left: "13.71%" }}>T12/23</div>
-            <div className="chart-x-lbl" style={{ left: "29.14%" }}>T1/24</div>
-            <div className="chart-x-lbl" style={{ left: "44.57%" }}>T2/24</div>
-            <div className="chart-x-lbl" style={{ left: "60%" }}>T3/24</div>
-            <div className="chart-x-lbl" style={{ left: "75.43%" }}>T4/24</div>
-            <div className="chart-x-lbl" style={{ left: "90.86%" }}>T5/24</div>
+            {(monthly.length >= 6 ? monthly.slice(-6) : [{month: "2023-12"}, {month: "2024-01"}, {month: "2024-02"}, {month: "2024-03"}, {month: "2024-04"}, {month: "2024-05"}]).map((m: any, i: number) => (
+              <div key={m.month ?? i} className="chart-x-lbl" style={{ left: `${[13.71, 29.14, 44.57, 60, 75.43, 90.86][i]}%` }}>{fmtMonthLabel(m.month)}</div>
+            ))}
 
             <div className="chart-tooltip">
-              <div className="tt-title">Tháng 5/2024</div>
+              <div className="tt-title">{periodTitle}</div>
               <div className="tt-row">
                 <div className="tt-dot" style={{ background: "#8b80f9" }}></div>
                 <div className="tt-name">Tổng thu</div>
-                <div className="tt-val">2.845.600.000 đ</div>
+                <div className="tt-val">{fmtVNDfull(incomeMonth)}</div>
               </div>
               <div className="tt-row">
                 <div className="tt-dot" style={{ background: "#ef6b7c" }}></div>
                 <div className="tt-name">Tổng chi</div>
-                <div className="tt-val">2.138.900.000 đ</div>
+                <div className="tt-val">{fmtVNDfull(expenseMonth)}</div>
               </div>
               <div className="tt-row">
                 <div className="tt-dot" style={{ background: "#22c08a" }}></div>
                 <div className="tt-name">Thặng dư</div>
-                <div className="tt-val">706.700.000 đ</div>
+                <div className="tt-val">{fmtVNDfull(surplusMonth)}</div>
               </div>
             </div>
           </div>
@@ -191,7 +212,7 @@ export default function FinanceOverviewPage() {
 
         {/* Donut chart */}
         <div className="donut-card">
-          <div className="donut-title">Cơ cấu chi phí tháng 5/2024</div>
+          <div className="donut-title">Cơ cấu chi phí {periodTitle.toLowerCase()}</div>
           <div className="donut-wrap">
             <img
               src="https://www.figma.com/api/mcp/asset/56447ff4-2e26-402d-8cd5-bfc42189cdd1"
@@ -200,59 +221,33 @@ export default function FinanceOverviewPage() {
               height="205"
             />
             <div className="donut-center">
-              <div className="donut-cval">2.138.900.000 đ</div>
+              <div className="donut-cval">{fmtVNDfull(kpis.totalExpense)}</div>
               <div className="donut-clbl">Tổng chi</div>
             </div>
           </div>
           <div className="donut-legend">
-            <div className="donut-row">
-              <div className="donut-left">
-                <div className="donut-dot" style={{ background: "#7a6dff" }}></div>
-                <span className="donut-name">Vận hành & quản lý</span>
+            {(expenseBreakdown.length ? expenseBreakdown.slice(0, 6).map((c: any, i: number) => ({
+              color: DONUT_COLORS[i % DONUT_COLORS.length],
+              name: c.name,
+              pct: Math.round((c.amount / totalExpense) * 100),
+              amt: fmtVNDfull(c.amount),
+            })) : [
+              { color: "#7a6dff", name: "Vận hành & quản lý", pct: 35, amt: "748.600.000 đ" },
+              { color: "#ff9d6a", name: "Điện nước chung", pct: 22, amt: "470.800.000 đ" },
+              { color: "#3ddcb6", name: "Bảo trì & sửa chữa", pct: 18, amt: "385.200.000 đ" },
+              { color: "#a99cff", name: "Dịch vụ & tiện ích", pct: 12, amt: "256.600.000 đ" },
+              { color: "#c7d3ff", name: "Nhân sự & lương", pct: 8, amt: "171.100.000 đ" },
+              { color: "#f5b5d4", name: "Khác", pct: 5, amt: "106.600.000 đ" },
+            ]).map((row: any, i: number) => (
+              <div className="donut-row" key={i}>
+                <div className="donut-left">
+                  <div className="donut-dot" style={{ background: row.color }}></div>
+                  <span className="donut-name">{row.name}</span>
+                </div>
+                <div className="donut-pct">{row.pct}%</div>
+                <div className="donut-amt">{row.amt}</div>
               </div>
-              <div className="donut-pct">35%</div>
-              <div className="donut-amt">748.600.000 đ</div>
-            </div>
-            <div className="donut-row">
-              <div className="donut-left">
-                <div className="donut-dot" style={{ background: "#ff9d6a" }}></div>
-                <span className="donut-name">Điện nước chung</span>
-              </div>
-              <div className="donut-pct">22%</div>
-              <div className="donut-amt">470.800.000 đ</div>
-            </div>
-            <div className="donut-row">
-              <div className="donut-left">
-                <div className="donut-dot" style={{ background: "#3ddcb6" }}></div>
-                <span className="donut-name">Bảo trì & sửa chữa</span>
-              </div>
-              <div className="donut-pct">18%</div>
-              <div className="donut-amt">385.200.000 đ</div>
-            </div>
-            <div className="donut-row">
-              <div className="donut-left">
-                <div className="donut-dot" style={{ background: "#a99cff" }}></div>
-                <span className="donut-name">Dịch vụ & tiện ích</span>
-              </div>
-              <div className="donut-pct">12%</div>
-              <div className="donut-amt">256.600.000 đ</div>
-            </div>
-            <div className="donut-row">
-              <div className="donut-left">
-                <div className="donut-dot" style={{ background: "#c7d3ff" }}></div>
-                <span className="donut-name">Nhân sự & lương</span>
-              </div>
-              <div className="donut-pct">8%</div>
-              <div className="donut-amt">171.100.000 đ</div>
-            </div>
-            <div className="donut-row">
-              <div className="donut-left">
-                <div className="donut-dot" style={{ background: "#f5b5d4" }}></div>
-                <span className="donut-name">Khác</span>
-              </div>
-              <div className="donut-pct">5%</div>
-              <div className="donut-amt">106.600.000 đ</div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
@@ -267,7 +262,7 @@ export default function FinanceOverviewPage() {
           <div className="sum-grid">
             <div className="sum-main">
               <div className="sum-mlbl">Số dư hiện tại</div>
-              <div className="sum-bigval">8.265.000.000 đ</div>
+              <div className="sum-bigval">{fmtVNDfull(kpis.maintenanceFundBalance)}</div>
               <div className="sum-trend">
                 <img src="https://www.figma.com/api/mcp/asset/c6a833b5-a6ff-466a-b396-972bb3661f6e" alt="" width="11" height="11" />
                 <span className="sum-tpct">3.2%</span>
@@ -306,7 +301,7 @@ export default function FinanceOverviewPage() {
                 <img src="https://www.figma.com/api/mcp/asset/a1f90758-bdbb-4b40-860d-072060f9689b" alt="" width="16" height="16" />
               </div>
               <div className="metric-name">Tỷ lệ thu phí</div>
-              <div className="metric-val">98.6%</div>
+              <div className="metric-val">{(kpis.collectionRate ?? 98.6)}%</div>
               <div className="metric-trend up">+2.4% so với T4/2024</div>
             </div>
             <div className="metric-row">
@@ -314,7 +309,7 @@ export default function FinanceOverviewPage() {
                 <img src="https://www.figma.com/api/mcp/asset/8911d112-c0c2-45cf-ac1f-829917821964" alt="" width="16" height="16" />
               </div>
               <div className="metric-name">Tỷ lệ chi phí / Thu</div>
-              <div className="metric-val">75.2%</div>
+              <div className="metric-val">{kpis.totalIncome ? `${((kpis.totalExpense / kpis.totalIncome) * 100).toFixed(1)}%` : "75.2%"}</div>
               <div className="metric-trend down">-3.1% so với T4/2024</div>
             </div>
             <div className="metric-row">
@@ -344,10 +339,10 @@ export default function FinanceOverviewPage() {
         </div>
         <div className="report-body">
           <div className="report-file">
-            <div className="pdf-badge">PDF</div>
+            <div className="pdf-badge">{latestReport?.fileType ?? "PDF"}</div>
             <div>
-              <div className="report-fname">Báo cáo tài chính tháng 5/2024</div>
-              <div className="report-fmeta">PDF • 2.4 MB • Ban quản trị</div>
+              <div className="report-fname">{latestReport?.title ?? "Báo cáo tài chính tháng 5/2024"}</div>
+              <div className="report-fmeta">{latestReport?.fileType ?? "PDF"} • {latestReport?.fileSize ? `${(latestReport.fileSize / 1024 / 1024).toFixed(1)} MB` : "2.4 MB"} • Ban quản trị</div>
             </div>
           </div>
           <div className="report-meta">
@@ -355,14 +350,14 @@ export default function FinanceOverviewPage() {
               <img src="https://www.figma.com/api/mcp/asset/62236d98-457d-41ed-b756-7cd5d55209a4" alt="" width="13" height="13" />
               <span className="report-mlbl">Ngày tạo</span>
             </div>
-            <span className="report-mval">01/06/2024</span>
+            <span className="report-mval">{latestReport?.publishDate ? new Date(latestReport.publishDate).toLocaleDateString("vi-VN") : "01/06/2024"}</span>
           </div>
           <div className="report-meta">
             <div className="report-mitem">
               <img src="https://www.figma.com/api/mcp/asset/78fa00e8-bbd4-4b35-972e-709ed91f109c" alt="" width="13" height="13" />
-              <span className="report-mlbl">Lượt xem</span>
+              <span className="report-mlbl">Lượt tải</span>
             </div>
-            <span className="report-mval">256</span>
+            <span className="report-mval">{latestReport?.downloadCount ?? 256}</span>
           </div>
           <a href="#" className="report-dl">
             <img src="https://www.figma.com/api/mcp/asset/fb3fce31-7fe7-48a0-bbdd-671441f0b2d4" alt="" width="15" height="15" />

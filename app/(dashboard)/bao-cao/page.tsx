@@ -1,3 +1,15 @@
+"use client";
+import { api } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
+
+const REPORT_FILE_TYPE: Record<string, "pdf" | "doc" | "xls"> = {
+  PDF: "pdf", DOCX: "doc", XLSX: "xls",
+};
+const fmtReportSize = (bytes?: number) => {
+  if (!bytes) return "";
+  return bytes >= 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : `${(bytes / 1024).toFixed(0)} KB`;
+};
+
 const EyeIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
@@ -105,6 +117,28 @@ function ReportCard({ r }: { r: Report }) {
 }
 
 export default function BaoCaoPage() {
+  const { data } = useApi(() => api.reports(), []);
+  const items: any[] = data?.items ?? [];
+  const stats = data?.stats ?? { totalReports: 28, published: 21, pending: 3, upcoming: 2 };
+  const tabs = data?.tabs ?? {};
+  const currentYear = new Date().getFullYear();
+
+  const mapToReport = (r: any): Report => ({
+    type: REPORT_FILE_TYPE[r.fileType] ?? "pdf",
+    period: r.type === "MONTHLY" ? "Báo cáo tháng" : r.type === "QUARTERLY" ? "Báo cáo quý" : "Báo cáo năm",
+    title: r.title,
+    date: `Phát hành: ${new Date(r.publishDate).toLocaleDateString("vi-VN")}${r.fileSize ? ` · ${fmtReportSize(r.fileSize)}` : ""}`,
+    badgeClass: "badge badge-green",
+    badgeText: "Đã phát hành",
+    rightText: `${r.downloadCount ?? 0} lượt tải`,
+  });
+
+  const apiMonthly = items.filter((r: any) => r.type === "MONTHLY").map(mapToReport);
+  const apiQuarterly = items.filter((r: any) => r.type === "QUARTERLY" || r.type === "YEARLY").map(mapToReport);
+
+  const monthlyToRender = apiMonthly.length ? apiMonthly.slice(0, 5) : monthlyReports;
+  const quarterlyToRender = apiQuarterly.length ? apiQuarterly.slice(0, 4) : quarterlyReports;
+
   return (
     <div className="bcdk-page">
       {/* ── Page Header ── */}
@@ -121,7 +155,7 @@ export default function BaoCaoPage() {
               <line x1="8" y1="2" x2="8" y2="6" />
               <line x1="3" y1="10" x2="21" y2="10" />
             </svg>
-            Năm 2024
+            Năm {currentYear}
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="6 9 12 15 18 9" />
             </svg>
@@ -145,8 +179,8 @@ export default function BaoCaoPage() {
               <polyline points="14 2 14 8 20 8" />
             </svg>
           </div>
-          <div className="stat-val">28</div>
-          <div className="stat-lbl">Tổng báo cáo năm 2024</div>
+          <div className="stat-val">{stats.totalReports}</div>
+          <div className="stat-lbl">Tổng báo cáo năm {currentYear}</div>
           <div className="stat-trend">
             <span style={{ color: "#1c9d5f" }}>↑ +4</span>
             <span className="trend-neu"> so với 2023</span>
@@ -160,7 +194,7 @@ export default function BaoCaoPage() {
               <polyline points="22 4 12 14.01 9 11.01" />
             </svg>
           </div>
-          <div className="stat-val green">21</div>
+          <div className="stat-val green">{stats.published}</div>
           <div className="stat-lbl">Đã phát hành</div>
           <div className="stat-trend"><span className="trend-neu">5 tháng đầu năm</span></div>
         </div>
@@ -172,7 +206,7 @@ export default function BaoCaoPage() {
               <polyline points="12 6 12 12 16 14" />
             </svg>
           </div>
-          <div className="stat-val orange">3</div>
+          <div className="stat-val orange">{stats.pending}</div>
           <div className="stat-lbl">Chờ phê duyệt</div>
           <div className="stat-trend"><span style={{ color: "#c8761b" }}>● Cần xem xét</span></div>
         </div>
@@ -185,7 +219,7 @@ export default function BaoCaoPage() {
               <line x1="12" y1="17" x2="12.01" y2="17" />
             </svg>
           </div>
-          <div className="stat-val red">2</div>
+          <div className="stat-val red">{stats.upcoming}</div>
           <div className="stat-lbl">Sắp đến hạn nộp</div>
           <div className="stat-trend"><span style={{ color: "#f5222d" }}>Trong 7 ngày tới</span></div>
         </div>
@@ -193,10 +227,10 @@ export default function BaoCaoPage() {
 
       {/* ── Filter ── */}
       <div className="filter-bar">
-        <button className="filter-tab active">Tất cả (28)</button>
-        <button className="filter-tab">Báo cáo tháng (20)</button>
-        <button className="filter-tab">Báo cáo quý (5)</button>
-        <button className="filter-tab">Báo cáo năm (3)</button>
+        <button className="filter-tab active">Tất cả ({tabs.all ?? 28})</button>
+        <button className="filter-tab">Báo cáo tháng ({tabs.MONTHLY ?? 20})</button>
+        <button className="filter-tab">Báo cáo quý ({tabs.QUARTERLY ?? 5})</button>
+        <button className="filter-tab">Báo cáo năm ({tabs.YEARLY ?? 3})</button>
         <div className="filter-spacer"></div>
         <div className="search-mini">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -209,9 +243,9 @@ export default function BaoCaoPage() {
 
       {/* ── Báo cáo tháng ── */}
       <div className="report-section">
-        <div className="section-label">Báo cáo tháng — 2024</div>
+        <div className="section-label">Báo cáo tháng — {currentYear}</div>
         <div className="report-grid">
-          {monthlyReports.map((r) => <ReportCard key={r.title} r={r} />)}
+          {monthlyToRender.map((r) => <ReportCard key={r.title} r={r} />)}
 
           {/* Chưa soạn placeholder */}
           <div className="report-card" style={{ borderStyle: "dashed", background: "#fafafa" }}>
@@ -234,9 +268,9 @@ export default function BaoCaoPage() {
 
       {/* ── Báo cáo quý ── */}
       <div className="report-section">
-        <div className="section-label">Báo cáo quý — 2024</div>
+        <div className="section-label">Báo cáo quý &amp; năm — {currentYear}</div>
         <div className="report-grid">
-          {quarterlyReports.map((r) => <ReportCard key={r.title} r={r} />)}
+          {quarterlyToRender.map((r) => <ReportCard key={r.title} r={r} />)}
         </div>
       </div>
 

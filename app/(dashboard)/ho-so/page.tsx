@@ -1,3 +1,4 @@
+"use client";
 /* eslint-disable @next/next/no-img-element */
 
 const CheckIcon = () => (
@@ -32,13 +33,51 @@ const CarIcon = ({ stroke }: { stroke: string }) => (
   </svg>
 );
 
+import { api } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
+
+const fmtDate = (iso?: string | null) => (iso ? new Date(iso).toLocaleDateString("vi-VN") : "—");
+const fmtDateTime = (iso?: string | null) => {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  return `${d.toLocaleDateString("vi-VN")}, ${d.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}`;
+};
+const initials2 = (name: string) => name.split(" ").slice(-2).map((p) => p[0]).join("").toUpperCase();
+
 export default function HoSoPage() {
+  const { data } = useApi(() => api.profile(), []);
+  const fullName = data?.fullName ?? "Trần Hoàng Chris";
+  const apartmentCode = data?.primaryApartment?.code ?? "A-12.05";
+  const buildingName = data?.primaryApartment?.building?.name ?? "Landmark 1";
+  const projectName = data?.primaryApartment?.building?.projectName ?? "Vinhomes Central Park";
+  const avatar = data?.avatar ?? "https://www.figma.com/api/mcp/asset/ee21e768-a070-4e15-ad43-73a28943d4ee";
+  const phone = data?.phone ?? "0912 345 678";
+  const email = data?.email ?? "chris.tran@gmail.com";
+  const dob = data?.dob;
+  const cccdDoc = data?.identityDocs?.find((d: any) => d.type === "CCCD") ?? data?.identityDocs?.[0];
+  const cccdNumber = cccdDoc?.number ?? "079190015820";
+  const cccdFormatted = cccdNumber.replace(/(\d{3})(\d{3})(\d{3})(\d{3})/, "$1 $2 $3 $4");
+  const cccdVerified = !!cccdDoc?.verifiedAt;
+  const emailVerified = !!data?.emailVerifiedAt;
+  const phoneVerified = !!data?.phoneVerifiedAt;
+  const vehicles: any[] = data?.vehicles ?? [];
+  const activities: any[] = data?.recentActivity ?? [];
+
+  const ACTIVITY_COLOR = ["#4137f9", "#1c9d5f", "#c8761b", "#b4b7c9", "#5a3ad9"];
+  const ACTION_LABEL: Record<string, string> = {
+    LOGIN: "Đăng nhập hệ thống",
+    SUBMIT_FEEDBACK: "Gửi góp ý",
+    PAY_FEE: "Đóng phí quản lý",
+    PUBLISH_NEWS: "Đăng tin tức",
+    APPROVE_FUND_TRANSACTION: "Phê duyệt khoản chi quỹ",
+  };
+
   return (
     <div className="profile-page">
       {/* ── Banner ── */}
       <div className="profile-banner">
         <div className="banner-avatar-wrap">
-          <img className="banner-avatar" src="https://www.figma.com/api/mcp/asset/ee21e768-a070-4e15-ad43-73a28943d4ee" alt="Chris Tran" />
+          <img className="banner-avatar" src={avatar} alt={fullName} />
           <div className="banner-avatar-edit">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
@@ -47,20 +86,20 @@ export default function HoSoPage() {
           </div>
         </div>
         <div className="banner-info">
-          <div className="banner-name">Trần Hoàng Chris</div>
+          <div className="banner-name">{fullName}</div>
           <div className="banner-tags">
             <div className="banner-tag">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
               </svg>
-              Căn hộ A-12.05
+              Căn hộ {apartmentCode}
             </div>
             <div className="banner-tag">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
                 <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
               </svg>
-              Landmark 1 · Vinhomes Central Park
+              {buildingName} · {projectName}
             </div>
             <div className="banner-tag" style={{ background: "rgba(74,222,128,.2)" }}>
               <svg viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -141,10 +180,10 @@ export default function HoSoPage() {
             </div>
             <div className="info-grid">
               {[
-                { l: "Họ và tên", v: "Trần Hoàng Chris" },
-                { l: "Tên hiển thị", v: "Chris Tran" },
-                { l: "Ngày sinh", v: "15/08/1990" },
-                { l: "Giới tính", v: "Nam" },
+                { l: "Họ và tên", v: fullName },
+                { l: "Tên hiển thị", v: fullName.split(" ").slice(-2).join(" ") },
+                { l: "Ngày sinh", v: fmtDate(dob) },
+                { l: "Giới tính", v: data?.gender === "FEMALE" ? "Nữ" : data?.gender === "OTHER" ? "Khác" : "Nam" },
                 { l: "Quốc tịch", v: "Việt Nam" },
                 { l: "Nghề nghiệp", v: "Kỹ sư phần mềm" },
               ].map((i) => (
@@ -179,13 +218,13 @@ export default function HoSoPage() {
               <div className="info-item">
                 <div className="info-label">Số CCCD</div>
                 <div className="info-value mono">
-                  079 190 015 820
-                  <VerifiedBadge />
+                  {cccdFormatted}
+                  {cccdVerified && <VerifiedBadge />}
                 </div>
               </div>
               <div className="info-item">
                 <div className="info-label">Ngày cấp</div>
-                <div className="info-value">20/03/2021</div>
+                <div className="info-value">{cccdDoc?.verifiedAt ? fmtDate(cccdDoc.verifiedAt) : "20/03/2021"}</div>
               </div>
               <div className="info-item info-full">
                 <div className="info-label">Nơi cấp</div>
@@ -211,8 +250,8 @@ export default function HoSoPage() {
               <div className="info-item">
                 <div className="info-label">Số điện thoại</div>
                 <div className="info-value">
-                  0912 345 678
-                  <VerifiedBadge />
+                  {phone}
+                  {phoneVerified && <VerifiedBadge />}
                 </div>
               </div>
               <div className="info-item">
@@ -222,16 +261,22 @@ export default function HoSoPage() {
               <div className="info-item info-full">
                 <div className="info-label">Email</div>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-                  <div className="info-value">chris.tran@gmail.com</div>
-                  <div style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "#fff1de", borderRadius: 10, padding: "3px 10px", fontSize: 11, fontWeight: 700, color: "#c8761b", whiteSpace: "nowrap", flexShrink: 0 }}>
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10" />
-                      <line x1="12" y1="8" x2="12" y2="12" />
-                      <line x1="12" y1="16" x2="12.01" y2="16" />
-                    </svg>
-                    Chưa xác minh
-                  </div>
-                  <button style={{ fontSize: 12, color: "#4137f9", fontWeight: 600, cursor: "pointer", background: "none", border: "none", padding: 0 }}>Xác minh ngay →</button>
+                  <div className="info-value">{email}</div>
+                  {emailVerified ? (
+                    <VerifiedBadge />
+                  ) : (
+                    <>
+                      <div style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "#fff1de", borderRadius: 10, padding: "3px 10px", fontSize: 11, fontWeight: 700, color: "#c8761b", whiteSpace: "nowrap", flexShrink: 0 }}>
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10" />
+                          <line x1="12" y1="8" x2="12" y2="12" />
+                          <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                        Chưa xác minh
+                      </div>
+                      <button style={{ fontSize: 12, color: "#4137f9", fontWeight: 600, cursor: "pointer", background: "none", border: "none", padding: 0 }}>Xác minh ngay →</button>
+                    </>
+                  )}
                 </div>
               </div>
               <div className="info-item info-full">
@@ -262,30 +307,32 @@ export default function HoSoPage() {
               </button>
             </div>
             <div className="vehicle-list">
-              <div className="vehicle-item">
-                <div className="vehicle-icon" style={{ background: "#efeeff" }}>
-                  <CarIcon stroke="#4137f9" />
-                </div>
-                <div className="vehicle-body">
-                  <div className="vehicle-name">Toyota Camry 2022</div>
-                  <div className="vehicle-plate">51G-123.45 · Tầng hầm B1-A21</div>
-                </div>
-                <span className="vehicle-badge" style={{ background: "#e3fbed", color: "#1c9d5f" }}>Ô tô</span>
-              </div>
-              <div className="vehicle-item">
-                <div className="vehicle-icon" style={{ background: "#e4f1ff" }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#1870c4" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="5.5" cy="17.5" r="3.5" />
-                    <circle cx="18.5" cy="17.5" r="3.5" />
-                    <path d="M15 6h3l3 6M9 17h6l-3-10h-2M5.5 14L8 9h7" />
-                  </svg>
-                </div>
-                <div className="vehicle-body">
-                  <div className="vehicle-name">Honda Air Blade</div>
-                  <div className="vehicle-plate">59K-999.00 · Tầng hầm B2-M14</div>
-                </div>
-                <span className="vehicle-badge" style={{ background: "#e4f1ff", color: "#1870c4" }}>Xe máy</span>
-              </div>
+              {(vehicles.length ? vehicles : [
+                { id: "pv1", brand: "Toyota Camry 2022", plateNumber: "51G-123.45", type: "CAR" },
+                { id: "pv2", brand: "Honda Air Blade", plateNumber: "59K-999.00", type: "MOTORCYCLE" },
+              ]).map((v: any) => {
+                const isCar = v.type === "CAR";
+                return (
+                  <div className="vehicle-item" key={v.id}>
+                    <div className="vehicle-icon" style={{ background: isCar ? "#efeeff" : "#e4f1ff" }}>
+                      {isCar ? (
+                        <CarIcon stroke="#4137f9" />
+                      ) : (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#1870c4" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="5.5" cy="17.5" r="3.5" />
+                          <circle cx="18.5" cy="17.5" r="3.5" />
+                          <path d="M15 6h3l3 6M9 17h6l-3-10h-2M5.5 14L8 9h7" />
+                        </svg>
+                      )}
+                    </div>
+                    <div className="vehicle-body">
+                      <div className="vehicle-name">{v.brand ?? (isCar ? "Ô tô" : "Xe máy")}</div>
+                      <div className="vehicle-plate">{v.plateNumber}{isCar ? " · Tầng hầm B1-A21" : " · Tầng hầm B2-M14"}</div>
+                    </div>
+                    <span className="vehicle-badge" style={{ background: isCar ? "#e3fbed" : "#e4f1ff", color: isCar ? "#1c9d5f" : "#1870c4" }}>{isCar ? "Ô tô" : "Xe máy"}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -342,17 +389,17 @@ export default function HoSoPage() {
               </div>
             </div>
             <div className="activity-list">
-              {[
-                { color: "#4137f9", text: <>Gửi <b>góp ý về tiếng ồn</b> hành lang tầng 12</>, time: "Hôm nay, 09:14" },
-                { color: "#1c9d5f", text: <>Đóng <b>phí quản lý</b> tháng 5/2024 thành công</>, time: "22/05/2024, 14:30" },
-                { color: "#c8761b", text: <>Đăng ký <b>thẻ từ phụ</b> cho khách</>, time: "18/05/2024, 10:05" },
-                { color: "#b4b7c9", text: <>Tải báo cáo <b>Quý 1/2024</b></>, time: "15/04/2024, 08:22" },
-              ].map((a, i) => (
-                <div className="act-row" key={i}>
-                  <div className="act-dot-col"><div className="act-dot" style={{ background: a.color }}></div></div>
+              {(activities.length ? activities.slice(0, 4) : [
+                { id: "pa1", action: "SUBMIT_FEEDBACK", createdAt: null, _text: <>Gửi <b>góp ý về tiếng ồn</b> hành lang tầng 12</>, _time: "Hôm nay, 09:14" },
+                { id: "pa2", action: "PAY_FEE", createdAt: null, _text: <>Đóng <b>phí quản lý</b> tháng 5/2024 thành công</>, _time: "22/05/2024, 14:30" },
+                { id: "pa3", action: "LOGIN", createdAt: null, _text: <>Đăng ký <b>thẻ từ phụ</b> cho khách</>, _time: "18/05/2024, 10:05" },
+                { id: "pa4", action: "LOGIN", createdAt: null, _text: <>Tải báo cáo <b>Quý 1/2024</b></>, _time: "15/04/2024, 08:22" },
+              ]).map((a: any, i: number) => (
+                <div className="act-row" key={a.id ?? i}>
+                  <div className="act-dot-col"><div className="act-dot" style={{ background: ACTIVITY_COLOR[i % ACTIVITY_COLOR.length] }}></div></div>
                   <div className="act-body">
-                    <div className="act-text">{a.text}</div>
-                    <div className="act-time">{a.time}</div>
+                    <div className="act-text">{a._text ?? ACTION_LABEL[a.action] ?? a.action}</div>
+                    <div className="act-time">{a._time ?? fmtDateTime(a.createdAt)}</div>
                   </div>
                 </div>
               ))}

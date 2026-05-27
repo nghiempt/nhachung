@@ -1,4 +1,31 @@
+"use client";
+import { api } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
+
+const CAT_LABEL_VI: Record<string, string> = {
+  MANAGEMENT: "Thông báo BQT", EVENT: "Sự kiện", SECURITY: "An ninh",
+  UTILITY: "Tiện ích", URGENT: "Khẩn cấp", COMMUNITY: "Cộng đồng",
+};
+const CAT_STYLE: Record<string, { bg: string; color: string }> = {
+  MANAGEMENT: { bg: "#e4f1ff", color: "#1561c0" },
+  EVENT: { bg: "#e0f7f4", color: "#0d7a6a" },
+  SECURITY: { bg: "#fff0f0", color: "#f5222d" },
+  UTILITY: { bg: "#fff3e0", color: "#b45309" },
+  URGENT: { bg: "#fff0f0", color: "#f5222d" },
+  COMMUNITY: { bg: "#ede9ff", color: "#5b21b6" },
+};
+const fmtVnDate = (iso?: string) =>
+  iso ? `${new Date(iso).getDate()} tháng ${new Date(iso).getMonth() + 1}, ${new Date(iso).getFullYear()}` : "";
+const fmtViews = (n?: number) => (n != null ? `${n.toLocaleString("vi-VN")} lượt xem` : "");
+
 export default function TinTucPage() {
+  const { data } = useApi(() => api.news(), []);
+  const featured = data?.featured;
+  const apiPosts: any[] = data?.posts ?? [];
+  const tabs = data?.tabs ?? {};
+  const hotTopics: any[] = data?.hotTopics ?? [];
+  const upcomingEvents: any[] = data?.upcomingEvents ?? [];
+
   const newsCards = [
     {
       img: "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=600&h=400&fit=crop&auto=format&q=80",
@@ -59,11 +86,11 @@ export default function TinTucPage() {
         {/* Tabs */}
         <nav style={{ display: "flex", gap: "4px", borderBottom: "1px solid #e2e5f1" }}>
           {[
-            { label: "Tất cả", count: "48", active: true },
-            { label: "Thông báo BQT", count: "14" },
-            { label: "Sự kiện", count: "8" },
-            { label: "Bảo trì", count: "11" },
-            { label: "Cộng đồng", count: "15" },
+            { label: "Tất cả", count: String(tabs.all ?? 48), active: true },
+            { label: "Thông báo BQT", count: String(tabs.MANAGEMENT ?? 14) },
+            { label: "Sự kiện", count: String(tabs.EVENT ?? 8) },
+            { label: "Bảo trì", count: String(tabs.UTILITY ?? 11) },
+            { label: "Cộng đồng", count: String(tabs.COMMUNITY ?? 15) },
           ].map((tab) => (
             <a key={tab.label} href="#" style={{
               display: "flex", alignItems: "center", gap: "6px",
@@ -120,32 +147,44 @@ export default function TinTucPage() {
         <div>
           {/* Featured article */}
           <div style={{ position: "relative", borderRadius: "20px", overflow: "hidden", marginBottom: "20px", cursor: "pointer" }}>
-            <img src="https://images.unsplash.com/photo-1431540015161-0bf868a2d407?w=1200&h=500&fit=crop&auto=format&q=80" alt="" style={{ width: "100%", height: "260px", objectFit: "cover", display: "block" }} />
+            <img src={featured?.thumbnail || "https://images.unsplash.com/photo-1431540015161-0bf868a2d407?w=1200&h=500&fit=crop&auto=format&q=80"} alt="" style={{ width: "100%", height: "260px", objectFit: "cover", display: "block" }} />
             <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,.72) 0%, rgba(0,0,0,.18) 55%, transparent 100%)" }} />
             <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "24px 28px" }}>
               <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
-                <span style={{ fontSize: "11px", fontWeight: 700, letterSpacing: ".4px", textTransform: "uppercase", padding: "3px 10px", borderRadius: "20px", background: "rgba(255,214,24,.9)", color: "#3b2a00" }}>📌 Ghim</span>
-                <span style={{ fontSize: "11px", fontWeight: 700, letterSpacing: ".4px", textTransform: "uppercase", padding: "3px 10px", borderRadius: "20px", background: "rgba(255,255,255,.2)", color: "#fff", backdropFilter: "blur(4px)" }}>Thông báo BQT</span>
+                {(featured?.isPinned ?? true) && <span style={{ fontSize: "11px", fontWeight: 700, letterSpacing: ".4px", textTransform: "uppercase", padding: "3px 10px", borderRadius: "20px", background: "rgba(255,214,24,.9)", color: "#3b2a00" }}>📌 Ghim</span>}
+                <span style={{ fontSize: "11px", fontWeight: 700, letterSpacing: ".4px", textTransform: "uppercase", padding: "3px 10px", borderRadius: "20px", background: "rgba(255,255,255,.2)", color: "#fff", backdropFilter: "blur(4px)" }}>{CAT_LABEL_VI[featured?.category] ?? "Thông báo BQT"}</span>
               </div>
               <div style={{ fontSize: "20px", fontWeight: 700, color: "#fff", lineHeight: 1.35, marginBottom: "8px", maxWidth: "680px" }}>
-                Kết quả họp Ban quản trị tháng 5/2026 — Thông qua ngân sách nâng cấp hệ thống PCCC và thang máy
+                {featured?.title ?? "Kết quả họp Ban quản trị tháng 5/2026 — Thông qua ngân sách nâng cấp hệ thống PCCC và thang máy"}
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                   <div style={{ width: "24px", height: "24px", borderRadius: "50%", background: "#4137f9", border: "2px solid rgba(255,255,255,.4)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "9px", fontWeight: 700, color: "#fff" }}>BQT</div>
-                  <span style={{ fontSize: "12px", color: "rgba(255,255,255,.85)", fontWeight: 500 }}>Ban quản trị Landmark 1</span>
+                  <span style={{ fontSize: "12px", color: "rgba(255,255,255,.85)", fontWeight: 500 }}>{featured?.author?.fullName ?? "Ban quản trị Landmark 1"}</span>
                 </div>
                 <div style={{ width: "3px", height: "3px", borderRadius: "50%", background: "rgba(255,255,255,.4)" }} />
-                <span style={{ fontSize: "12px", color: "rgba(255,255,255,.65)" }}>22 tháng 5, 2026</span>
+                <span style={{ fontSize: "12px", color: "rgba(255,255,255,.65)" }}>{featured?.publishedAt ? fmtVnDate(featured.publishedAt) : "22 tháng 5, 2026"}</span>
                 <div style={{ width: "3px", height: "3px", borderRadius: "50%", background: "rgba(255,255,255,.4)" }} />
-                <span style={{ fontSize: "12px", color: "rgba(255,255,255,.65)" }}>5 phút đọc</span>
+                <span style={{ fontSize: "12px", color: "rgba(255,255,255,.65)" }}>{featured?.readTimeMin ?? 5} phút đọc</span>
               </div>
             </div>
           </div>
 
           {/* News grid */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px", marginBottom: "24px" }}>
-            {newsCards.map((card, i) => (
+            {(apiPosts.length ? apiPosts.map((p, i) => {
+              const cat = CAT_STYLE[p.category] ?? CAT_STYLE.MANAGEMENT;
+              return {
+                img: p.thumbnail || newsCards[i % newsCards.length].img,
+                cats: [{ label: CAT_LABEL_VI[p.category] ?? p.category, bg: cat.bg, color: cat.color }],
+                title: p.title,
+                excerpt: p.summary,
+                authorBg: cat.color,
+                authorLabel: (p.author?.fullName ?? "BQT").split(" ").slice(-1)[0][0] || "B",
+                authorName: p.author?.fullName ?? "Ban quản trị",
+                date: fmtVnDate(p.publishedAt),
+              };
+            }) : newsCards).map((card: any, i: number) => (
               <div key={i} style={{ background: "#ffffff", border: "1px solid #e2e5f1", borderRadius: "20px", overflow: "hidden", cursor: "pointer", display: "flex", flexDirection: "column" }}>
                 <img src={card.img} alt="" style={{ width: "100%", height: "148px", objectFit: "cover", display: "block", background: "#f7f7f7" }} />
                 <div style={{ padding: "14px 16px 16px", display: "flex", flexDirection: "column", flex: 1 }}>
@@ -191,13 +230,22 @@ export default function TinTucPage() {
               <div style={{ fontSize: "12px", fontWeight: 700, color: "#585c7b", textTransform: "uppercase", letterSpacing: ".5px" }}>Xem nhiều nhất</div>
             </div>
             <div style={{ padding: "4px 0 8px" }}>
-              {[
+              {(hotTopics.length ? hotTopics.map((t, i) => {
+                const styles = [
+                  { rankBg: "#fff3e0", rankColor: "#c05621" },
+                  { rankBg: "#f0f9ff", rankColor: "#0369a1" },
+                  { rankBg: "#f0fdf4", rankColor: "#166534" },
+                  { rankBg: "#f7f7f7", rankColor: "#b4b7c9" },
+                  { rankBg: "#f7f7f7", rankColor: "#b4b7c9" },
+                ];
+                return { rank: String(i + 1), ...styles[i % styles.length], title: t.title, views: fmtViews(t.viewCount) };
+              }) : [
                 { rank: "1", rankBg: "#fff3e0", rankColor: "#c05621", title: "Quy định mới về việc chuyển nhượng chỗ đỗ xe tầng hầm", views: "2.841 lượt xem" },
                 { rank: "2", rankBg: "#f0f9ff", rankColor: "#0369a1", title: "Hướng dẫn đăng ký thẻ từ ra vào cho người thân", views: "1.920 lượt xem" },
                 { rank: "3", rankBg: "#f0fdf4", rankColor: "#166534", title: "Danh sách tiện ích nâng cấp tầng 3 hoàn thành tháng 4/2026", views: "1.532 lượt xem" },
                 { rank: "4", rankBg: "#f7f7f7", rankColor: "#b4b7c9", title: "Biên bản hội nghị cư dân thường niên 2026 đã có trên hệ thống", views: "1.104 lượt xem" },
                 { rank: "5", rankBg: "#f7f7f7", rankColor: "#b4b7c9", title: "Nhận đồ giao tận nơi — Quy trình mới từ 1/5/2026", views: "987 lượt xem" },
-              ].map((item, i) => (
+              ]).map((item: any, i: number) => (
                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: "10px", padding: "10px 16px", cursor: "pointer" }}>
                   <div style={{ width: "22px", height: "22px", borderRadius: "6px", background: item.rankBg, color: item.rankColor, fontSize: "11px", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: "1px" }}>{item.rank}</div>
                   <div style={{ flex: 1 }}>
@@ -215,12 +263,21 @@ export default function TinTucPage() {
               <div style={{ fontSize: "12px", fontWeight: 700, color: "#585c7b", textTransform: "uppercase", letterSpacing: ".5px" }}>Sự kiện sắp diễn ra</div>
             </div>
             <div style={{ padding: "4px 0 8px" }}>
-              {[
+              {(upcomingEvents.length ? upcomingEvents.map((e) => {
+                const d = new Date(e.eventDate);
+                const time = e.startTime && e.endTime ? `${e.startTime} – ${e.endTime}` : "Cả ngày";
+                return {
+                  day: String(d.getDate()).padStart(2, "0"),
+                  mon: `Th.${d.getMonth() + 1}`,
+                  title: e.title,
+                  loc: `${time}${e.location ? ` · ${e.location}` : ""}`,
+                };
+              }) : [
                 { day: "25", mon: "Th.5", title: "Bảo trì hệ thống cấp nước toà B", loc: "08:00 – 17:00 · Tầng 1–5 toà B" },
                 { day: "26", mon: "Th.5", title: "Hướng dẫn nội quy cho cư dân mới", loc: "18:00 – 19:30 · Phòng sinh hoạt cộng đồng" },
                 { day: "01", mon: "Th.6", title: "Ngày hội cư dân Landmark 1", loc: "08:00 – 21:00 · Hồ bơi & Sân thượng" },
                 { day: "07", mon: "Th.6", title: "Kiểm tra định kỳ hệ thống PCCC", loc: "Cả ngày · Toàn tòa nhà" },
-              ].map((ev, i) => (
+              ]).map((ev: any, i: number) => (
                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: "10px", padding: "10px 16px", cursor: "pointer" }}>
                   <div style={{ width: "38px", textAlign: "center", flexShrink: 0 }}>
                     <div style={{ fontSize: "18px", fontWeight: 800, color: "#4137f9", lineHeight: 1 }}>{ev.day}</div>

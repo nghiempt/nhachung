@@ -1,3 +1,38 @@
+"use client";
+import { api } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
+
+const KPI_CAT_LABEL: Record<string, string> = {
+  FINANCE: "Tài chính", MAINTENANCE: "Bảo trì hạ tầng", SATISFACTION: "Dịch vụ cư dân",
+  LEGAL: "Pháp lý", OPERATIONS: "Vận hành", SECURITY: "An ninh & PCCC",
+};
+const KPI_CAT_COLOR: Record<string, string> = {
+  FINANCE: "#1c9d5f", MAINTENANCE: "#c8761b", SATISFACTION: "#4137f9",
+  LEGAL: "#5a3ad9", OPERATIONS: "#1870c4", SECURITY: "#f5222d",
+};
+const RATING_LABEL: Record<string, string> = {
+  EXCELLENT: "Xuất sắc", GOOD: "Tốt", AVERAGE: "Trung bình", POOR: "Kém",
+};
+const RATING_BADGE: Record<string, { class: string; text: string }> = {
+  EXCELLENT: { class: "badge badge-green", text: "Xuất sắc" },
+  GOOD: { class: "badge badge-green", text: "Tốt" },
+  AVERAGE: { class: "badge badge-orange", text: "Trung bình" },
+  POOR: { class: "badge badge-red", text: "Kém" },
+};
+const INDICATOR_STATUS: Record<string, { class: string; text: string }> = {
+  ON_TRACK: { class: "badge badge-green", text: "Đạt" },
+  NEEDS_ATTENTION: { class: "badge badge-orange", text: "Cần cải thiện" },
+  OFF_TRACK: { class: "badge badge-red", text: "Chưa đạt" },
+};
+const initialsKpi = (name: string) => name.split(" ").slice(-2).map((p) => p[0]).join("").toUpperCase();
+const MEMBER_PALETTE = [
+  { bg: "#efeeff", color: "#4137f9" },
+  { bg: "#e3fbed", color: "#1c9d5f" },
+  { bg: "#e4f1ff", color: "#1870c4" },
+  { bg: "#fff1de", color: "#c8761b" },
+  { bg: "#ffeded", color: "#f5222d" },
+];
+
 type KpiRow = {
   metric: string;
   unit: string;
@@ -58,6 +93,55 @@ const groups: KpiGroup[] = [
 ];
 
 export default function KpiPage() {
+  const { data } = useApi(() => api.kpi(), []);
+  const period = data?.period;
+  const summary = data?.summary ?? { totalScore: 87.4, rating: "EXCELLENT", achieved: 18, needsAttention: 4, offTrack: 2, totalIndicators: 24 };
+  const apiCategories: any[] = data?.categoryScores ?? [];
+  const indicators: any[] = data?.indicators ?? [];
+  const boardMembers: any[] = data?.boardMembers ?? [];
+  const trend: any[] = data?.trend ?? [];
+
+  const totalScore = Number(summary.totalScore) || 87.4;
+  const totalScoreCircle = 289;
+  const totalScoreDash = (totalScore / 100) * totalScoreCircle;
+  const periodLabel = period ? `Quý ${period.quarter}/${period.year}` : "Quý 2/2024";
+  const ratingText = RATING_LABEL[summary.rating] ?? "Xuất sắc";
+
+  // Group indicators by category name for the detail table
+  const apiGroups: KpiGroup[] = apiCategories.length
+    ? apiCategories.map((c: any) => {
+        const catIndicators = indicators.filter((i: any) => i.categoryId === c.id);
+        const color = KPI_CAT_COLOR[c.name] ?? "#585c7b";
+        return {
+          label: KPI_CAT_LABEL[c.name] ?? c.name,
+          color,
+          rows: catIndicators.map((i: any): KpiRow => {
+            const ach = Number(i.achievementRate);
+            const statusInfo = INDICATOR_STATUS[i.status] ?? INDICATOR_STATUS.ON_TRACK;
+            const isGood = i.status === "ON_TRACK";
+            const isWarn = i.status === "NEEDS_ATTENTION";
+            const achColor = isGood ? "#1c9d5f" : isWarn ? "#c8761b" : "#f5222d";
+            return {
+              metric: i.name,
+              unit: i.unit ?? "",
+              target: `${Number(i.targetValue)}${i.unit?.includes("%") ? "" : ""}`,
+              actual: `${Number(i.actualValue)}${i.unit?.includes("%") ? "" : ""}`,
+              actualClass: isGood ? "green" : isWarn ? "orange" : "red",
+              achPct: `${ach.toFixed(1)}%`,
+              achColor,
+              achWidth: `${Math.min(ach, 100)}%`,
+              achFillColor: color,
+              pts: `${Number(i.score)}/25`,
+              ptsStyle: isWarn ? { color: "#c8761b" } : undefined,
+              badgeClass: statusInfo.class,
+              badgeText: statusInfo.text,
+            };
+          }),
+        };
+      })
+    : [];
+  const groupsToRender = apiGroups.length ? apiGroups : groups;
+
   return (
     <div className="kpi-page">
       {/* ── Page Header ── */}
@@ -74,7 +158,7 @@ export default function KpiPage() {
               <line x1="8" y1="2" x2="8" y2="6" />
               <line x1="3" y1="10" x2="21" y2="10" />
             </svg>
-            Quý 2/2024
+            {periodLabel}
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="6 9 12 15 18 9" />
             </svg>
@@ -105,18 +189,18 @@ export default function KpiPage() {
               <circle cx="55" cy="55" r="46" fill="none" stroke="rgba(255,255,255,.15)" strokeWidth="10" />
               <circle
                 cx="55" cy="55" r="46" fill="none" stroke="rgba(255,255,255,.9)" strokeWidth="10"
-                strokeDasharray="252.7 289" strokeDashoffset="72.3" strokeLinecap="round"
+                strokeDasharray={`${totalScoreDash} ${totalScoreCircle}`} strokeDashoffset="72.3" strokeLinecap="round"
                 transform="rotate(-90 55 55)"
               />
             </svg>
             <div className="score-ring-label">
-              <div className="score-big">87.4</div>
+              <div className="score-big">{totalScore.toFixed(1)}</div>
               <div className="score-max">/100</div>
             </div>
           </div>
           <div className="score-info">
-            <div className="score-title">Tổng điểm KPI — Quý 2/2024</div>
-            <div className="score-grade">Xuất sắc</div>
+            <div className="score-title">Tổng điểm KPI — {periodLabel}</div>
+            <div className="score-grade">{ratingText}</div>
             <div className="score-grade-badge">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12" />
@@ -137,7 +221,7 @@ export default function KpiPage() {
             </div>
             <div className="stat-mini-trend trend-up">+3 so với Q1</div>
           </div>
-          <div className="stat-mini-val green">18</div>
+          <div className="stat-mini-val green">{summary.achieved}</div>
           <div className="stat-mini-label">Chỉ tiêu đạt / vượt</div>
         </div>
 
@@ -151,7 +235,7 @@ export default function KpiPage() {
             </div>
             <div className="stat-mini-trend trend-same">Theo dõi</div>
           </div>
-          <div className="stat-mini-val orange">4</div>
+          <div className="stat-mini-val orange">{summary.needsAttention}</div>
           <div className="stat-mini-label">Chỉ tiêu cần cải thiện</div>
         </div>
 
@@ -166,7 +250,7 @@ export default function KpiPage() {
             </div>
             <div className="stat-mini-trend trend-down">-1 so với Q1</div>
           </div>
-          <div className="stat-mini-val red">2</div>
+          <div className="stat-mini-val red">{summary.offTrack}</div>
           <div className="stat-mini-label">Chỉ tiêu chưa đạt</div>
         </div>
 
@@ -184,7 +268,7 @@ export default function KpiPage() {
             </div>
             <div className="stat-mini-trend trend-same">Q2/2024</div>
           </div>
-          <div className="stat-mini-val">24</div>
+          <div className="stat-mini-val">{summary.totalIndicators}</div>
           <div className="stat-mini-label">Tổng chỉ tiêu đánh giá</div>
         </div>
       </div>
@@ -368,22 +452,33 @@ export default function KpiPage() {
             </div>
           </div>
 
-          <div style={{ background: "#fafafa", borderRadius: 12, padding: "14px 16px", display: "flex", gap: 16 }}>
-            <div style={{ flex: 1, textAlign: "center" }}>
-              <div style={{ fontSize: 12, color: "#585c7b", marginBottom: 4 }}>Q1/2024</div>
-              <div style={{ fontFamily: '"Manrope","Inter",sans-serif', fontSize: 20, fontWeight: 800, color: "#272727" }}>83.2</div>
-            </div>
-            <div style={{ width: 1, background: "#e2e5f1" }}></div>
-            <div style={{ flex: 1, textAlign: "center" }}>
-              <div style={{ fontSize: 12, color: "#4137f9", fontWeight: 600, marginBottom: 4 }}>Q2/2024 ●</div>
-              <div style={{ fontFamily: '"Manrope","Inter",sans-serif', fontSize: 20, fontWeight: 800, color: "#4137f9" }}>87.4</div>
-            </div>
-            <div style={{ width: 1, background: "#e2e5f1" }}></div>
-            <div style={{ flex: 1, textAlign: "center" }}>
-              <div style={{ fontSize: 12, color: "#585c7b", marginBottom: 4 }}>Tăng trưởng</div>
-              <div style={{ fontFamily: '"Manrope","Inter",sans-serif', fontSize: 20, fontWeight: 800, color: "#1c9d5f" }}>+4.2</div>
-            </div>
-          </div>
+          {(() => {
+            const last = trend[trend.length - 1];
+            const prev = trend[trend.length - 2];
+            const prevScore = prev?.totalScore != null ? Number(prev.totalScore) : 83.2;
+            const lastScore = last?.totalScore != null ? Number(last.totalScore) : totalScore;
+            const delta = lastScore - prevScore;
+            const prevLabel = prev ? `Q${prev.quarter}/${prev.year}` : "Q1/2024";
+            const lastLabel = last ? `Q${last.quarter}/${last.year}` : periodLabel;
+            return (
+              <div style={{ background: "#fafafa", borderRadius: 12, padding: "14px 16px", display: "flex", gap: 16 }}>
+                <div style={{ flex: 1, textAlign: "center" }}>
+                  <div style={{ fontSize: 12, color: "#585c7b", marginBottom: 4 }}>{prevLabel}</div>
+                  <div style={{ fontFamily: '"Manrope","Inter",sans-serif', fontSize: 20, fontWeight: 800, color: "#272727" }}>{prevScore.toFixed(1)}</div>
+                </div>
+                <div style={{ width: 1, background: "#e2e5f1" }}></div>
+                <div style={{ flex: 1, textAlign: "center" }}>
+                  <div style={{ fontSize: 12, color: "#4137f9", fontWeight: 600, marginBottom: 4 }}>{lastLabel} ●</div>
+                  <div style={{ fontFamily: '"Manrope","Inter",sans-serif', fontSize: 20, fontWeight: 800, color: "#4137f9" }}>{lastScore.toFixed(1)}</div>
+                </div>
+                <div style={{ width: 1, background: "#e2e5f1" }}></div>
+                <div style={{ flex: 1, textAlign: "center" }}>
+                  <div style={{ fontSize: 12, color: "#585c7b", marginBottom: 4 }}>Tăng trưởng</div>
+                  <div style={{ fontFamily: '"Manrope","Inter",sans-serif', fontSize: 20, fontWeight: 800, color: delta >= 0 ? "#1c9d5f" : "#f5222d" }}>{delta >= 0 ? "+" : ""}{delta.toFixed(1)}</div>
+                </div>
+              </div>
+            );
+          })()}
         </div>
 
         <div className="detail-card">
@@ -402,7 +497,7 @@ export default function KpiPage() {
               <span>Kết quả</span>
             </div>
 
-            {groups.map((g) => (
+            {groupsToRender.map((g) => (
               <div key={g.label}>
                 <div className="kpi-group-label">
                   <span className="kpi-group-dot" style={{ background: g.color }}></span>
@@ -439,13 +534,26 @@ export default function KpiPage() {
           <span className="card-sub">Nhiệm kỳ 2023–2026</span>
         </div>
         <div className="members-grid">
-          {[
+          {(boardMembers.length ? boardMembers.slice(0, 5).map((b: any, i: number) => {
+            const palette = MEMBER_PALETTE[i % MEMBER_PALETTE.length];
+            const ratingInfo = b.currentRating ? RATING_BADGE[b.currentRating] : RATING_BADGE.GOOD;
+            return {
+              initials: initialsKpi(b.user?.fullName ?? "?"),
+              bg: palette.bg,
+              color: palette.color,
+              name: b.user?.fullName ?? "—",
+              role: b.position ?? "—",
+              score: String(Math.round(Number(b.currentScore ?? 0))),
+              badge: ratingInfo.class.replace("badge ", ""),
+              badgeText: ratingInfo.text,
+            };
+          }) : [
             { initials: "NT", bg: "#efeeff", color: "#4137f9", name: "Ông Nguyễn Thanh Bình", role: "Chủ tịch BQT", score: "92", badge: "badge-green", badgeText: "Xuất sắc" },
             { initials: "TL", bg: "#e3fbed", color: "#1c9d5f", name: "Bà Trần Thị Lan Anh", role: "Phó Chủ tịch BQT", score: "89", badge: "badge-green", badgeText: "Tốt" },
             { initials: "PH", bg: "#e4f1ff", color: "#1870c4", name: "Ông Phạm Hoàng Nam", role: "Uỷ viên Tài chính", score: "91", badge: "badge-green", badgeText: "Xuất sắc" },
             { initials: "LV", bg: "#fff1de", color: "#c8761b", name: "Ông Lê Văn Đức", role: "Uỷ viên Kỹ thuật", score: "83", badge: "badge-orange", badgeText: "Cần cải thiện" },
             { initials: "VT", bg: "#ffeded", color: "#f5222d", name: "Bà Võ Thị Mai", role: "Uỷ viên An ninh", score: "88", badge: "badge-green", badgeText: "Tốt" },
-          ].map((m) => (
+          ]).map((m: any) => (
             <div className="member-item" key={m.initials}>
               <div className="member-avatar" style={{ background: m.bg, color: m.color }}>{m.initials}</div>
               <div>
