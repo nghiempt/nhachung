@@ -1279,3 +1279,158 @@
   padding: 9px 16px; border-radius: 12px;
   font-size: 14px; font-weight: 500; align-self: flex-start; cursor: pointer; border: 0;
 }
+
+/* ============================================================
+   PAGE: QUỸ BẢO TRÌ
+   ============================================================ */
+.qbt-page { padding: 20px; display: flex; flex-direction: column; gap: 20px; font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+
+.qbt-page .page-hd { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 0; }
+.qbt-page .page-title { font-size: 28px; font-weight: 700; line-height: 36px; color: #272727; }
+.qbt-page .page-sub { font-size: 16px; color: #3e4265; margin-top: 6px; line-height: 24px; font-weight: 500; }
+.qbt-page .page-actions { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+.qbt-page .btn-outline {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 16px; background: #ffffff;
+  border: 1px solid #d4d7e5; border-radius: 10px;
+  font-size: 14px; font-weight: 500; color: #272727;
+  cursor: pointer; white-space: nowrap; line-height: 22px;
+}
+.qbt-page .btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 16px; background: #4137f9; border: 1px solid #4137f9;
+  border-radius: 10px; font-size: 14px; font-weight: 500; color: #fff;
+  cursor: pointer; white-space: nowrap; line-height: 22px;
+}
+
+/* KPI */
+.qbt-page .kpi-row { display: flex; gap: 16px; }
+.qbt-page .kpi-card {
+  flex: 1; min-width: 0; background: #ffffff;
+  border: 1px solid #e2e5f1; border-radius: 20px;
+  padding: 19px 21px; display: flex; flex-direction: column; gap: 14px;
+}
+.qbt-page .kpi-icon-bg { width: 44px; height: 44px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.qbt-page .kpi-icon-bg svg { width: 22px; height: 22px; }
+.qbt-page .kpi-label { font-size: 13px; font-weight: 500; color: #585c7b; }
+.qbt-page .kpi-value { font-family: "Manrope","Inter",sans-serif; font-size: 22px; font-weight: 700; color: #272727; line-height: 30px; letter-spacing: -.22px; }
+.qbt-page .kpi-trend { display: flex; align-items: center; gap: 4px; padding-top: 2px; }
+.qbt-page .kpi-pct { font-size: 12px; font-weight: 700; }
+.qbt-page .kpi-pct.up { color: #1c9d5f; }
+.qbt-page .kpi-pct.down { color: #f5222d; }
+.qbt-page .kpi-tlabel { font-size: 12px; color: #585c7b; margin-left: 2px; }
+.qbt-page .arrow-up, .qbt-page .arrow-down { width: 11px; height: 11px; flex: 0 0 11px; }
+
+/* Chart row */
+.qbt-page .chart-row { display: flex; gap: 16px; align-items: stretch; }
+.qbt-page .chart-card {
+  flex: 1; min-width: 0; background: #ffffff;
+  border: 1px solid #e2e5f1; border-radius: 20px;
+  padding: 21px 23px; display: flex; flex-direction: column; gap: 14px;
+}
+.qbt-page .chart-hd { display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.qbt-page .chart-title { font-family: "Manrope","Inter",sans-serif; font-size: 17px; font-weight: 700; color: #272727; display: flex; align-items: center; gap: 8px; }
+.qbt-page .chart-period {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 7px 13px; background: #ffffff;
+  border: 1px solid #d4d7e5; border-radius: 10px;
+  font-size: 12.5px; color: #3e4265; cursor: pointer;
+}
+.qbt-page .chart-svg-wrap { position: relative; flex: 1; min-height: 240px; }
+.qbt-page .chart-svg-wrap svg { display: block; width: 100%; }
+.qbt-page .chart-y-lbl { position: absolute; left: 0; width: 36px; text-align: right; font-size: 11.5px; color: #585c7b; transform: translateY(-50%); white-space: nowrap; pointer-events: none; }
+.qbt-page .chart-legend { display: flex; gap: 14px; align-items: center; justify-content: center; }
+.qbt-page .legend-item { display: flex; align-items: center; gap: 6px; }
+.qbt-page .legend-dot { width: 9px; height: 9px; border-radius: 4.5px; flex-shrink: 0; }
+.qbt-page .legend-line { width: 18px; height: 3px; border-radius: 1.5px; flex-shrink: 0; }
+.qbt-page .legend-lbl { font-size: 12px; color: #3e4265; white-space: nowrap; }
+
+/* Fund info card */
+.fund-info-card {
+  width: 300px; flex-shrink: 0; background: #ffffff;
+  border: 1px solid #e2e5f1; border-radius: 20px;
+  padding: 21px 23px; display: flex; flex-direction: column; gap: 20px;
+}
+.fund-info-title { font-family: "Manrope","Inter",sans-serif; font-size: 17px; font-weight: 700; color: #272727; }
+.fund-info-list { display: flex; flex-direction: column; gap: 12px; }
+.fund-info-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid #eff2fc; }
+.fund-info-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.fund-info-key { font-size: 13px; color: #585c7b; line-height: 20px; flex-shrink: 0; }
+.fund-info-val { font-size: 13px; font-weight: 600; color: #272727; text-align: right; line-height: 20px; }
+.fund-info-val.green { color: #1c9d5f; }
+.fund-info-val.blue { color: #4137f9; }
+
+.collect-rate-wrap { display: flex; flex-direction: column; gap: 8px; }
+.collect-rate-hd { display: flex; align-items: center; justify-content: space-between; }
+.collect-rate-label { font-size: 13px; color: #585c7b; }
+.collect-rate-val { font-family: "Manrope","Inter",sans-serif; font-size: 15px; font-weight: 700; color: #1c9d5f; }
+.collect-bar-track { height: 10px; background: #f0f0f5; border-radius: 5px; overflow: hidden; }
+.collect-bar-fill { height: 100%; border-radius: 5px; background: #1c9d5f; }
+.collect-sub { font-size: 12px; color: #585c7b; }
+
+/* Two table row */
+.two-table-row { display: flex; gap: 16px; align-items: stretch; }
+.table-card {
+  flex: 1; min-width: 0; background: #ffffff;
+  border: 1px solid #e2e5f1; border-radius: 20px;
+  padding: 21px 23px; display: flex; flex-direction: column; gap: 14px;
+}
+.table-hd { display: flex; align-items: center; justify-content: space-between; }
+.table-title { font-family: "Manrope","Inter",sans-serif; font-size: 16px; font-weight: 700; color: #272727; }
+.table-link { font-size: 13px; font-weight: 500; color: #4137f9; cursor: pointer; }
+
+.exp-table { display: flex; flex-direction: column; }
+.exp-hd { display: grid; grid-template-columns: 1fr 100px 88px 80px; padding: 0 8px 8px; border-bottom: 1px solid #e2e5f1; }
+.exp-hd span { font-size: 12px; font-weight: 600; color: #585c7b; text-transform: uppercase; letter-spacing: .4px; }
+.exp-hd span:nth-child(3) { text-align: right; }
+.exp-hd span:nth-child(4) { text-align: center; }
+
+.exp-row { display: grid; grid-template-columns: 1fr 100px 88px 80px; align-items: center; padding: 11px 8px; border-bottom: 1px solid #eff2fc; gap: 0; transition: background .12s; }
+.exp-row:hover { background: #fafafa; border-radius: 8px; }
+.exp-row:last-child { border-bottom: 0; }
+.exp-name { font-size: 13px; font-weight: 500; color: #272727; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 8px; }
+.exp-contractor { font-size: 12px; color: #585c7b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 8px; }
+.exp-amount { font-family: "Manrope","Inter",sans-serif; font-size: 13px; font-weight: 700; color: #f5222d; text-align: right; white-space: nowrap; }
+.exp-status-wrap { display: flex; justify-content: center; }
+
+.plan-list { display: flex; flex-direction: column; gap: 0; }
+.plan-row { display: flex; align-items: center; gap: 12px; padding: 12px 8px; border-bottom: 1px solid #eff2fc; transition: background .12s; }
+.plan-row:hover { background: #fafafa; border-radius: 8px; }
+.plan-row:last-child { border-bottom: 0; }
+.plan-dot-col { display: flex; flex-direction: column; align-items: center; gap: 0; flex: 0 0 18px; }
+.plan-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; border: 2px solid; }
+.plan-dot.done { background: #1c9d5f; border-color: #1c9d5f; }
+.plan-dot.planned { background: #fff; border-color: #4137f9; }
+.plan-dot.tentative { background: #fff; border-color: #d4d7e5; }
+.plan-body { flex: 1; min-width: 0; }
+.plan-name { font-size: 13px; font-weight: 500; color: #272727; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.plan-meta { font-size: 12px; color: #585c7b; margin-top: 2px; }
+.plan-right { text-align: right; flex-shrink: 0; }
+.plan-amount { font-family: "Manrope","Inter",sans-serif; font-size: 13px; font-weight: 700; color: #272727; white-space: nowrap; }
+.plan-period { font-size: 12px; color: #585c7b; margin-top: 2px; }
+
+/* Badges (qbt-scoped to avoid collisions) */
+.qbt-page .badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.qbt-page .badge-green { background: #e3fbed; color: #1c9d5f; }
+.qbt-page .badge-blue { background: #efeaff; color: #5a3ad9; }
+.qbt-page .badge-orange { background: #fff1de; color: #c8761b; }
+.qbt-page .badge-gray { background: #f0f0f5; color: #585c7b; }
+
+/* Block card */
+.block-card {
+  background: #ffffff; border: 1px solid #e2e5f1; border-radius: 20px;
+  padding: 21px 23px; display: flex; flex-direction: column; gap: 18px;
+}
+.block-card-hd { display: flex; align-items: center; justify-content: space-between; }
+.block-card-title { font-family: "Manrope","Inter",sans-serif; font-size: 16px; font-weight: 700; color: #272727; }
+.block-card-meta { font-size: 13px; color: #585c7b; }
+.block-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.block-item { display: flex; flex-direction: column; gap: 8px; }
+.block-item-hd { display: flex; align-items: center; justify-content: space-between; }
+.block-name { font-size: 14px; font-weight: 600; color: #272727; }
+.block-count { font-size: 12px; color: #585c7b; }
+.block-track { height: 8px; background: #f0f0f5; border-radius: 4px; overflow: hidden; }
+.block-fill { height: 100%; border-radius: 4px; transition: width .3s; }
+.block-foot { display: flex; align-items: center; justify-content: space-between; }
+.block-pct { font-family: "Manrope","Inter",sans-serif; font-size: 13.5px; font-weight: 700; color: #1c9d5f; }
+.block-missing { font-size: 12px; color: #585c7b; }
