@@ -2230,3 +2230,146 @@
 .profile-page .badge-green { background: #e3fbed; color: #1c9d5f; }
 .profile-page .badge-blue { background: #efeaff; color: #5a3ad9; }
 .profile-page .badge-gray { background: #f0f0f5; color: #585c7b; }
+
+/* ============================================================
+   PAGE: THÀNH VIÊN GIA ĐÌNH
+   ============================================================ */
+.giadinh-page { padding: 24px 28px 32px; font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+
+.giadinh-page .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+.giadinh-page .page-title { font-size: 20px; font-weight: 700; color: #272727; line-height: 28px; }
+.giadinh-page .page-subtitle { font-size: 13px; color: #585c7b; margin-top: 3px; line-height: 18px; }
+.giadinh-page .btn-add-member {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: #4137f9; color: #fff;
+  font-size: 13px; font-weight: 600; padding: 9px 16px; border-radius: 8px;
+  cursor: pointer; border: 0;
+}
+.giadinh-page .btn-add-member:hover { background: #3128e0; }
+.giadinh-page .btn-add-member svg { width: 16px; height: 16px; flex: 0 0 16px; }
+
+/* Stats */
+.giadinh-page .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+.giadinh-page .stat-card {
+  background: #ffffff; border: 1px solid #e2e5f1; border-radius: 20px;
+  padding: 16px 20px; display: flex; align-items: center; gap: 14px;
+}
+.giadinh-page .stat-icon-wrap { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.giadinh-page .stat-icon-wrap svg { width: 22px; height: 22px; }
+.giadinh-page .stat-lbl { font-size: 12px; color: #585c7b; line-height: 16px; font-weight: 500; }
+.giadinh-page .stat-val { font-family: "Manrope","Inter",sans-serif; font-size: 22px; font-weight: 800; color: #272727; line-height: 30px; }
+.giadinh-page .stat-sub { font-size: 12px; color: #585c7b; margin-top: 1px; }
+.giadinh-page .stat-sub b { font-weight: 600; }
+
+/* Section header */
+.giadinh-page .section-hd-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.giadinh-page .section-hd-title { font-size: 15px; font-weight: 700; color: #272727; }
+.giadinh-page .section-hd-sub { font-size: 12px; color: #585c7b; }
+.giadinh-page .member-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+/* Member card */
+.giadinh-page .member-card {
+  background: #ffffff; border: 1px solid #e2e5f1; border-radius: 20px;
+  padding: 22px 20px 18px; display: flex; flex-direction: column; gap: 0;
+  transition: box-shadow .15s, border-color .15s; position: relative;
+}
+.giadinh-page .member-card:hover { box-shadow: 0 4px 20px rgba(65,55,249,.08); border-color: #d3c5fd; }
+
+.giadinh-page .owner-tag {
+  position: absolute; top: 14px; right: 14px;
+  font-size: 10px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase;
+  background: #efeeff; color: #4137f9; padding: 3px 8px; border-radius: 20px; white-space: nowrap;
+}
+
+.giadinh-page .mc-top { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.giadinh-page .mc-avatar {
+  width: 56px; height: 56px; border-radius: 50%; flex: 0 0 56px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: "Manrope","Inter",sans-serif; font-size: 18px; font-weight: 800; color: #fff;
+  overflow: hidden; object-fit: cover;
+}
+.giadinh-page .mc-name { font-size: 15px; font-weight: 700; color: #272727; line-height: 20px; }
+.giadinh-page .mc-relation { font-size: 12px; color: #585c7b; margin-top: 2px; }
+
+.giadinh-page .mc-status {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 6px;
+  margin-top: 6px; white-space: nowrap;
+}
+.giadinh-page .mc-status-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.giadinh-page .mc-status.ok { background: #e3fbed; color: #1c9d5f; }
+.giadinh-page .mc-status.ok .mc-status-dot { background: #1c9d5f; }
+.giadinh-page .mc-status.pending { background: #fff8ec; color: #c8761b; }
+.giadinh-page .mc-status.pending .mc-status-dot { background: #c8761b; }
+.giadinh-page .mc-status.temp { background: #e4f1ff; color: #1870c4; }
+.giadinh-page .mc-status.temp .mc-status-dot { background: #1870c4; }
+
+.giadinh-page .mc-divider { border: 0; border-top: 1px solid #e2e5f1; margin: 12px 0; }
+.giadinh-page .mc-fields { display: flex; flex-direction: column; gap: 9px; }
+.giadinh-page .mc-field { display: flex; align-items: baseline; gap: 8px; }
+.giadinh-page .mc-field-label { font-size: 12px; color: #585c7b; width: 90px; flex-shrink: 0; }
+.giadinh-page .mc-field-value { font-size: 13px; color: #272727; font-weight: 500; flex: 1; min-width: 0; }
+
+.giadinh-page .doc-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10.5px; font-weight: 600; padding: 2px 7px; border-radius: 5px; white-space: nowrap;
+}
+.giadinh-page .doc-cccd { background: #efeaff; color: #5a3ad9; }
+.giadinh-page .doc-ks { background: #fff1de; color: #c8761b; }
+.giadinh-page .doc-hc { background: #e4f1ff; color: #1870c4; }
+
+.giadinh-page .mc-vehicles { display: flex; gap: 5px; flex-wrap: wrap; }
+.giadinh-page .mc-veh {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10.5px; font-weight: 500; color: #585c7b;
+  background: #f7f7f7; border: 1px solid #e2e5f1; padding: 2px 8px; border-radius: 5px; white-space: nowrap;
+}
+
+.giadinh-page .mc-actions { display: flex; gap: 8px; margin-top: 14px; }
+.giadinh-page .mc-btn {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
+  border: 1px solid #d4d7e5; border-radius: 8px; padding: 7px 0;
+  font-size: 12px; font-weight: 600; color: #585c7b; cursor: pointer;
+  background: #ffffff; transition: all .15s;
+}
+.giadinh-page .mc-btn:hover { border-color: #4137f9; color: #4137f9; }
+.giadinh-page .mc-btn.primary { background: #4137f9; color: #fff; border-color: #4137f9; }
+.giadinh-page .mc-btn.primary:hover { background: #3128e0; }
+.giadinh-page .mc-btn svg { width: 13px; height: 13px; flex: 0 0 13px; }
+
+/* Slot card */
+.giadinh-page .slot-card {
+  background: #ffffff; border: 1.5px dashed #d4d7e5; border-radius: 20px;
+  padding: 22px 20px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 10px;
+  min-height: 200px; cursor: pointer; transition: border-color .15s, background .15s;
+}
+.giadinh-page .slot-card:hover { border-color: #4137f9; background: #f7f5ff; }
+.giadinh-page .slot-circle {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: #f7f7f7; border: 1.5px dashed #d4d7e5;
+  display: flex; align-items: center; justify-content: center; transition: border-color .15s, background .15s;
+}
+.giadinh-page .slot-card:hover .slot-circle { border-color: #4137f9; background: #f7f5ff; }
+.giadinh-page .slot-circle svg { width: 22px; height: 22px; color: #b4b7c9; }
+.giadinh-page .slot-card:hover .slot-circle svg { color: #4137f9; }
+.giadinh-page .slot-label { font-size: 13px; font-weight: 600; color: #b4b7c9; }
+.giadinh-page .slot-card:hover .slot-label { color: #4137f9; }
+.giadinh-page .slot-sub { font-size: 12px; color: #b4b7c9; text-align: center; }
+
+/* Policy note */
+.giadinh-page .policy-note {
+  background: #f7f5ff; border: 1px solid #d3c5fd; border-radius: 12px;
+  padding: 12px 16px; display: flex; align-items: flex-start; gap: 10px; margin-top: 20px;
+}
+.giadinh-page .policy-note svg { width: 16px; height: 16px; flex: 0 0 16px; color: #4137f9; margin-top: 1px; }
+.giadinh-page .policy-text { font-size: 12px; color: #3e4265; line-height: 18px; }
+.giadinh-page .policy-text b { font-weight: 600; color: #4137f9; }
+
+/* Verified badge */
+.giadinh-page .verified-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 10px; font-weight: 700; color: #1c9d5f; background: #e3fbed;
+  padding: 2px 6px; border-radius: 8px;
+}
+.giadinh-page .verified-badge svg { width: 10px; height: 10px; }
