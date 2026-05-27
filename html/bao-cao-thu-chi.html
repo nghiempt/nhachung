@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nhà Chung — Báo cáo thu chi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --primary:           #4137f9;
+  --primary-hover:     #3028e0;
+  --primary-light:     #f7f5ff;
+  --primary-border:    #d3c5fd;
+  --primary-bg-active: #f1f7ff;
+
+  --text:              #222222;
+  --text-272727:       #272727;
+  --text-secondary:    #3e4265;
+  --text-gray:         #585c7b;
+  --text-placeholder:  #b4b7c9;
+  --text-section-label:#959595;
+
+  --canvas:            #ffffff;
+  --surface-hover:     #fafafa;
+  --surface-subtle:    #f7f7f7;
+
+  --border:            #e2e5f1;
+  --border-input:      #d4d7e5;
+  --border-subtle:     #eff2fc;
+  --border-divider:    #dedede;
+
+  --success:           #1c9d5f;
+  --danger:            #f5222d;
+
+  --r-xs:   4px;
+  --r-sm:   8px;
+  --r-md:   10px;
+  --r-lg:   12px;
+  --r-xl:   14px;
+  --r-card: 20px;
+
+  --shadow-sidebar: 2px 0 10px rgba(89,89,89,.05);
+  --shadow-pop:     0 8px 24px rgba(0,0,0,.06);
+
+  --sidebar-w:  268px;
+
+  --fs-xs:   12px;
+  --fs-sm:   13px;
+  --fs-body: 14px;
+  --fs-md:   16px;
+  --fs-3xl:  28px;
+
+  --font-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-number:  "Manrope", "Inter", sans-serif;
+}
+
+/* ============================================================
+   RESET
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: var(--font-body);
+  background: var(--surface-hover);
+  color: var(--text-272727);
+  display: flex;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+a { color: inherit; text-decoration: none; }
+button { font: inherit; cursor: pointer; border: 0; background: none; }
+img { display: block; }
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: var(--canvas);
+  border-right: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sidebar);
+  display: flex;
+  flex-direction: column;
+  padding: 16px 0 24px;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.sidebar-logo {
+  padding: 0 16px 30px;
+  display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+}
+.sidebar-logo-icon { width: 36px; height: 40px; flex-shrink: 0; }
+.sidebar-logo-text { width: 114px; height: 23px; flex-shrink: 0; }
+.sidebar-nav-group {
+  display: flex; flex-direction: column; gap: 20px; padding: 0 16px;
+}
+.nav-section { display: flex; flex-direction: column; gap: 2px; }
+.nav-section-label {
+  font-size: 12px; font-weight: 700; color: var(--text-section-label);
+  text-transform: uppercase; letter-spacing: .5px; padding: 0 8px 6px; line-height: 16px;
+}
+.nav-row { display: flex; align-items: center; position: relative; border-radius: var(--r-sm); width: 100%; }
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px; border-radius: var(--r-sm); cursor: pointer;
+  color: var(--text-272727); font-size: var(--fs-body); font-weight: 400;
+  line-height: 22px; width: 236px; flex-shrink: 0; transition: background .15s;
+}
+.nav-item:hover  { background: var(--surface-hover); }
+.nav-item.active { background: var(--primary-bg-active); color: var(--primary); font-weight: 600; }
+.nav-item .nav-icon {
+  width: 20px; height: 20px; flex: 0 0 20px;
+  filter: brightness(0) opacity(0.5);
+}
+.nav-item.active .nav-icon {
+  filter: brightness(0) saturate(100%) invert(22%) sepia(97%) saturate(2000%) hue-rotate(237deg) brightness(107%) contrast(104%);
+}
+.nav-item span   { flex: 1; }
+.nav-item span.nav-badge { flex: none; }
+.nav-bar { display: none; }
+.nav-badge {
+  background: var(--primary-bg-active); color: var(--primary);
+  font-size: var(--fs-xs); font-weight: 700; padding: 4px 6px;
+  border-radius: 10px; line-height: 1; margin-left: auto; flex: none; white-space: nowrap;
+}
+.sidebar-footer { margin-top: auto; padding: 16px 16px 0; border-top: 1px solid var(--border-divider); }
+.sidebar-footer-text { font-size: 12px; color: var(--text-gray); line-height: 18px; margin-bottom: 8px; }
+.sidebar-collapse {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px; border-radius: var(--r-sm); cursor: pointer; color: var(--text-gray);
+}
+
+/* ============================================================
+   MAIN
+   ============================================================ */
+.main { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; min-width: 0; }
+
+/* HEADER */
+.header {position:relative;z-index:200;
+  background: var(--canvas); border-bottom: 1px solid var(--border-subtle);
+  padding: 10px 20px; display: flex; align-items: center; gap: 20px; flex-shrink: 0;
+}
+.building-selector {
+  display: flex; align-items: center; gap: 10px;
+  border: 1px solid var(--border-input); border-radius: var(--r-sm);
+  padding: 8px 12px; width: 236px; flex-shrink: 0; cursor: pointer;
+}
+.building-selector img { flex: 0 0 auto; }
+.building-selector .label {
+  flex: 1; font-size: 14px; font-weight: 500; color: var(--text-272727);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.search-bar {
+  flex: 1; display: flex; align-items: center; gap: 8px;
+  border: 1px solid var(--border-input); border-radius: var(--r-md);
+  padding: 0 12px; height: 40px; background: var(--canvas);
+}
+.search-bar input {
+  flex: 1; border: 0; outline: 0; font: inherit;
+  font-size: var(--fs-body); color: var(--text); background: transparent;
+}
+.search-bar input::placeholder { color: var(--text-placeholder); }
+.header-right { display: flex; align-items: center; gap: 14px; margin-left: auto; }
+.notif-btn {
+  position: relative; width: 36px; height: 36px; background: #f7f7f7;
+  border-radius: var(--r-md); display: inline-flex; align-items: center;
+  justify-content: center; padding: 6px; cursor: pointer; flex-shrink: 0;
+}
+.notif-btn .notif-dot {
+  position: absolute; top: 5px; left: 19px; width: 10px; height: 10px; pointer-events: none;
+}
+.user-pill { display: flex; align-items: center; gap: 18px; height: 32px; border-radius: var(--r-md); cursor: pointer; }
+.user-pill .avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; flex: 0 0 32px; }
+.user-info { display: flex; flex-direction: column; gap: 2px; }
+.user-name { font-weight: 600; font-size: 14px; line-height: 16px; white-space: nowrap; color: var(--text-272727); }
+.user-apt  { font-size: 12px; color: var(--text-gray); line-height: 14px; white-space: nowrap; }
+
+/* SCROLL */
+.content-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; background: var(--surface-hover); }
+
+/* ============================================================
+   PAGE: BÁO CÁO THU CHI
+   ============================================================ */
+.tc-page { padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+
+/* Page header */
+.tc-page-hd {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+}
+.tc-title { font-size: var(--fs-3xl); font-weight: 700; color: var(--text-272727); line-height: 36px; }
+.tc-sub { font-size: var(--fs-md); color: var(--text-secondary); margin-top: 6px; line-height: 24px; font-weight: 500; }
+.tc-actions { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+.tc-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 16px; background: var(--canvas);
+  border: 1px solid var(--border-input); border-radius: var(--r-md);
+  font-size: var(--fs-body); font-weight: 500; color: var(--text-272727);
+  cursor: pointer; white-space: nowrap; line-height: 22px;
+}
+.tc-btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 16px; background: var(--primary);
+  border: 1px solid var(--primary); border-radius: var(--r-md);
+  font-size: var(--fs-body); font-weight: 500; color: #fff;
+  cursor: pointer; white-space: nowrap; line-height: 22px;
+}
+
+/* KPI row */
+.kpi-row { display: flex; gap: 16px; }
+.kpi-card {
+  flex: 1; min-width: 0;
+  background: var(--canvas); border: 1px solid var(--border); border-radius: var(--r-card);
+  padding: 19px 21px; display: flex; flex-direction: column; gap: 14px;
+}
+.kpi-icon-bg {
+  width: 44px; height: 44px; border-radius: var(--r-lg);
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.kpi-body { display: flex; flex-direction: column; gap: 4px; }
+.kpi-label { font-size: var(--fs-sm); font-weight: 500; color: var(--text-gray); line-height: normal; }
+.kpi-value {
+  font-family: var(--font-number); font-size: 22px; font-weight: 700;
+  color: var(--text-272727); line-height: 30px; letter-spacing: -.22px;
+}
+.kpi-trend { display: flex; align-items: center; gap: 4px; padding-top: 2px; }
+.kpi-pct  { font-size: var(--fs-xs); font-weight: 700; }
+.kpi-pct.up   { color: var(--success); }
+.kpi-pct.down { color: var(--danger); }
+.kpi-tlabel { font-size: var(--fs-xs); color: var(--text-gray); margin-left: 2px; }
+
+/* AI Summary Banner */
+.ai-sum-banner {
+  background: linear-gradient(135deg, #f4f1ff 0%, #fbfaff 100%);
+  border: 1px solid var(--primary-border);
+  border-radius: var(--r-card);
+  padding: 18px 22px;
+  display: flex; align-items: center; gap: 16px;
+}
+.ai-sum-icon-wrap {
+  width: 44px; height: 44px; background: var(--primary);
+  border-radius: var(--r-md); display: inline-flex; align-items: center;
+  justify-content: center; flex-shrink: 0;
+}
+.ai-sum-body { flex: 1; min-width: 0; }
+.ai-sum-label {
+  font-size: 11px; font-weight: 700; color: var(--primary);
+  text-transform: uppercase; letter-spacing: 0.88px; margin-bottom: 5px; line-height: 1;
+}
+.ai-sum-text { font-size: var(--fs-sm); color: var(--text-272727); line-height: 20px; }
+.ai-sum-text .hl-green { color: var(--success); font-weight: 700; }
+.ai-sum-text .hl-red   { color: var(--danger); font-weight: 700; }
+.ai-sum-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 16px; background: var(--canvas);
+  border: 1px solid var(--primary-border); border-radius: var(--r-md);
+  font-size: var(--fs-sm); font-weight: 500; color: var(--primary);
+  cursor: pointer; white-space: nowrap; flex-shrink: 0;
+}
+
+/* Chart row */
+.chart-row { display: flex; gap: 16px; align-items: stretch; }
+
+/* Bar chart card */
+.chart-card {
+  flex: 1; min-width: 0;
+  background: var(--canvas); border: 1px solid var(--border); border-radius: var(--r-card);
+  padding: 21px 23px; display: flex; flex-direction: column; gap: 0;
+}
+.chart-hd { display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; margin-bottom: 14px; }
+.chart-title {
+  font-family: var(--font-number); font-size: 17px; font-weight: 700;
+  color: var(--text-272727); display: flex; align-items: center; gap: 8px;
+}
+.chart-info {
+  width: 16px; height: 16px; border: 1px solid #b4b7c9; border-radius: var(--r-sm);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: #b4b7c9; flex-shrink: 0;
+}
+.chart-period {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 7px 13px; background: var(--canvas);
+  border: 1px solid var(--border-input); border-radius: var(--r-md);
+  font-size: 12.5px; color: var(--text-secondary); cursor: pointer;
+}
+.chart-svg-area { position: relative; flex: 1; margin-bottom: 10px; min-height: 280px; }
+.chart-svg-area svg { display: block; width: 100%; }
+.chart-y-lbl {
+  position: absolute; left: 0; width: 40px; text-align: right;
+  font-size: 11.5px; color: var(--text-gray); font-family: var(--font-body);
+  transform: translateY(-50%); white-space: nowrap; line-height: 1; pointer-events: none;
+}
+.chart-x-lbl {
+  position: absolute; bottom: 0;
+  font-size: 12px; color: var(--text-gray); font-family: var(--font-body);
+  transform: translateX(-50%); white-space: nowrap; line-height: 1; pointer-events: none;
+}
+.chart-legend { display: flex; gap: 14px; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 10px; }
+.legend-item { display: flex; align-items: center; gap: 6px; }
+.legend-dot { width: 9px; height: 9px; border-radius: 4.5px; flex-shrink: 0; }
+.legend-line { width: 18px; height: 3px; border-radius: 1.5px; flex-shrink: 0; }
+.legend-lbl { font-size: var(--fs-xs); color: var(--text-secondary); white-space: nowrap; }
+
+/* Tooltip */
+.chart-tooltip {
+  position: absolute; top: 36px; left: 58%;
+  min-width: 180px; background: var(--canvas);
+  border: 1px solid var(--border); border-radius: var(--r-md);
+  padding: 10px 14px; box-shadow: 0 8px 12px rgba(0,0,0,.06);
+  pointer-events: none; z-index: 2;
+}
+.tt-title { font-size: var(--fs-xs); font-weight: 600; color: var(--text-272727); margin-bottom: 4px; }
+.tt-row { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
+.tt-dot { width: 8px; height: 8px; border-radius: 4px; flex-shrink: 0; }
+.tt-name { flex: 1; font-size: var(--fs-xs); color: var(--text-gray); }
+.tt-val { font-size: var(--fs-xs); font-weight: 600; color: var(--text-272727); white-space: nowrap; }
+
+/* Donut card */
+.donut-card {
+  background: var(--canvas); border: 1px solid var(--border); border-radius: var(--r-card);
+  padding: 21px 23px; display: flex; flex-direction: column;
+  align-items: center; gap: 16px; flex-shrink: 0; width: 334px;
+}
+.donut-title {
+  font-family: var(--font-number); font-size: 17px; font-weight: 700;
+  color: var(--text-272727); text-align: center; width: 100%; line-height: normal;
+}
+.donut-wrap { position: relative; width: 200px; height: 200px; flex-shrink: 0; }
+.donut-wrap img { width: 100%; height: 100%; }
+.donut-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.donut-cval { font-size: 15px; font-weight: 700; color: var(--text-272727); line-height: 20px; white-space: nowrap; }
+.donut-clbl { font-size: 11px; color: var(--text-gray); margin-top: 4px; }
+.donut-legend { width: 100%; }
+.donut-row { display: flex; align-items: center; justify-content: space-between; height: 15px; margin-bottom: 9px; }
+.donut-row:last-child { margin-bottom: 0; }
+.donut-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.donut-dot { width: 9px; height: 9px; border-radius: 4.5px; flex-shrink: 0; }
+.donut-name { font-size: 12.5px; color: var(--text-272727); white-space: nowrap; }
+.donut-pct { font-size: var(--fs-xs); font-weight: 600; color: var(--text-272727); text-align: right; width: 28px; flex-shrink: 0; }
+.donut-amt { font-size: var(--fs-xs); color: var(--text-gray); text-align: right; white-space: nowrap; width: 70px; flex-shrink: 0; }
+
+/* ============================================================
+   BREAKDOWN TABLES ROW
+   ============================================================ */
+.breakdown-row { display: flex; gap: 16px; align-items: stretch; }
+.breakdown-card {
+  flex: 1; min-width: 0;
+  background: var(--canvas); border: 1px solid var(--border); border-radius: var(--r-card);
+  padding: 21px 23px; display: flex; flex-direction: column; gap: 16px;
+}
+.breakdown-hd { display: flex; align-items: center; justify-content: space-between; }
+.breakdown-title {
+  font-family: var(--font-number); font-size: 16px; font-weight: 700; color: var(--text-272727);
+}
+.breakdown-total {
+  font-family: var(--font-number); font-size: 15px; font-weight: 700; color: var(--text-272727);
+}
+.breakdown-total span { color: var(--text-gray); font-size: var(--fs-sm); font-weight: 400; font-family: var(--font-body); margin-right: 6px; }
+
+.bd-table { display: flex; flex-direction: column; gap: 0; }
+.bd-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 0; border-bottom: 1px solid var(--border-divider);
+}
+.bd-row:last-child { border-bottom: 0; }
+.bd-name-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.bd-name { font-size: var(--fs-sm); font-weight: 500; color: var(--text-272727); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bd-sub  { font-size: var(--fs-xs); color: var(--text-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bd-bar-col { width: 110px; flex-shrink: 0; }
+.bd-bar-track {
+  height: 6px; background: #f0f0f5; border-radius: 3px; overflow: hidden;
+}
+.bd-bar-fill { height: 100%; border-radius: 3px; }
+.bd-amount-col { text-align: right; flex-shrink: 0; }
+.bd-amount { font-family: var(--font-number); font-size: 13px; font-weight: 700; color: var(--text-272727); white-space: nowrap; }
+.bd-cmp { font-size: var(--fs-xs); font-weight: 600; white-space: nowrap; }
+.bd-cmp.up   { color: var(--success); }
+.bd-cmp.down { color: var(--danger); }
+.bd-cmp.neu  { color: var(--text-gray); }
+
+/* ============================================================
+   GIAO DỊCH GẦN ĐÂY
+   ============================================================ */
+.txn-card {
+  background: var(--canvas); border: 1px solid var(--border); border-radius: var(--r-card);
+  padding: 21px 23px; display: flex; flex-direction: column; gap: 16px;
+}
+.txn-hd { display: flex; align-items: center; justify-content: space-between; }
+.txn-title { font-family: var(--font-number); font-size: 16px; font-weight: 700; color: var(--text-272727); }
+.txn-link { font-size: var(--fs-sm); font-weight: 500; color: var(--primary); cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+
+/* Table header */
+.txn-table-hd {
+  display: grid;
+  grid-template-columns: 200px 1fr 120px 80px 100px 110px;
+  gap: 0; padding: 0 12px 8px; border-bottom: 1px solid var(--border);
+}
+.txn-table-hd span {
+  font-size: var(--fs-xs); font-weight: 600; color: var(--text-gray);
+  text-transform: uppercase; letter-spacing: .4px;
+}
+.txn-table-hd span:last-child { text-align: right; }
+.txn-table-hd span:nth-child(3) { text-align: center; }
+.txn-table-hd span:nth-child(4) { text-align: center; }
+.txn-table-hd span:nth-child(5) { text-align: center; }
+
+/* Table rows */
+.txn-row {
+  display: grid;
+  grid-template-columns: 200px 1fr 120px 80px 100px 110px;
+  gap: 0; padding: 12px; border-radius: var(--r-md);
+  align-items: center; transition: background .12s;
+}
+.txn-row:hover { background: var(--surface-subtle); }
+
+.txn-id-col { display: flex; flex-direction: column; gap: 2px; }
+.txn-id { font-size: var(--fs-xs); font-weight: 600; color: var(--text-gray); }
+.txn-type-icon {
+  width: 32px; height: 32px; border-radius: 9px;
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+
+.txn-desc-col { display: flex; align-items: center; gap: 10px; min-width: 0; padding-right: 12px; }
+.txn-desc-body { flex: 1; min-width: 0; }
+.txn-desc-main { font-size: var(--fs-sm); font-weight: 500; color: var(--text-272727); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.txn-desc-sub  { font-size: var(--fs-xs); color: var(--text-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+
+.txn-cat-col { display: flex; align-items: center; justify-content: center; }
+.txn-cat-badge {
+  display: inline-flex; align-items: center; padding: 4px 9px; border-radius: 6px;
+  font-size: 11px; font-weight: 600; white-space: nowrap;
+}
+
+.txn-date-col { text-align: center; font-size: var(--fs-sm); color: var(--text-secondary); font-weight: 500; }
+.txn-method-col { text-align: center; font-size: var(--fs-xs); color: var(--text-gray); }
+
+.txn-amt-col { text-align: right; }
+.txn-amount {
+  font-family: var(--font-number); font-size: 13.5px; font-weight: 700; white-space: nowrap;
+}
+.txn-amount.income { color: var(--success); }
+.txn-amount.expense { color: var(--danger); }
+
+/* Pagination */
+.txn-pagination {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding-top: 4px; border-top: 1px solid var(--border-divider); margin-top: 4px;
+}
+.txn-pag-label { font-size: var(--fs-sm); color: var(--text-gray); }
+.txn-pag-btns { display: flex; align-items: center; gap: 4px; }
+.pag-btn {
+  min-width: 32px; height: 32px; padding: 0 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border-input); border-radius: var(--r-sm);
+  font-size: var(--fs-sm); font-weight: 500; color: var(--text-secondary);
+  cursor: pointer; background: var(--canvas); transition: all .12s;
+}
+.pag-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.pag-btn:hover:not(.active) { background: var(--surface-subtle); }
+.pag-sep { font-size: var(--fs-sm); color: var(--text-gray); padding: 0 4px; }
+
+/* ============================================================
+   BOTTOM AI BANNER
+   ============================================================ */
+.ai-bot-banner {
+  position: relative; overflow: hidden;
+  border: 1px solid var(--primary-border); border-radius: var(--r-card);
+  padding: 28px 28px 28px 240px; flex-shrink: 0; min-height: 140px;
+}
+.ai-bot-bg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; border-radius: var(--r-card); pointer-events: none;
+}
+.ai-bot-content { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; }
+.ai-bot-tag {
+  font-size: 11px; font-weight: 700; color: var(--primary);
+  text-transform: uppercase; letter-spacing: .88px; line-height: 1;
+}
+.ai-bot-title {
+  font-size: 24px; font-weight: 700; color: var(--primary);
+  line-height: 32px; font-family: var(--font-number);
+}
+.ai-bot-cta {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--primary); color: #fff;
+  padding: 9px 16px; border-radius: var(--r-lg);
+  font-size: var(--fs-body); font-weight: 500; align-self: flex-start; cursor: pointer;
+}
+  
+/* ── Dropdown system ── */
+.building-selector{position:relative;}
+.notif-btn{position:relative;}
+.user-pill{position:relative;}
+.dd{position:fixed;z-index:9999;background:var(--canvas);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:0 8px 32px rgba(0,0,0,.14);display:none;}
+.dd.open{display:block;animation:ddIn .14s ease;}
+@keyframes ddIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+/* Building dropdown */
+.dd-building{min-width:272px;}
+.dd-search{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);}
+.dd-search svg{width:15px;height:15px;color:var(--text-placeholder);flex-shrink:0;}
+.dd-search input{flex:1;border:0;outline:0;font:inherit;font-size:13px;background:transparent;color:var(--text);}
+.dd-search input::placeholder{color:var(--text-placeholder);}
+.dd-sep-label{font-size:11px;font-weight:700;color:var(--text-placeholder);text-transform:uppercase;letter-spacing:.5px;padding:10px 14px 3px;}
+.dd-bld-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;transition:background .15s;}
+.dd-bld-item:hover{background:var(--surface-hover);}
+.dd-bld-item.active{background:var(--primary-bg);}
+.dd-bld-ico{width:30px;height:30px;border-radius:var(--r-sm);background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.dd-bld-ico svg{width:15px;height:15px;color:var(--primary);}
+.dd-bld-ico.muted{background:var(--surface-subtle);}
+.dd-bld-ico.muted svg{color:var(--text-gray);}
+.dd-bld-info{flex:1;}
+.dd-bld-name{font-size:13px;font-weight:600;color:var(--text);}
+.dd-bld-meta{font-size:11px;color:var(--text-gray);margin-top:1px;}
+.dd-bld-check svg{width:14px;height:14px;color:var(--primary);}
+.dd-divider{height:1px;background:var(--border);margin:4px 0;}
+/* Notification dropdown */
+.dd-notif{width:348px;}
+.dd-nt-hd{display:flex;align-items:center;justify-content:space-between;padding:13px 16px 9px;border-bottom:1px solid var(--border);}
+.dd-nt-hd-title{font-size:14px;font-weight:700;color:var(--text);}
+.dd-nt-mark{font-size:12px;font-weight:600;color:var(--primary);cursor:pointer;}
+.dd-nt-grp{font-size:11px;font-weight:700;color:var(--text-placeholder);text-transform:uppercase;letter-spacing:.4px;padding:9px 16px 3px;}
+.dd-nt-item{display:flex;align-items:flex-start;gap:10px;padding:9px 16px;cursor:pointer;transition:background .15s;position:relative;}
+.dd-nt-item:hover{background:var(--surface-hover);}
+.dd-nt-item.unread{background:var(--primary-bg);}
+.dd-nt-item.unread::before{content:'';position:absolute;left:5px;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:var(--primary);}
+.dd-nt-ico{width:30px;height:30px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.dd-nt-ico svg{width:14px;height:14px;}
+.dd-nt-body{flex:1;min-width:0;text-align:left;}
+.dd-nt-title{font-size:13px;font-weight:600;color:var(--text);line-height:1.4;text-align:left;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.dd-nt-meta{font-size:12px;color:var(--text-placeholder);margin-top:3px;text-align:left;}
+.dd-nt-footer{display:block;text-align:center;padding:11px;font-size:12px;font-weight:600;color:var(--primary);border-top:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.dd-nt-footer:hover{background:var(--surface-hover);}
+/* User dropdown */
+.dd-user{min-width:216px;}
+.dd-usr-info{display:flex;align-items:center;gap:10px;padding:13px 16px 16px;}
+.dd-usr-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+.dd-usr-name{font-size:13px;font-weight:700;color:var(--text);}
+.dd-usr-email{font-size:11px;color:var(--text-gray);margin-top:1px;}
+.dd-menu-item{display:flex;align-items:center;gap:9px;padding:9px 16px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text);transition:background .15s;}
+.dd-menu-item:hover{background:var(--surface-hover);}
+.dd-menu-item svg{width:15px;height:15px;color:var(--text-gray);flex-shrink:0;}
+.dd-menu-item.danger{color:var(--danger);}
+.dd-menu-item.danger svg{color:var(--danger);}
+.dd-menu-item.danger:hover{background:#fff5f5;}
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     SIDEBAR
+     ============================================================ -->
+<aside class="sidebar">
+
+  <div class="sidebar-logo">
+    <svg class="sidebar-logo-icon" width="36" height="40" viewBox="0 0 36 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 12.6995V36.7148C0 36.8859 0.0894999 37.043 0.235683 37.13L3.58397 39.1241C3.73215 39.2122 3.91711 39.2142 4.06727 39.1281L7.61545 37.086C7.76461 37 7.8571 36.8399 7.8571 36.6668V16.7058C7.8571 16.5337 7.76561 16.3736 7.61744 16.2875L0.719977 12.2813C0.399766 12.0952 0 12.3273 0 12.6995Z" fill="#4137F9"/>
+      <path d="M19.4784 8.91446L27.7512 13.7201C27.8993 13.8062 27.9908 13.9662 27.9908 14.1383V30.0301C27.9908 30.2973 28.2056 30.5134 28.4711 30.5134H35.3676C35.6331 30.5134 35.8479 30.2973 35.8479 30.0301V9.57482C35.8479 9.40273 35.7564 9.24264 35.6082 9.15659L19.9587 0.0655729C19.6385 -0.12053 19.2387 0.111598 19.2387 0.483804V8.49523C19.2387 8.66732 19.3302 8.82741 19.4784 8.91346V8.91446Z" fill="#A7A3F7"/>
+      <path d="M15.8893 0.0655729L1.13768 8.6353C0.817474 8.82141 0.817474 9.28566 1.13768 9.47177L8.03315 13.478C8.18133 13.564 8.3643 13.564 8.51347 13.478L16.3696 8.91446C16.5177 8.82841 16.6092 8.66832 16.6092 8.49623V0.483804C16.6092 0.111598 16.2095 -0.12053 15.8893 0.0655729Z" fill="#4137F9"/>
+      <path d="M31.9184 40.0005C34.0878 40.0005 35.8464 38.231 35.8464 36.0483C35.8464 33.8656 34.0878 32.0961 31.9184 32.0961C29.749 32.0961 27.9903 33.8656 27.9903 36.0483C27.9903 38.231 29.749 40.0005 31.9184 40.0005Z" fill="#4137F9"/>
+      <path d="M17.72 14.6407C15.3164 14.6407 13.3613 16.6068 13.3613 19.0261C13.3613 21.4455 15.206 23.3185 17.6096 23.4016C17.6832 23.3926 17.7568 23.3926 17.8115 23.4016H17.8761C20.225 23.3185 22.0687 21.3985 22.0786 19.0261C22.0786 16.6078 20.1245 14.6407 17.72 14.6407Z" fill="#4137F9"/>
+      <path d="M22.3805 25.8569C19.8208 24.1399 15.6461 24.1399 13.0675 25.8569C11.902 26.6413 11.2596 27.7029 11.2596 28.8385C11.2596 29.9742 11.902 31.0267 13.0576 31.8022C14.3424 32.6697 16.03 33.1039 17.7185 33.1039C19.4071 33.1039 21.0947 32.6697 22.3795 31.8022C23.536 31.0177 24.1774 29.9652 24.1774 28.8205C24.1685 27.6849 23.535 26.6323 22.3795 25.8569H22.3805Z" fill="#4137F9"/>
+    </svg>
+    <svg class="sidebar-logo-text" width="114" height="23" viewBox="0 0 114 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3.08376 0.41618L10.7434 11.7261V0.41618H13.6282V17.0307H10.7932L3.08376 5.72081V17.0307H0V0.666398C0 0.605345 0.079581 0.513264 0 0.41618H3.08376Z" fill="#161A48"/>
+      <path d="M111.115 15.3252C108.772 17.8894 104.134 17.0627 102.672 13.962C100.157 8.62835 105.228 2.80527 110.467 6.21925L111.215 6.91786V5.51664H114V17.4771C114 17.8704 113.652 19.0575 113.476 19.4518C111.549 23.7666 103.993 23.5974 102.56 18.9293L105.285 18.0195C106.038 20.5267 110.022 20.6018 110.895 18.1557C110.939 18.0296 111.115 17.449 111.115 17.377V15.3252ZM107.811 7.84667C103.858 8.23001 104.125 14.8558 108.769 14.2152C112.193 13.7428 111.9 7.45033 107.811 7.84667Z" fill="#161A48"/>
+      <path d="M51.2667 12.9877C53.4541 15.1626 57.8182 14.8553 59.1074 11.8347L62.1334 12.6174C60.8015 17.3075 54.6399 18.4615 50.7325 16.3777C45.4413 13.5552 45.127 5.19392 49.8481 1.67184C53.7197 -1.21668 59.8515 -0.34792 62.0648 4.16702L59.3213 5.60427C59.1332 5.62129 58.7184 4.81959 58.5453 4.61441C56.6622 2.37946 52.903 2.63969 51.0369 4.76854C49.1866 6.87839 49.2672 10.998 51.2676 12.9877H51.2667Z" fill="#161A48"/>
+      <path d="M19.4978 0.0146542V6.72051C21.5023 4.48656 25.6743 4.68773 26.877 7.65332C26.9496 7.83348 27.257 8.75929 27.257 8.87238V17.0295H24.2727V10.2736C24.2727 8.49606 23.0322 7.76442 21.362 8.04566C20.5503 8.18278 19.4978 9.36081 19.4978 10.1735V17.0295H16.613V0.0146542H19.4978Z" fill="#161A48"/>
+      <path d="M67.0478 0.0146542V6.72051L68.2475 5.77568C71.0059 4.25435 74.8069 5.89779 74.8069 9.27273V17.0295H71.9221V10.1735C71.9221 9.94732 71.6834 9.26473 71.562 9.03453C70.7473 7.48517 68.14 7.70837 67.395 9.22169C67.3422 9.32978 67.0478 10.2176 67.0478 10.2736V17.0295H64.163V0.0146542H67.0478Z" fill="#161A48"/>
+      <path d="M39.5915 17.0319H36.8062C36.8171 16.6846 36.7853 16.3173 36.7047 15.981C36.6003 15.5456 36.4779 16.019 36.3645 16.1331C34.6366 17.8856 30.6217 17.8136 29.427 15.4986C28.0314 12.7962 30.1482 10.1259 32.9763 10.1259H36.5077C36.5286 9.26713 36.6152 8.58053 35.9029 7.982C35.0176 7.23836 33.0649 7.31042 32.3864 8.33131C32.1935 8.62156 32.1228 9.2411 31.8612 9.31216C31.5091 9.25311 29.3932 9.10098 29.3504 8.86878C29.7812 5.48382 33.5881 4.74818 36.3874 5.49383C38.3431 6.01529 39.2911 7.39349 39.4811 9.38723C39.7149 11.8494 39.2523 14.5637 39.5925 17.0319H39.5915ZM36.5077 12.0275H33.5732C33.426 12.0275 32.5854 12.4369 32.4262 12.575C31.3051 13.5499 32.2213 15.0842 33.5712 15.1773C35.6304 15.3184 36.7843 14.0923 36.5077 12.0275Z" fill="#161A48"/>
+      <path d="M100.471 17.0268H97.4871V9.77049C97.4871 9.5613 97.0941 8.80665 96.934 8.62549C96.1203 7.70969 94.1466 7.80777 93.3558 8.71657C93.1807 8.91774 92.7122 9.96265 92.7122 10.1708V17.0268H89.8274V5.51677H92.6127V6.81691L93.7766 5.83705C96.3878 4.20063 100.471 5.86308 100.471 9.16996V17.0268Z" fill="#161A48"/>
+      <path d="M84.556 5.5178H87.4408V17.0278H84.6555V15.7267C82.7605 18.1318 78.4541 17.8526 77.2167 14.954C77.0784 14.6308 76.7969 13.6889 76.7969 13.3747V5.5178H79.6319L79.7812 5.66793V12.9743C79.7812 13.0414 80.0647 13.6139 80.1353 13.719C81.0843 15.1122 83.3892 14.8139 84.179 13.3957C84.2417 13.2836 84.556 12.4278 84.556 12.3738V5.5178Z" fill="#161A48"/>
+      <path d="M31.3356 0.617431H34.4691L35.997 3.7882L35.8618 4.0204H33.4743L31.3903 1.11386L31.3356 0.617431Z" fill="#161A48"/>
+    </svg>
+  </div>
+
+  <div class="sidebar-nav-group">
+    <!-- Main -->
+    <div class="nav-section">
+      <div class="nav-row">
+        <a href="dashboard.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/948dfd1b-cf10-487e-a625-2f3992055751" alt="" />
+          <span>Dashboard</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="notification.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/48c83959-0e4a-4796-92aa-855c591bea09" alt="" />
+          <span>Thông báo</span>
+          <span class="nav-badge" style="background:#f9c268;color:#272727;">298</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="kho-tai-lieu.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/4d81f87e-d02e-4f11-bbeb-1cbb8bd237cd" alt="" />
+          <span>Kho tài liệu</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="gop-y-phan-anh.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/e7a24a0c-9154-4fe5-b775-e28b59efd97b" alt="" />
+          <span>Góp ý / Phản ánh</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="tin-tuc-cong-dong.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/88032ed9-c023-453f-ace1-48bac91b8033" alt="" />
+          <span>Tin tức cộng đồng</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="ai-assistant.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/78e1328a-b252-4727-85bd-ef574d18925e" alt="" />
+          <span>AI Assistant</span>
+        </a><div class="nav-bar"></div>
+      </div>
+    </div>
+
+    <!-- Báo cáo minh bạch -->
+    <div class="nav-section">
+      <div class="nav-section-label">báo cáo minh bạch</div>
+      <div class="nav-row">
+        <a href="tong-quan-tai-chinh.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/704a494d-6aa9-4050-93d6-8be752cc3e38" alt="" />
+          <span>Tổng quan tài chính</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="bao-cao-thu-chi.html" class="nav-item active">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/89c6053d-33c3-448d-b8d6-5eaef37341ac" alt="" />
+          <span>Báo cáo thu chi</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="quy-bao-tri.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/73832a3c-38ad-496e-b944-0ebb15cb0d62" alt="" />
+          <span>Quỹ bảo trì</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="van-hanh-bao-tri.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/82bc45d6-8665-4c78-bac3-f9fbb084e888" alt="" />
+          <span>Vận hành &amp; bảo trì</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="kpi-ban-quan-tri.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/4a802188-fa92-4a4d-97e3-f3cf05f15319" alt="" />
+          <span>KPI Ban quản trị</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="bao-cao-dinh-ky.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/6df232ea-f0e0-4733-9c5b-bd32987e6750" alt="" />
+          <span>Báo cáo định kỳ</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="lich-su-luu-tru.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/e68588e5-a681-4c29-aeea-03abf1166456" alt="" />
+          <span>Lịch sử &amp; lưu trữ</span>
+        </a><div class="nav-bar"></div>
+      </div>
+    </div>
+
+    <!-- Cá nhân -->
+    <div class="nav-section">
+      <div class="nav-section-label">cá nhân</div>
+      <div class="nav-row">
+        <a href="ho-so-ca-nhan.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/33744d68-a412-4dd3-aed3-a586e2256f38" alt="" />
+          <span>Hồ sơ cá nhân</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="thanh-vien-gia-dinh.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/29317f27-aa9f-46d1-b44e-723d4ca142d1" alt="" />
+          <span>Thành viên gia đình</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="can-ho-cua-toi.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/5239243c-3028-423d-a5d8-7983f3bcf2c1" alt="" />
+          <span>Căn hộ của tôi</span>
+        </a><div class="nav-bar"></div>
+      </div>
+      <div class="nav-row">
+        <a href="cai-dat.html" class="nav-item">
+          <img class="nav-icon" src="https://www.figma.com/api/mcp/asset/1effc1b6-c32f-4ad4-8e08-df8f1d1ec6bf" alt="" />
+          <span>Cài đặt</span>
+        </a><div class="nav-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-text">Nhà Chung Platform<br/>Phiên bản 1.0.0</div>
+    <div class="sidebar-collapse">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </div>
+  </div>
+</aside>
+
+<!-- ============================================================
+     MAIN
+     ============================================================ -->
+<div class="main">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="building-selector" data-dd="dd-building">
+      <img src="https://www.figma.com/api/mcp/asset/e6f58352-70f9-4da3-97bd-52e295398cd2" alt="" width="20" height="20" />
+      <span class="label">Landmark 1</span>
+      <img src="https://www.figma.com/api/mcp/asset/923cda87-71a9-4618-97e0-fba047a66ea1" alt="" width="18" height="18" />
+      <div class="dd dd-building" id="dd-building">
+        <div class="dd-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Tìm kiếm tòa nhà..." />
+        </div>
+        <div class="dd-sep-label">Của tôi</div>
+        <div class="dd-bld-item active">
+          <div class="dd-bld-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="9" y1="22" x2="9" y2="2"/><line x1="15" y1="6" x2="15" y2="2"/><line x1="15" y1="10" x2="19" y2="10"/><line x1="15" y1="14" x2="19" y2="14"/></svg></div>
+          <div class="dd-bld-info">
+            <div class="dd-bld-name">Landmark 1</div>
+            <div class="dd-bld-meta">Căn hộ A-12.05 · Vinhomes Central Park</div>
+          </div>
+          <div class="dd-bld-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        </div>
+        <div class="dd-divider"></div>
+        <div class="dd-sep-label">Khám phá</div>
+        <div class="dd-bld-item">
+          <div class="dd-bld-ico muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="9" y1="22" x2="9" y2="2"/></svg></div>
+          <div class="dd-bld-info">
+            <div class="dd-bld-name">Landmark 2</div>
+            <div class="dd-bld-meta">Vinhomes Central Park</div>
+          </div>
+        </div>
+        <div class="dd-bld-item">
+          <div class="dd-bld-ico muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="9" y1="22" x2="9" y2="2"/></svg></div>
+          <div class="dd-bld-info">
+            <div class="dd-bld-name">The Grand Marina</div>
+            <div class="dd-bld-meta">Quận 1, TP. Hồ Chí Minh</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="search-bar">
+      <img src="https://www.figma.com/api/mcp/asset/1b7094e2-18f3-4a4d-8483-36ebc09553c2" alt="" width="20" height="20" style="flex:0 0 20px;" />
+      <input placeholder="Tìm kiếm giao dịch, khoản thu chi, báo cáo..." />
+    </div>
+    <div class="header-right">
+      <button class="notif-btn" data-dd="dd-notif" aria-label="Thông báo">
+        <img src="https://www.figma.com/api/mcp/asset/088722b6-433a-4c41-a336-286691d19904" alt="" width="24" height="24" />
+        <img class="notif-dot" src="https://www.figma.com/api/mcp/asset/b33a6d31-df5d-4121-8e34-e50fe1b0c7e5" alt="" />
+        <div id="dd-notif" class="dd dd-notif">
+          <div class="dd-nt-hd">
+            <span class="dd-nt-hd-title">Thông báo</span>
+            <span class="dd-nt-mark">Đánh dấu đã đọc</span>
+          </div>
+          <div class="dd-nt-grp">Hôm nay</div>
+          <div class="dd-nt-item unread">
+            <div class="dd-nt-ico" style="background:#fff3e0;">
+              <svg viewBox="0 0 16 16" fill="none" stroke="#c8761b" stroke-width="1.5"><path d="M8 2L2 13h12L8 2z" stroke-linejoin="round"/><path d="M8 6v4M8 11.5v.5" stroke-linecap="round"/></svg>
+            </div>
+            <div class="dd-nt-body">
+              <div class="dd-nt-title">Bảo trì hệ thống PCCC định kỳ — Tầng B1 &amp; B2</div>
+              <div class="dd-nt-meta">Ban quản trị · 10:30 sáng</div>
+            </div>
+          </div>
+          <div class="dd-nt-item unread">
+            <div class="dd-nt-ico" style="background:#e8f4fd;">
+              <svg viewBox="0 0 16 16" fill="none" stroke="#1890ff" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 7v5M8 5.5v.5" stroke-linecap="round"/></svg>
+            </div>
+            <div class="dd-nt-body">
+              <div class="dd-nt-title">Điều chỉnh phí gửi xe ô tô từ tháng 6/2026</div>
+              <div class="dd-nt-meta">Ban quản trị · 09:15 sáng</div>
+            </div>
+          </div>
+          <div class="dd-nt-grp">Hôm qua</div>
+          <div class="dd-nt-item">
+            <div class="dd-nt-ico" style="background:#e6f9f1;">
+              <svg viewBox="0 0 16 16" fill="none" stroke="#1c9d5f" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="1"/><path d="M5 3V1.5M11 3V1.5M2 7h12" stroke-linecap="round"/></svg>
+            </div>
+            <div class="dd-nt-body">
+              <div class="dd-nt-title">Sự kiện: Ngày hội cư dân 1/6/2026 — Đăng ký tham gia</div>
+              <div class="dd-nt-meta">Ban quản trị · Hôm qua</div>
+            </div>
+          </div>
+          <a href="notification.html" class="dd-nt-footer">Xem tất cả thông báo →</a>
+        </div>
+      </button>
+      <div class="user-pill" data-dd="dd-user">
+        <img class="avatar" src="https://www.figma.com/api/mcp/asset/ee21e768-a070-4e15-ad43-73a28943d4ee" alt="" width="32" height="32" />
+        <div class="user-info">
+          <div class="user-name">Chris Tran</div>
+          <div class="user-apt">Căn hộ A-12.05</div>
+        </div>
+        <img src="https://www.figma.com/api/mcp/asset/d8416c17-0767-465c-b7db-cbcbe7dc0620" alt="" width="10" height="10" style="flex:0 0 10px;" />
+        <div class="dd dd-user" id="dd-user">
+          <div class="dd-usr-info">
+            <img class="dd-usr-avatar" src="https://www.figma.com/api/mcp/asset/ee21e768-a070-4e15-ad43-73a28943d4ee" alt="" />
+            <div>
+              <div class="dd-usr-name">Chris Tran</div>
+              <div class="dd-usr-email">chris.tran@gmail.com</div>
+            </div>
+          </div>
+          <a class="dd-menu-item" href="ho-so-ca-nhan.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Hồ sơ cá nhân
+          </a>
+          <a class="dd-menu-item" href="cai-dat.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            Cài đặt
+          </a>
+          <a class="dd-menu-item danger" href="login.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Đăng xuất
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <div class="content-scroll">
+    <div class="tc-page">
+
+      <!-- ── Page Header ── -->
+      <div class="tc-page-hd">
+        <div>
+          <h1 class="tc-title">Báo cáo thu chi</h1>
+          <p class="tc-sub">Chi tiết các khoản thu, chi và biến động dòng tiền của tòa nhà</p>
+        </div>
+        <div class="tc-actions">
+          <button class="tc-btn">
+            <img src="https://www.figma.com/api/mcp/asset/bb824f87-1b0e-4c71-ba99-09a0e1da7f1e" alt="" width="16" height="16" />
+            Tháng 5/2024
+            <img src="https://www.figma.com/api/mcp/asset/f68a73a3-66a4-4714-b40e-bd14e282faef" alt="" width="14" height="14" />
+          </button>
+          <button class="tc-btn">
+            <img src="https://www.figma.com/api/mcp/asset/690e85bc-cb14-4eb3-931b-790db95c8d26" alt="" width="16" height="16" />
+            Bộ lọc
+          </button>
+          <button class="tc-btn-primary">
+            <img src="https://www.figma.com/api/mcp/asset/690e85bc-cb14-4eb3-931b-790db95c8d26" alt="" width="16" height="16" style="filter:brightness(0) invert(1);" />
+            Xuất báo cáo
+          </button>
+        </div>
+      </div>
+
+      <!-- ── KPI Cards ── -->
+      <div class="kpi-row">
+        <!-- Tổng thu -->
+        <div class="kpi-card">
+          <div class="kpi-icon-bg" style="background:#e3fbed;">
+            <img src="https://www.figma.com/api/mcp/asset/044401e8-31a2-4319-baba-dea119cc37a0" alt="" width="22" height="22" />
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-label">Tổng thu trong tháng</div>
+            <div class="kpi-value">2.845.600.000 đ</div>
+            <div class="kpi-trend">
+              <img src="https://www.figma.com/api/mcp/asset/533d51cd-ada2-4e1e-9195-c963cd036668" alt="" width="11" height="11" />
+              <span class="kpi-pct up">+12.4%</span>
+              <span class="kpi-tlabel">so với tháng 4/2024</span>
+            </div>
+          </div>
+        </div>
+        <!-- Tổng chi -->
+        <div class="kpi-card">
+          <div class="kpi-icon-bg" style="background:#ffeded;">
+            <img src="https://www.figma.com/api/mcp/asset/426729a8-7cb5-4d21-88af-4a84e9722dd9" alt="" width="22" height="22" />
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-label">Tổng chi trong tháng</div>
+            <div class="kpi-value">2.138.900.000 đ</div>
+            <div class="kpi-trend">
+              <img src="https://www.figma.com/api/mcp/asset/7e266243-494f-485c-afcc-77d8e7a3f69a" alt="" width="11" height="11" />
+              <span class="kpi-pct down">+8.7%</span>
+              <span class="kpi-tlabel">so với tháng 4/2024</span>
+            </div>
+          </div>
+        </div>
+        <!-- Thặng dư -->
+        <div class="kpi-card">
+          <div class="kpi-icon-bg" style="background:#efeeff;">
+            <img src="https://www.figma.com/api/mcp/asset/74172d89-4a1b-4dbd-b7c1-6c2ea57ab41c" alt="" width="22" height="22" />
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-label">Thặng dư / thâm hụt</div>
+            <div class="kpi-value">706.700.000 đ</div>
+            <div class="kpi-trend">
+              <img src="https://www.figma.com/api/mcp/asset/533d51cd-ada2-4e1e-9195-c963cd036668" alt="" width="11" height="11" />
+              <span class="kpi-pct up">+28.6%</span>
+              <span class="kpi-tlabel">so với tháng 4/2024</span>
+            </div>
+          </div>
+        </div>
+        <!-- Tỉ lệ chi/thu -->
+        <div class="kpi-card">
+          <div class="kpi-icon-bg" style="background:#e4f1ff;">
+            <img src="https://www.figma.com/api/mcp/asset/06413164-378f-45dc-a373-944256292fb7" alt="" width="22" height="22" />
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-label">Tỉ lệ chi / thu</div>
+            <div class="kpi-value">75.2%</div>
+            <div class="kpi-trend">
+              <img src="https://www.figma.com/api/mcp/asset/7e266243-494f-485c-afcc-77d8e7a3f69a" alt="" width="11" height="11" />
+              <span class="kpi-pct down">+3.1%</span>
+              <span class="kpi-tlabel">so với tháng 4/2024</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── AI Summary Banner ── -->
+      <div class="ai-sum-banner">
+        <div class="ai-sum-icon-wrap">
+          <img src="https://www.figma.com/api/mcp/asset/25958985-3347-42bb-be2a-fd5ff8597dd2" alt="" width="24" height="24" />
+        </div>
+        <div class="ai-sum-body">
+          <div class="ai-sum-label">AI Phân tích nhanh</div>
+          <div class="ai-sum-text">
+            Tháng 5/2024, tòa nhà ghi nhận thặng dư <span class="hl-green">dương 706.7 triệu đồng</span>, cải thiện <span class="hl-green">28.6%</span> so với tháng trước. Tỉ lệ thu phí quản lý đạt <span class="hl-green">98.6%</span>, rất tốt. Khoản chi tăng chủ yếu từ <span class="hl-red">Bảo trì &amp; sửa chữa</span> (+14.2%) do thay thế thiết bị PCCC định kỳ.
+          </div>
+        </div>
+        <button class="ai-sum-btn">
+          Xem chi tiết
+          <img src="https://www.figma.com/api/mcp/asset/1fe2686f-14e9-4794-99b2-6091479ae9d6" alt="" width="14" height="14" />
+        </button>
+      </div>
+
+      <!-- ── Chart Row ── -->
+      <div class="chart-row">
+
+        <!-- Bar + Line chart -->
+        <div class="chart-card">
+          <div class="chart-hd">
+            <div class="chart-title">
+              Biến động thu chi
+              <span class="chart-info">i</span>
+            </div>
+            <div class="chart-period">
+              6 tháng gần nhất
+              <img src="https://www.figma.com/api/mcp/asset/f68a73a3-66a4-4714-b40e-bd14e282faef" alt="" width="13" height="13" />
+            </div>
+          </div>
+
+          <!-- SVG Chart -->
+          <div class="chart-svg-area" style="height:300px; position:relative;">
+            <!-- Y-axis labels -->
+            <span class="chart-y-lbl" style="top:8px;">3.2B</span>
+            <span class="chart-y-lbl" style="top:72px;">2.4B</span>
+            <span class="chart-y-lbl" style="top:136px;">1.6B</span>
+            <span class="chart-y-lbl" style="top:200px;">800M</span>
+            <span class="chart-y-lbl" style="top:264px;">0</span>
+
+            <svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg" style="position:absolute;left:44px;right:0;top:0;bottom:20px;width:calc(100% - 44px);height:280px;">
+              <!-- Grid lines -->
+              <line x1="0" y1="8"   x2="640" y2="8"   stroke="#f0f0f5" stroke-width="1"/>
+              <line x1="0" y1="72"  x2="640" y2="72"  stroke="#f0f0f5" stroke-width="1"/>
+              <line x1="0" y1="136" x2="640" y2="136" stroke="#f0f0f5" stroke-width="1"/>
+              <line x1="0" y1="200" x2="640" y2="200" stroke="#f0f0f5" stroke-width="1"/>
+              <line x1="0" y1="264" x2="640" y2="264" stroke="#e8e8f0" stroke-width="1"/>
+
+              <!-- Month columns — 6 months: T12/23, T1/24, T2/24, T3/24, T4/24, T5/24 -->
+              <!-- Each col: x offset = 20 + colIndex * 100, bar-width=38 each, gap=14 between thu/chi -->
+
+              <!-- T12/23 — Thu: 2.4B (top ~72), Chi: 1.9B (~122) -->
+              <rect x="20"  y="72"  width="38" height="192" rx="5" fill="#8b80f9" opacity="0.85"/>
+              <rect x="62"  y="122" width="38" height="142" rx="5" fill="#ef6b7c" opacity="0.85"/>
+
+              <!-- T1/24 — Thu: 2.3B (~88), Chi: 1.95B (~116) -->
+              <rect x="120" y="88"  width="38" height="176" rx="5" fill="#8b80f9" opacity="0.85"/>
+              <rect x="162" y="116" width="38" height="148" rx="5" fill="#ef6b7c" opacity="0.85"/>
+
+              <!-- T2/24 — Thu: 2.5B (~64), Chi: 2.0B (~104) -->
+              <rect x="220" y="64"  width="38" height="200" rx="5" fill="#8b80f9" opacity="0.85"/>
+              <rect x="262" y="108" width="38" height="156" rx="5" fill="#ef6b7c" opacity="0.85"/>
+
+              <!-- T3/24 — Thu: 2.6B (~44), Chi: 2.1B (~92) -->
+              <rect x="320" y="44"  width="38" height="220" rx="5" fill="#8b80f9" opacity="0.85"/>
+              <rect x="362" y="96"  width="38" height="168" rx="5" fill="#ef6b7c" opacity="0.85"/>
+
+              <!-- T4/24 — Thu: 2.5B (~64), Chi: 1.98B (~106) — selected month highlight -->
+              <rect x="420" y="64"  width="38" height="200" rx="5" fill="#8b80f9" opacity="0.85"/>
+              <rect x="462" y="106" width="38" height="158" rx="5" fill="#ef6b7c" opacity="0.85"/>
+
+              <!-- T5/24 — Thu: 2.85B (~18), Chi: 2.14B (~88) — current -->
+              <rect x="520" y="18"  width="38" height="246" rx="5" fill="#8b80f9"/>
+              <rect x="562" y="88"  width="38" height="176" rx="5" fill="#ef6b7c"/>
+
+              <!-- Thặng dư line: T12~150, T1~172, T2~132, T3~124, T4~132, T5~100 -->
+              <polyline
+                points="39,150 139,172 239,132 339,124 439,132 539,100"
+                fill="none" stroke="#22c08a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              />
+              <!-- Data points -->
+              <circle cx="39"  cy="150" r="4" fill="#22c08a" stroke="#fff" stroke-width="2"/>
+              <circle cx="139" cy="172" r="4" fill="#22c08a" stroke="#fff" stroke-width="2"/>
+              <circle cx="239" cy="132" r="4" fill="#22c08a" stroke="#fff" stroke-width="2"/>
+              <circle cx="339" cy="124" r="4" fill="#22c08a" stroke="#fff" stroke-width="2"/>
+              <circle cx="439" cy="132" r="4" fill="#22c08a" stroke="#fff" stroke-width="2"/>
+              <!-- Current month highlight point -->
+              <circle cx="539" cy="100" r="6" fill="#22c08a" stroke="#fff" stroke-width="2.5"/>
+
+              <!-- X-axis labels -->
+              <text x="39"  y="278" text-anchor="middle" font-size="12" fill="#585c7b" font-family="Inter,sans-serif">T12/23</text>
+              <text x="139" y="278" text-anchor="middle" font-size="12" fill="#585c7b" font-family="Inter,sans-serif">T1/24</text>
+              <text x="239" y="278" text-anchor="middle" font-size="12" fill="#585c7b" font-family="Inter,sans-serif">T2/24</text>
+              <text x="339" y="278" text-anchor="middle" font-size="12" fill="#585c7b" font-family="Inter,sans-serif">T3/24</text>
+              <text x="439" y="278" text-anchor="middle" font-size="12" fill="#585c7b" font-family="Inter,sans-serif">T4/24</text>
+              <text x="539" y="278" text-anchor="middle" font-size="12" fill="#4137f9" font-weight="600" font-family="Inter,sans-serif">T5/24</text>
+            </svg>
+
+            <!-- Tooltip for T5/24 -->
+            <div class="chart-tooltip" style="top:30px; left:60%;">
+              <div class="tt-title">T5/2024</div>
+              <div class="tt-row">
+                <div class="tt-dot" style="background:#8b80f9;"></div>
+                <span class="tt-name">Tổng thu</span>
+                <span class="tt-val">2.845.600.000đ</span>
+              </div>
+              <div class="tt-row">
+                <div class="tt-dot" style="background:#ef6b7c;"></div>
+                <span class="tt-name">Tổng chi</span>
+                <span class="tt-val">2.138.900.000đ</span>
+              </div>
+              <div class="tt-row">
+                <div class="tt-dot" style="background:#22c08a;"></div>
+                <span class="tt-name">Thặng dư</span>
+                <span class="tt-val">706.700.000đ</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Legend -->
+          <div class="chart-legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#8b80f9;"></div>
+              <span class="legend-lbl">Tổng thu</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#ef6b7c;"></div>
+              <span class="legend-lbl">Tổng chi</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-line" style="background:#22c08a;"></div>
+              <span class="legend-lbl">Thặng dư</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Donut chart — Cơ cấu chi phí -->
+        <div class="donut-card">
+          <div class="donut-title">Cơ cấu chi phí</div>
+          <div class="donut-wrap">
+            <img src="https://www.figma.com/api/mcp/asset/b5288dca-c5ba-442d-9c20-ddaf75ae7faf" alt="Cơ cấu chi phí" />
+            <div class="donut-center">
+              <div class="donut-cval">2.138,9M</div>
+              <div class="donut-clbl">Tổng chi</div>
+            </div>
+          </div>
+          <div class="donut-legend">
+            <div class="donut-row">
+              <div class="donut-left">
+                <div class="donut-dot" style="background:#7a6dff;"></div>
+                <span class="donut-name">Vận hành</span>
+              </div>
+              <span class="donut-pct">35%</span>
+              <span class="donut-amt">748,6M</span>
+            </div>
+            <div class="donut-row">
+              <div class="donut-left">
+                <div class="donut-dot" style="background:#ff9d6a;"></div>
+                <span class="donut-name">Điện nước</span>
+              </div>
+              <span class="donut-pct">22%</span>
+              <span class="donut-amt">470,8M</span>
+            </div>
+            <div class="donut-row">
+              <div class="donut-left">
+                <div class="donut-dot" style="background:#3ddcb6;"></div>
+                <span class="donut-name">Bảo trì</span>
+              </div>
+              <span class="donut-pct">18%</span>
+              <span class="donut-amt">385,2M</span>
+            </div>
+            <div class="donut-row">
+              <div class="donut-left">
+                <div class="donut-dot" style="background:#a99cff;"></div>
+                <span class="donut-name">Dịch vụ</span>
+              </div>
+              <span class="donut-pct">12%</span>
+              <span class="donut-amt">256,6M</span>
+            </div>
+            <div class="donut-row">
+              <div class="donut-left">
+                <div class="donut-dot" style="background:#c7d3ff;"></div>
+                <span class="donut-name">Nhân sự</span>
+              </div>
+              <span class="donut-pct">8%</span>
+              <span class="donut-amt">171,1M</span>
+            </div>
+            <div class="donut-row">
+              <div class="donut-left">
+                <div class="donut-dot" style="background:#f5b5d4;"></div>
+                <span class="donut-name">Khác</span>
+              </div>
+              <span class="donut-pct">5%</span>
+              <span class="donut-amt">106,6M</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Breakdown Tables ── -->
+      <div class="breakdown-row">
+
+        <!-- Chi tiết khoản thu -->
+        <div class="breakdown-card">
+          <div class="breakdown-hd">
+            <div class="breakdown-title">Chi tiết khoản thu</div>
+            <div class="breakdown-total"><span>Tổng:</span>2.845.600.000đ</div>
+          </div>
+          <div class="bd-table">
+            <!-- Row 1: Phí quản lý chung cư ~62% -->
+            <div class="bd-row">
+              <div class="bd-name-col">
+                <div class="bd-name">Phí quản lý chung cư</div>
+                <div class="bd-sub">Đạt 98.6% kế hoạch • 856/868 căn hộ</div>
+              </div>
+              <div class="bd-bar-col">
+                <div class="bd-bar-track">
+                  <div class="bd-bar-fill" style="width:62%;background:#8b80f9;"></div>
+                </div>
+              </div>
+              <div class="bd-amount-col">
+                <div class="bd-amount">1.764.272.000đ</div>
+                <div class="bd-cmp up">+8.2%</div>
+              </div>
+            </div>
+            <!-- Row 2: Phí gửi xe ~18% -->
+            <div class="bd-row">
+              <div class="bd-name-col">
+                <div class="bd-name">Phí gửi xe</div>
+                <div class="bd-sub">512 ô tô • 1.246 xe máy</div>
+              </div>
+              <div class="bd-bar-col">
+                <div class="bd-bar-track">
+                  <div class="bd-bar-fill" style="width:18%;background:#8b80f9;"></div>
+                </div>
+              </div>
+              <div class="bd-amount-col">
+                <div class="bd-amount">512.208.000đ</div>
+                <div class="bd-cmp up">+15.3%</div>
+              </div>
+            </div>
+            <!-- Row 3: Cho thuê mặt bằng ~12% -->
+            <div class="bd-row">
+              <div class="bd-name-col">
+                <div class="bd-name">Cho thuê mặt bằng</div>
+                <div class="bd-sub">12 đơn vị thuê</div>
+              </div>
+              <div class="bd-bar-col">
+                <div class="bd-bar-track">
+                  <div class="bd-bar-fill" style="width:12%;background:#8b80f9;"></div>
+                </div>
+              </div>
+              <div class="bd-amount-col">
+                <div class="bd-amount">341.472.000đ</div>
+                <div class="bd-cmp up">+22.4%</div>
+              </div>
+            </div>
+            <!-- Row 4: Lãi tiền gửi quỹ ~6% -->
+            <div class="bd-row">
+              <div class="bd-name-col">
+                <div class="bd-name">Lãi tiền gửi quỹ</div>
+                <div class="bd-sub">Quỹ bảo trì 6.5%/năm</div>
+              </div>
+              <div class="bd-bar-col">
+                <div class="bd-bar-track">
+                  <div class="bd-bar-fill" style="width:6%;background:#8b80f9;"></div>
+                </div>
+              </div>
+              <div class="bd-amount-col">
+                <div class="bd-amount">170.736.000đ</div>
+                <div class="bd-cmp up">+3.1%</div>
+              </div>
+            </div>
+            <!-- Row 5: Phí dịch vụ tiện ích ~2% -->
+            <div class="bd-row">
+              <div class="bd-name-col">
+                <div class="bd-name">Phí dịch vụ tiện ích</div>
+                <div class="bd-sub">Hồ bơi • Phòng gym • BBQ</div>
+              </div>
+              <div class="bd-bar-col">
+                <div class="bd-bar-track">
+                  <div class="bd-bar-fill" style="width:2%;background:#8b80f9;"></div>
+                </div>
+              </div>
+              <div class="bd-amount-col">
+                <div class="bd-amount">56.912.000đ</div>
+                <div class="bd-cmp down">-4.8%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chi tiết khoản chi -->
+        <div class="breakdown-card">
+          <div class="breakdown-hd">
+            <div class="breakdown-title">Chi tiết khoản chi</div>
+            <div class="breakdown-total"><span>Tổng:</span>2.138.900.000đ</div>
+          </div>
+          <div class="bd-table">
+            <!-- Row 1: Vận hành 35% -->
+            <div class="bd-row">
+              <div class="bd-name-col">
+                <div class="bd-name">Vận hành &amp; quản lý</div>
+                <div class="bd-sub">35% tổng chi</div>
+              </div>
+              <div class="bd-bar-col">
+                <div class="bd-bar-track">
+                  <div class="bd-bar-fill" style="width:100%;background:#7a6dff;"></div>
+                </div>
+              </div>
+              <div class="bd-amount-col">
+                <div class="bd-amount">748.615.000đ</div>
+                <div class="bd-cmp neu">+0.4%</div>
+              </div>
+            </div>
+            <!-- Row 2: Điện nước 22% -->
+            <div class="bd-row">
+              <div class="bd-name-col">
+                <div class="bd-name">Điện nước chung</div>
+                <div class="bd-sub">22% tổng chi • Tăng do mùa nóng</div>
+              </div>
+              <div class="bd-bar-col">
+                <div class="bd-bar-track">
+                  <div class="bd-bar-fill" style="width:63%;background:#ff9d6a;"></div>
+                </div>
+              </div>
+              <div class="bd-amount-col">
+                <div class="bd-amount">470.558.000đ</div>
+                <div class="bd-cmp down">+11.7%</div>
+              </div>
+            </div>
+            <!-- Row 3: Bảo trì 18% -->
+            <div class="bd-row">
+              <div class="bd-name-col">
+                <div class="bd-name">Bảo trì &amp; sửa chữa</div>
+                <div class="bd-sub">18% • Thay thế thiết bị PCCC</div>
+              </div>
+              <div class="bd-bar-col">
+                <div class="bd-bar-track">
+                  <div class="bd-bar-fill" style="width:51%;background:#3ddcb6;"></div>
+                </div>
+              </div>
+              <div class="bd-amount-col">
+                <div class="bd-amount">385.002.000đ</div>
+                <div class="bd-cmp down">+14.2%</div>
+              </div>
+            </div>
+            <!-- Row 4: Dịch vụ 12% -->
+            <div class="bd-row">
+              <div class="bd-name-col">
+                <div class="bd-name">Dịch vụ tiện ích</div>
+                <div class="bd-sub">12% • Hồ bơi, gym, BBQ</div>
+              </div>
+              <div class="bd-bar-col">
+                <div class="bd-bar-track">
+                  <div class="bd-bar-fill" style="width:34%;background:#a99cff;"></div>
+                </div>
+              </div>
+              <div class="bd-amount-col">
+                <div class="bd-amount">256.668.000đ</div>
+                <div class="bd-cmp up">-2.1%</div>
+              </div>
+            </div>
+            <!-- Row 5: Nhân sự 8% -->
+            <div class="bd-row">
+              <div class="bd-name-col">
+                <div class="bd-name">Nhân sự &amp; lương</div>
+                <div class="bd-sub">8% • 24 nhân viên</div>
+              </div>
+              <div class="bd-bar-col">
+                <div class="bd-bar-track">
+                  <div class="bd-bar-fill" style="width:23%;background:#c7d3ff;"></div>
+                </div>
+              </div>
+              <div class="bd-amount-col">
+                <div class="bd-amount">171.112.000đ</div>
+                <div class="bd-cmp neu">±0%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Giao dịch gần đây ── -->
+      <div class="txn-card">
+        <div class="txn-hd">
+          <div class="txn-title">Giao dịch gần đây</div>
+          <span class="txn-link">
+            Xem tất cả
+            <img src="https://www.figma.com/api/mcp/asset/1fe2686f-14e9-4794-99b2-6091479ae9d6" alt="" width="13" height="13" />
+          </span>
+        </div>
+
+        <!-- Table header -->
+        <div class="txn-table-hd">
+          <span>MÃ GIAO DỊCH</span>
+          <span>MÔ TẢ</span>
+          <span style="text-align:center;">DANH MỤC</span>
+          <span style="text-align:center;">NGÀY</span>
+          <span style="text-align:center;">HÌNH THỨC</span>
+          <span style="text-align:right;">SỐ TIỀN</span>
+        </div>
+
+        <!-- Row 1: Income -->
+        <div class="txn-row">
+          <div class="txn-id-col">
+            <span class="txn-id">#GD-240525-038</span>
+          </div>
+          <div class="txn-desc-col">
+            <div class="txn-type-icon" style="background:#e3fbed;">
+              <img src="https://www.figma.com/api/mcp/asset/47f9e73d-0043-419f-8ee5-ba6a7ecba22e" alt="" width="18" height="18" />
+            </div>
+            <div class="txn-desc-body">
+              <div class="txn-desc-main">Thu phí quản lý kỳ T5/2024 — A-12.05</div>
+              <div class="txn-desc-sub">76 căn hộ Block A</div>
+            </div>
+          </div>
+          <div class="txn-cat-col">
+            <span class="txn-cat-badge" style="background:#efeaff;color:#5a3ad9;">Phí quản lý</span>
+          </div>
+          <div class="txn-date-col">25/05</div>
+          <div class="txn-method-col">Chuyển khoản</div>
+          <div class="txn-amt-col"><span class="txn-amount income">+ 168.080.000đ</span></div>
+        </div>
+
+        <!-- Row 2: Expense -->
+        <div class="txn-row">
+          <div class="txn-id-col">
+            <span class="txn-id">#GD-240524-037</span>
+          </div>
+          <div class="txn-desc-col">
+            <div class="txn-type-icon" style="background:#ffeded;">
+              <img src="https://www.figma.com/api/mcp/asset/608266b7-1e25-4466-a5f3-68a8ebf94ae6" alt="" width="18" height="18" />
+            </div>
+            <div class="txn-desc-body">
+              <div class="txn-desc-main">Thay thế bình chữa cháy CO₂ định kỳ</div>
+              <div class="txn-desc-sub">Công ty PCCC Sài Gòn • Hợp đồng 2024-PC-08</div>
+            </div>
+          </div>
+          <div class="txn-cat-col">
+            <span class="txn-cat-badge" style="background:#fff1de;color:#c8761b;">Bảo trì</span>
+          </div>
+          <div class="txn-date-col">24/05</div>
+          <div class="txn-method-col">Chuyển khoản</div>
+          <div class="txn-amt-col"><span class="txn-amount expense">- 84.500.000đ</span></div>
+        </div>
+
+        <!-- Row 3: Income -->
+        <div class="txn-row">
+          <div class="txn-id-col">
+            <span class="txn-id">#GD-240523-036</span>
+          </div>
+          <div class="txn-desc-col">
+            <div class="txn-type-icon" style="background:#e3fbed;">
+              <img src="https://www.figma.com/api/mcp/asset/47f9e73d-0043-419f-8ee5-ba6a7ecba22e" alt="" width="18" height="18" />
+            </div>
+            <div class="txn-desc-body">
+              <div class="txn-desc-main">Phí gửi xe ô tô tháng 5/2024 — Block B</div>
+              <div class="txn-desc-sub">142 chỗ đỗ xe • 1.500.000đ/chỗ</div>
+            </div>
+          </div>
+          <div class="txn-cat-col">
+            <span class="txn-cat-badge" style="background:#e3fbed;color:#1c9d5f;">Phí gửi xe</span>
+          </div>
+          <div class="txn-date-col">23/05</div>
+          <div class="txn-method-col">Chuyển khoản</div>
+          <div class="txn-amt-col"><span class="txn-amount income">+ 213.000.000đ</span></div>
+        </div>
+
+        <!-- Row 4: Expense -->
+        <div class="txn-row">
+          <div class="txn-id-col">
+            <span class="txn-id">#GD-240522-035</span>
+          </div>
+          <div class="txn-desc-col">
+            <div class="txn-type-icon" style="background:#ffeded;">
+              <img src="https://www.figma.com/api/mcp/asset/608266b7-1e25-4466-a5f3-68a8ebf94ae6" alt="" width="18" height="18" />
+            </div>
+            <div class="txn-desc-body">
+              <div class="txn-desc-main">Hóa đơn tiền điện khu vực chung T4/2024</div>
+              <div class="txn-desc-sub">EVN HCM • Hợp đồng PD15-22</div>
+            </div>
+          </div>
+          <div class="txn-cat-col">
+            <span class="txn-cat-badge" style="background:#e4f1ff;color:#1f6dd4;">Điện nước</span>
+          </div>
+          <div class="txn-date-col">22/05</div>
+          <div class="txn-method-col">Chuyển khoản</div>
+          <div class="txn-amt-col"><span class="txn-amount expense">- 312.680.000đ</span></div>
+        </div>
+
+        <!-- Row 5: Income -->
+        <div class="txn-row">
+          <div class="txn-id-col">
+            <span class="txn-id">#GD-240521-034</span>
+          </div>
+          <div class="txn-desc-col">
+            <div class="txn-type-icon" style="background:#e3fbed;">
+              <img src="https://www.figma.com/api/mcp/asset/47f9e73d-0043-419f-8ee5-ba6a7ecba22e" alt="" width="18" height="18" />
+            </div>
+            <div class="txn-desc-body">
+              <div class="txn-desc-main">Cho thuê mặt bằng cửa hàng tầng 1 — Tháng 5</div>
+              <div class="txn-desc-sub">Highland Coffee • Hợp đồng MB-04</div>
+            </div>
+          </div>
+          <div class="txn-cat-col">
+            <span class="txn-cat-badge" style="background:#fff1de;color:#c8761b;">Cho thuê</span>
+          </div>
+          <div class="txn-date-col">21/05</div>
+          <div class="txn-method-col">Chuyển khoản</div>
+          <div class="txn-amt-col"><span class="txn-amount income">+ 78.000.000đ</span></div>
+        </div>
+
+        <!-- Row 6: Expense -->
+        <div class="txn-row">
+          <div class="txn-id-col">
+            <span class="txn-id">#GD-240520-033</span>
+          </div>
+          <div class="txn-desc-col">
+            <div class="txn-type-icon" style="background:#ffeded;">
+              <img src="https://www.figma.com/api/mcp/asset/608266b7-1e25-4466-a5f3-68a8ebf94ae6" alt="" width="18" height="18" />
+            </div>
+            <div class="txn-desc-body">
+              <div class="txn-desc-main">Lương nhân viên vận hành tháng 5/2024</div>
+              <div class="txn-desc-sub">24 nhân viên • Bao gồm BHXH</div>
+            </div>
+          </div>
+          <div class="txn-cat-col">
+            <span class="txn-cat-badge" style="background:#eef0f7;color:#3e4265;">Nhân sự</span>
+          </div>
+          <div class="txn-date-col">20/05</div>
+          <div class="txn-method-col">Chuyển khoản</div>
+          <div class="txn-amt-col"><span class="txn-amount expense">- 171.112.000đ</span></div>
+        </div>
+
+        <!-- Row 7: Expense -->
+        <div class="txn-row">
+          <div class="txn-id-col">
+            <span class="txn-id">#GD-240518-032</span>
+          </div>
+          <div class="txn-desc-col">
+            <div class="txn-type-icon" style="background:#ffeded;">
+              <img src="https://www.figma.com/api/mcp/asset/608266b7-1e25-4466-a5f3-68a8ebf94ae6" alt="" width="18" height="18" />
+            </div>
+            <div class="txn-desc-body">
+              <div class="txn-desc-main">Vệ sinh và bảo dưỡng hồ bơi tầng thượng</div>
+              <div class="txn-desc-sub">PoolCare Service • HĐ DV-2024-12</div>
+            </div>
+          </div>
+          <div class="txn-cat-col">
+            <span class="txn-cat-badge" style="background:#efeaff;color:#5a3ad9;">Dịch vụ tiện ích</span>
+          </div>
+          <div class="txn-date-col">18/05</div>
+          <div class="txn-method-col">Tiền mặt</div>
+          <div class="txn-amt-col"><span class="txn-amount expense">- 24.500.000đ</span></div>
+        </div>
+
+        <!-- Row 8: Income -->
+        <div class="txn-row">
+          <div class="txn-id-col">
+            <span class="txn-id">#GD-240515-031</span>
+          </div>
+          <div class="txn-desc-col">
+            <div class="txn-type-icon" style="background:#e3fbed;">
+              <img src="https://www.figma.com/api/mcp/asset/47f9e73d-0043-419f-8ee5-ba6a7ecba22e" alt="" width="18" height="18" />
+            </div>
+            <div class="txn-desc-body">
+              <div class="txn-desc-main">Lãi tiền gửi quỹ bảo trì Q2/2024</div>
+              <div class="txn-desc-sub">Vietcombank • Số tài khoản 0700-***-4521</div>
+            </div>
+          </div>
+          <div class="txn-cat-col">
+            <span class="txn-cat-badge" style="background:#e3fbed;color:#1c9d5f;">Lãi tiền gửi</span>
+          </div>
+          <div class="txn-date-col">15/05</div>
+          <div class="txn-method-col">Chuyển khoản</div>
+          <div class="txn-amt-col"><span class="txn-amount income">+ 56.912.000đ</span></div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="txn-pagination">
+          <span class="txn-pag-label">Hiển thị 1 - 8 của 64 giao dịch trong tháng 5/2024</span>
+          <div class="txn-pag-btns">
+            <button class="pag-btn">&#8249;</button>
+            <button class="pag-btn active">1</button>
+            <button class="pag-btn">2</button>
+            <button class="pag-btn">3</button>
+            <button class="pag-btn">4</button>
+            <span class="pag-sep">…</span>
+            <button class="pag-btn">8</button>
+            <button class="pag-btn">&#8250;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Bottom AI Banner ── -->
+      <div class="ai-bot-banner">
+        <img class="ai-bot-bg" src="https://www.figma.com/api/mcp/asset/e1803480-f04b-45ee-b55c-9cd83b6024a7" alt="" />
+        <div class="ai-bot-content">
+          <div class="ai-bot-tag">AI Assistant</div>
+          <div class="ai-bot-title">Trợ lý AI tài chính<br/>thông minh</div>
+          <button class="ai-bot-cta">
+            Hỏi ngay
+            <img src="https://www.figma.com/api/mcp/asset/2d5f6eb3-da7c-4c55-b3e3-3e94dcef4928" alt="" width="16" height="16" />
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /tc-page -->
+  </div><!-- /content-scroll -->
+
+</div><!-- /main -->
+<script>
+(function(){
+  function posDD(trigger, dd) {
+    var r = trigger.getBoundingClientRect();
+    var id = dd.id;
+    var ww = window.innerWidth;
+    if (id === 'dd-building') {
+      dd.style.top  = (r.bottom + 8) + 'px';
+      dd.style.left = r.left + 'px';
+      dd.style.right = 'auto';
+    } else if (id === 'dd-notif') {
+      dd.style.top   = (r.bottom + 10) + 'px';
+      dd.style.right = (ww - r.right - 4) + 'px';
+      dd.style.left  = 'auto';
+    } else if (id === 'dd-user') {
+      dd.style.top   = (r.bottom + 10) + 'px';
+      dd.style.right = (ww - r.right) + 'px';
+      dd.style.left  = 'auto';
+    }
+  }
+  document.addEventListener('click', function(e) {
+    var t = e.target.closest('[data-dd]');
+    if (t) {
+      var id = t.getAttribute('data-dd');
+      var dd = document.getElementById(id);
+      if (!dd) return;
+      var wasOpen = dd.classList.contains('open');
+      document.querySelectorAll('.dd').forEach(function(d){ d.classList.remove('open'); });
+      if (!wasOpen) { posDD(t, dd); dd.classList.add('open'); }
+      e.stopPropagation();
+    } else {
+      document.querySelectorAll('.dd').forEach(function(d){ d.classList.remove('open'); });
+    }
+  });
+})();
+</script>
+</body>
+</html>
