@@ -1,0 +1,1087 @@
+"use client";
+import { useEffect, useState } from "react";
+
+const LOGO_ICON = "https://www.figma.com/api/mcp/asset/e8b182ee-2638-44c4-ab73-1dcac4fe1b09";
+const LOGO_TEXT = "https://www.figma.com/api/mcp/asset/304fcfea-8963-4444-a417-3699387a6170";
+const CHECK_ICON = "https://www.figma.com/api/mcp/asset/eba44e03-c105-4274-9cbf-81b932df4b85";
+const ARROW_WHITE = "https://www.figma.com/api/mcp/asset/fe579514-c090-45e3-be25-3d2479743970";
+const PLAY_ICON = "https://www.figma.com/api/mcp/asset/09aea935-39b8-4f63-b744-a0183917e0e2";
+const HERO_IMAGE = "https://www.figma.com/api/mcp/asset/2e041fce-16e2-4eda-8544-91deeb5a3db2";
+const CHECK_FEATURE = "https://www.figma.com/api/mcp/asset/f7c66a39-c69e-4fad-b54a-1e7b2826e324";
+
+export default function LandingPage() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setMenuOpen(false);
+    }
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
+  return (
+    <>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Manrope:wght@800&display=swap"
+        rel="stylesheet"
+      />
+
+      {/* ===== MOBILE MENU ===== */}
+      <div className={`mobile-menu${menuOpen ? " open" : ""}`} id="mobileMenu">
+        <div className="mobile-menu-header">
+          <div className="logo" style={{ position: "relative", width: 165, height: 42 }}>
+            <img className="logo-icon" src={LOGO_ICON} alt="" />
+            <img className="logo-text" src={LOGO_TEXT} alt="Nhà Chung" />
+          </div>
+          <button className="close-btn" onClick={() => setMenuOpen(false)} aria-label="Đóng">×</button>
+        </div>
+        <a href="#" className="nav-link">Giải pháp</a>
+        <a href="#" className="nav-link">Tính năng</a>
+        <a href="#" className="nav-link">AI Chatbot</a>
+        <a href="#" className="nav-link">Bảng giá</a>
+        <a href="#" className="nav-link">Tài nguyên</a>
+        <a href="#" className="nav-link">Demo</a>
+        <div className="mobile-menu-actions">
+          <a href="#" className="btn btn-outline">Đăng nhập</a>
+          <a href="#" className="btn btn-primary">Tạo miễn phí</a>
+        </div>
+      </div>
+
+      {/* ===== NAVBAR ===== */}
+      <nav className="navbar">
+        <div className="logo">
+          <img className="logo-icon" src={LOGO_ICON} alt="" />
+          <img className="logo-text" src={LOGO_TEXT} alt="Nhà Chung" />
+        </div>
+        <div className="nav-links">
+          <a href="#" className="nav-link">Giải pháp</a>
+          <a href="#" className="nav-link">Tính năng</a>
+          <a href="#" className="nav-link">AI Chatbot</a>
+          <a href="#" className="nav-link">Bảng giá</a>
+          <a href="#" className="nav-link">Tài nguyên</a>
+          <a href="#" className="nav-link">Demo</a>
+        </div>
+        <div className="nav-actions">
+          <a href="/login" className="btn btn-outline">Đăng nhập</a>
+          <a href="/signup" className="btn btn-primary">Tạo miễn phí</a>
+        </div>
+        <button className="hamburger" onClick={() => setMenuOpen(true)} aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </nav>
+
+      {/* ===== HERO ===== */}
+      <section className="hero-section">
+        <div className="hero-content">
+          <div className="hero-text">
+            <div className="section-heading">
+              <span className="badge">Nền tảng truyền thông và minh bạch thông tin</span>
+              <h1 className="hero-headline">
+                Minh bạch thông tin<br />
+                <span className="accent">Vững niềm tin cư dân</span>
+              </h1>
+              <p className="hero-subtitle">Nhà Chung giúp Ban quản trị công bố thông tin minh bạch, kết nối cư dân dễ dàng và quản lý tòa nhà hiệu quả.</p>
+            </div>
+            <div className="hero-checklist">
+              <div className="check-item">
+                <img src={CHECK_ICON} alt="" />
+                <span>Website riêng cho từng tòa (subdomain + custom domain)</span>
+              </div>
+              <div className="check-item">
+                <img src={CHECK_ICON} alt="" />
+                <span>Công khai thông báo, báo cáo, tài liệu</span>
+              </div>
+              <div className="check-item">
+                <img src={CHECK_ICON} alt="" />
+                <span>AI chatbot trả lời cư dân 24/7</span>
+              </div>
+            </div>
+            <div className="hero-cta">
+              <div className="subdomain-input">
+                <input type="text" placeholder="Nhập tên tòa nhà" />
+                <span className="subdomain-suffix">.nhachung.vn</span>
+              </div>
+              <div className="hero-buttons">
+                <a href="#" className="btn btn-primary">
+                  Dùng thử miễn phí
+                  <img src={ARROW_WHITE} alt="" />
+                </a>
+                <a href="#" className="btn btn-outline">
+                  Xem demo
+                  <img src={PLAY_ICON} alt="" />
+                </a>
+              </div>
+            </div>
+          </div>
+          <div className="hero-image-wrap">
+            <div className="hero-image-inner">
+              <img src={HERO_IMAGE} alt="Nhà Chung Platform" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== STATS BAR ===== */}
+      <section className="stats-section">
+        <div className="stats-bar">
+          <div className="stat-item">
+            <div className="stat-icon-box">
+              <div className="stat-icon-inner">
+                <div style={{ position: "absolute", inset: "12.5%" }}>
+                  <div style={{ position: "absolute", inset: "-5.56%" }}>
+                    <img src="https://www.figma.com/api/mcp/asset/d32482cd-0fc9-45bd-8e8c-b13d7e76f226" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", maxWidth: "none" }} />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="stat-text">
+              <div className="stat-number">50+</div>
+              <div className="stat-label">Tòa nhà sử dụng</div>
+            </div>
+          </div>
+          <div className="stat-item">
+            <div className="stat-icon-box">
+              <div className="stat-icon-inner">
+                <div style={{ position: "absolute", inset: "6.25% 6.25% 37.5% 6.25%" }}>
+                  <img src="https://www.figma.com/api/mcp/asset/b01a152b-ccdf-491f-87f8-fadee395f449" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", maxWidth: "none" }} />
+                </div>
+                <div style={{ position: "absolute", inset: "37.5% 31.25% 6.25% 31.25%" }}>
+                  <img src="https://www.figma.com/api/mcp/asset/37095821-9e3f-411b-99a1-916cc50285b9" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", maxWidth: "none" }} />
+                </div>
+              </div>
+            </div>
+            <div className="stat-text">
+              <div className="stat-number">10,000+</div>
+              <div className="stat-label">Cư dân tin tưởng</div>
+            </div>
+          </div>
+          <div className="stat-item">
+            <div className="stat-icon-box">
+              <div className="stat-icon-inner">
+                <div style={{ position: "absolute", inset: "8.33%" }}>
+                  <div style={{ position: "absolute", inset: "-5%" }}>
+                    <img src="https://www.figma.com/api/mcp/asset/4f3c0af1-c9f2-405c-8b49-decb43d0e5e4" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", maxWidth: "none" }} />
+                  </div>
+                </div>
+                <div style={{ position: "absolute", bottom: "41.67%", left: "50%", right: "33.33%", top: "25%" }}>
+                  <div style={{ position: "absolute", inset: "-12.5% -25.01% -12.5% -25%" }}>
+                    <img src="https://www.figma.com/api/mcp/asset/ac64542a-1a49-4f1c-a45c-0466871f6ae6" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", maxWidth: "none" }} />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="stat-text">
+              <div className="stat-number">99%</div>
+              <div className="stat-label">Uptime cam kết</div>
+            </div>
+          </div>
+          <div className="stat-item">
+            <div className="stat-icon-box">
+              <div className="stat-icon-inner">
+                <div style={{ position: "absolute", inset: "8.33% 10% 8.33% 8.33%" }}>
+                  <img src="https://www.figma.com/api/mcp/asset/974b969e-06e7-4e72-91d0-f9dbb31c18d3" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", maxWidth: "none" }} />
+                </div>
+              </div>
+            </div>
+            <div className="stat-text">
+              <div className="stat-number">24/7</div>
+              <div className="stat-label">AI Support</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== SOLUTIONS ===== */}
+      <section className="solutions-section">
+        <div className="solutions-left">
+          <span className="badge">Minh bạch - Kết nối - Hiệu quả</span>
+          <h2 className="section-title">Giải pháp toàn diện cho<br />Ban quản trị &amp; Cư dân</h2>
+        </div>
+        <div className="solutions-cards">
+          <div className="service-card">
+            <div className="card-icon card-icon-50" style={{ background: "#efeeff" }}>
+              <div className="card-icon-inner">
+                <div style={{ position: "absolute", inset: "6.25% 12.47%" }}>
+                  <img src="https://www.figma.com/api/mcp/asset/00542e23-5716-47bc-96a1-23048ad505cb" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", maxWidth: "none" }} />
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="card-title">Thông báo</div>
+              <p className="card-desc">Công khai nhanh chóng, đúng người, đúng thời điểm</p>
+            </div>
+          </div>
+          <div className="service-card">
+            <div className="card-icon card-icon-50" style={{ background: "#e4f1ff" }}>
+              <div className="card-icon-inner">
+                <div style={{ position: "absolute", inset: "8.33% 16.67%" }}>
+                  <img src="https://www.figma.com/api/mcp/asset/ac482cf6-b660-44af-abda-8fb993873d95" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", maxWidth: "none" }} />
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="card-title">Báo cáo</div>
+              <p className="card-desc">Công khai tài chính, rõ ràng, dễ hiểu</p>
+            </div>
+          </div>
+          <div className="service-card">
+            <div className="card-icon card-icon-50" style={{ background: "#e7fffc" }}>
+              <div className="card-icon-inner">
+                <div style={{ position: "absolute", bottom: "19.03%", left: "12.5%", right: "25%", top: "6.53%" }}>
+                  <img src="https://www.figma.com/api/mcp/asset/b0e1cc29-fe57-4ec2-a4f6-f91457ddc3b0" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", maxWidth: "none" }} />
+                </div>
+                <div style={{ position: "absolute", inset: "46.88% 12.5% 6.25% 28.13%" }}>
+                  <img src="https://www.figma.com/api/mcp/asset/1d5c6582-3087-49df-83af-85c53265670c" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", maxWidth: "none" }} />
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="card-title">Tài liệu</div>
+              <p className="card-desc">Lưu trữ &amp; chia sẻ tài liệu khoa học, dễ tìm</p>
+            </div>
+          </div>
+          <div className="service-card">
+            <div className="card-icon card-icon-50" style={{ background: "#efffe7" }}>
+              <div className="card-icon-inner">
+                <div style={{ position: "absolute", inset: "12.5% 8.33% 8.34% 8.33%" }}>
+                  <img src="https://www.figma.com/api/mcp/asset/55300665-86eb-4c9c-9ec9-10ae1f54142a" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", maxWidth: "none" }} />
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="card-title">Góp ý</div>
+              <p className="card-desc">Lắng nghe cư dân, cải thiện dịch vụ</p>
+            </div>
+          </div>
+          <div className="service-card">
+            <div className="card-icon card-icon-50" style={{ background: "#f2e7ff" }}>
+              <div className="card-icon-inner">
+                <div style={{ position: "absolute", inset: 0 }}>
+                  <img src="https://www.figma.com/api/mcp/asset/da55842d-a3ad-41ab-83dd-b1690c4e1c99" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", maxWidth: "none" }} />
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="card-title">Tiện ích</div>
+              <p className="card-desc">Đặt lịch, đăng ký dịch vụ tiện ích nhanh chóng</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== AI CHATBOT ===== */}
+      <section className="about-section">
+        <div className="about-content">
+          <div className="about-text">
+            <div className="section-heading">
+              <span className="badge">AI Đồng hành</span>
+              <h2 className="about-title">Trợ lý AI thông minh<br />Hỗ trợ cư dân 24/7</h2>
+            </div>
+            <p className="about-desc">Trả lời mọi thắc mắc của cư dân nhanh chóng và chính xác, mọi lúc mọi nơi.</p>
+            <a href="#" className="btn btn-primary" style={{ alignSelf: "flex-start" }}>
+              Trải nghiệm AI Chatbot
+              <img src={ARROW_WHITE} alt="" />
+            </a>
+          </div>
+          <div className="about-image">
+            <img src="https://www.figma.com/api/mcp/asset/780435c6-fe63-4b33-a828-62c486f699da" alt="AI Chatbot demo" />
+          </div>
+        </div>
+      </section>
+
+      {/* ===== FEATURES ===== */}
+      <section className="features-section">
+        <div className="features-header">
+          <span className="badge">Tính năng nổi bật</span>
+          <h2 className="section-title-lg" style={{ textAlign: "center" }}>Tất cả trong một nền tảng<br />Quản lý toàn diện – Vận hành hiệu quả</h2>
+        </div>
+        <div className="features-grid">
+          <div className="feature-card">
+            <div className="card-icon card-icon-60" style={{ background: "#e7fffc" }}>
+              <div className="card-icon-inner">
+                <div style={{ position: "absolute", inset: "30.21% 3.13% 3.12% 3.12%" }}>
+                  <img src="https://www.figma.com/api/mcp/asset/5b08e641-20e5-45d5-ad38-16cc003a1679" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", maxWidth: "none" }} />
+                </div>
+                <div style={{ position: "absolute", inset: "3.13% 3.78% 76.04% 3.78%" }}>
+                  <img src="https://www.figma.com/api/mcp/asset/898f2fd5-dc2e-496b-a4b7-4a46dedf95a5" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", maxWidth: "none" }} />
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="feature-title">Website riêng</div>
+              <p className="feature-desc">Tạo dấu ấn riêng cho từng tòa nhà</p>
+            </div>
+          </div>
+          <div className="feature-card">
+            <div className="card-icon card-icon-60" style={{ background: "#efeeff" }}>
+              <div className="card-icon-inner">
+                <div style={{ position: "absolute", inset: "6.25% 12.47%" }}>
+                  <img src="https://www.figma.com/api/mcp/asset/a4ee5245-ea35-4fb3-a10e-aa6784d68a14" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", maxWidth: "none" }} />
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="feature-title">Quản lý thông báo</div>
+              <p className="feature-desc">Gửi thông báo nhanh chóng, chính xác</p>
+            </div>
+          </div>
+          <div className="feature-card">
+            <div className="card-icon card-icon-60" style={{ background: "#e4f1ff" }}>
+              <div className="card-icon-inner">
+                <div style={{ position: "absolute", inset: "8.33% 16.67%" }}>
+                  <img src="https://www.figma.com/api/mcp/asset/5d880802-ed65-42ee-b901-32e0b32fd92a" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", maxWidth: "none" }} />
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="feature-title">Báo cáo minh bạch</div>
+              <p className="feature-desc">Công khai tài chính rõ ràng</p>
+            </div>
+          </div>
+          <div className="feature-card">
+            <div className="card-icon card-icon-60" style={{ background: "#efffe7" }}>
+              <div className="card-icon-inner">
+                <div style={{ position: "absolute", bottom: "19.03%", left: "12.5%", right: "25%", top: "6.53%" }}>
+                  <img src="https://www.figma.com/api/mcp/asset/0e8e72ea-b320-45b2-b7ba-dbf63addfbfd" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", maxWidth: "none" }} />
+                </div>
+                <div style={{ position: "absolute", inset: "46.88% 12.5% 6.25% 28.13%" }}>
+                  <img src="https://www.figma.com/api/mcp/asset/d433749b-ffc5-4f80-b578-01794f5f411b" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", maxWidth: "none" }} />
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="feature-title">Kho tài liệu</div>
+              <p className="feature-desc">Lưu trữ khoa học, tìm kiếm dễ dàng</p>
+            </div>
+          </div>
+          <div className="feature-card">
+            <div className="card-icon card-icon-60" style={{ background: "#f2e7ff" }}>
+              <div className="card-icon-inner">
+                <div style={{ position: "absolute", inset: 0 }}>
+                  <img src="https://www.figma.com/api/mcp/asset/7d02971f-649c-4951-9172-4cf31f9ea087" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", maxWidth: "none" }} />
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="feature-title">Tiện ích cư dân</div>
+              <p className="feature-desc">Đặt lịch, đăng ký, thanh toán tiện lợi</p>
+            </div>
+          </div>
+          <div className="feature-card">
+            <div className="card-icon card-icon-60" style={{ background: "#e7fcff" }}>
+              <div className="card-icon-inner">
+                <div style={{ position: "absolute", inset: "8.33% 6.25% 8.33% 4.17%" }}>
+                  <img src="https://www.figma.com/api/mcp/asset/ad4cbf90-cc41-445f-a916-79d620e2c270" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", maxWidth: "none" }} />
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="feature-title">Thống kê &amp; báo cáo</div>
+              <p className="feature-desc">Theo dõi hiệu suất vận hành trực quan</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== SECURITY ===== */}
+      <section className="about-section">
+        <div className="about-content">
+          <div className="about-text">
+            <div className="section-heading">
+              <span className="badge">An toàn - Bảo mật</span>
+              <h2 className="about-title">Bảo mật tuyệt đối<br />An tâm sử dụng</h2>
+            </div>
+            <p className="about-desc">Hệ thống bảo mật nhiều lớp, dữ liệu được mã hóa và sao lưu định kỳ, đảm bảo an toàn tuyệt đối.</p>
+          </div>
+          <div className="about-image">
+            <img src="https://www.figma.com/api/mcp/asset/1bf7bcd7-e55b-4315-8158-20e6b2d9595f" alt="Bảo mật hệ thống" />
+          </div>
+        </div>
+      </section>
+
+      {/* ===== PARTNERS ===== */}
+      <section className="partners-section">
+        <span className="badge" style={{ flexShrink: 0 }}>Được tin dùng bởi</span>
+        <div className="partners-list">
+          <div className="partner-item">
+            <img src="https://www.figma.com/api/mcp/asset/875e6313-6ef9-4fdf-84ea-26de783031fb" alt="Partner" />
+          </div>
+          <div className="partner-item">
+            <img src="https://www.figma.com/api/mcp/asset/311fda4c-1734-4e00-94a1-2e8ee230ee57" alt="Partner" />
+          </div>
+          <div className="partner-item">
+            <img src="https://www.figma.com/api/mcp/asset/438ec515-6813-4468-a9b7-af890c80d460" alt="Partner" />
+          </div>
+          <div className="partner-item">
+            <img src="https://www.figma.com/api/mcp/asset/ce635816-7c73-4614-b21b-3c651790797e" alt="Partner" />
+          </div>
+          <div className="partner-item">
+            <img src="https://www.figma.com/api/mcp/asset/f6bfc032-4b04-4ef9-ad60-5f94399e7937" alt="Partner" />
+          </div>
+        </div>
+      </section>
+
+      {/* ===== PRICING ===== */}
+      <section className="pricing-section">
+        <div className="pricing-content">
+          <div className="pricing-top-row">
+            <div className="pricing-info">
+              <span className="badge">Bảng giá linh hoạt</span>
+              <h2 className="section-title-lg">Chọn gói phù hợp<br />cho mọi tòa nhà</h2>
+              <p className="pricing-desc">Linh hoạt - Minh bạch - Tiết kiệm</p>
+            </div>
+            <img className="pricing-city-img" src="https://www.figma.com/api/mcp/asset/7170c58e-bf9e-472b-a6bb-9ce698fa7447" alt="Pricing illustration" />
+          </div>
+          <div className="pricing-cards">
+            {/* Free */}
+            <div className="pricing-card">
+              <div>
+                <div className="pricing-header">
+                  <div className="plan-name">Free</div>
+                  <div className="price-row">
+                    <span className="price">0đ</span>
+                    <span className="period">/tháng</span>
+                  </div>
+                  <div className="plan-sub">Dành cho tòa nhà nhỏ</div>
+                </div>
+                <div className="plan-features" style={{ marginTop: 16 }}>
+                  <div className="plan-feature-item">
+                    <img src={CHECK_FEATURE} alt="" />
+                    <span className="plan-feature-text">Website subdomain</span>
+                  </div>
+                  <div className="plan-feature-item">
+                    <img src={CHECK_FEATURE} alt="" />
+                    <span className="plan-feature-text">Thông báo cơ bản</span>
+                  </div>
+                  <div className="plan-feature-item">
+                    <img src={CHECK_FEATURE} alt="" />
+                    <span className="plan-feature-text">Kho tài liệu (1GB)</span>
+                  </div>
+                  <div className="plan-feature-item">
+                    <img src={CHECK_FEATURE} alt="" />
+                    <span className="plan-feature-text">AI Chatbot cơ bản</span>
+                  </div>
+                </div>
+              </div>
+              <a href="#" className="btn btn-outline" style={{ justifyContent: "center", width: "100%", marginTop: 8 }}>Dùng miễn phí</a>
+            </div>
+            {/* Standard */}
+            <div className="pricing-card">
+              <div>
+                <div className="pricing-header">
+                  <div className="plan-name">Standard</div>
+                  <div className="price-row">
+                    <span className="price">499.000đ</span>
+                    <span className="period">/tháng</span>
+                  </div>
+                  <div className="plan-sub">Phù hợp đa số tòa nhà</div>
+                </div>
+                <div className="plan-features" style={{ marginTop: 16 }}>
+                  <div className="plan-feature-item">
+                    <img src={CHECK_FEATURE} alt="" />
+                    <span className="plan-feature-text">Tất cả tính năng Free</span>
+                  </div>
+                  <div className="plan-feature-item">
+                    <img src={CHECK_FEATURE} alt="" />
+                    <span className="plan-feature-text">Báo cáo tài chính</span>
+                  </div>
+                  <div className="plan-feature-item">
+                    <img src={CHECK_FEATURE} alt="" />
+                    <span className="plan-feature-text">Góp ý cư dân</span>
+                  </div>
+                  <div className="plan-feature-item">
+                    <img src={CHECK_FEATURE} alt="" />
+                    <span className="plan-feature-text">Dung lượng 10GB</span>
+                  </div>
+                </div>
+              </div>
+              <a href="#" className="btn btn-outline" style={{ justifyContent: "center", width: "100%", marginTop: 8 }}>Chọn Standard</a>
+            </div>
+            {/* AI Pro (Featured) */}
+            <div className="pricing-card featured">
+              <div className="popular-badge">Phổ biến nhất</div>
+              <div>
+                <div className="pricing-header">
+                  <div className="plan-name">AI Pro</div>
+                  <div className="price-row">
+                    <span className="price">1.490.000đ</span>
+                    <span className="period">/tháng</span>
+                  </div>
+                  <div className="plan-sub">Dành cho tòa nhà hiện đại</div>
+                </div>
+                <div className="plan-features" style={{ marginTop: 16 }}>
+                  <div className="plan-feature-item">
+                    <img src={CHECK_FEATURE} alt="" />
+                    <span className="plan-feature-text">Tất cả tính năng Standard</span>
+                  </div>
+                  <div className="plan-feature-item">
+                    <img src={CHECK_FEATURE} alt="" />
+                    <span className="plan-feature-text">AI Chatbot nâng cao</span>
+                  </div>
+                  <div className="plan-feature-item">
+                    <img src={CHECK_FEATURE} alt="" />
+                    <span className="plan-feature-text">AI viết nội dung</span>
+                  </div>
+                  <div className="plan-feature-item">
+                    <img src={CHECK_FEATURE} alt="" />
+                    <span className="plan-feature-text">Đăng bài tự động đa kênh</span>
+                  </div>
+                  <div className="plan-feature-item">
+                    <img src={CHECK_FEATURE} alt="" />
+                    <span className="plan-feature-text">Dung lượng 50GB</span>
+                  </div>
+                </div>
+              </div>
+              <a href="#" className="btn btn-primary" style={{ justifyContent: "center", width: "100%", marginTop: 8 }}>Chọn AI Pro</a>
+            </div>
+            {/* Enterprise */}
+            <div className="pricing-card">
+              <div>
+                <div className="pricing-header">
+                  <div className="plan-name">Enterprise</div>
+                  <div className="price-row">
+                    <span className="price">Liên hệ</span>
+                  </div>
+                  <div className="plan-sub">Dành cho tòa nhà lớn</div>
+                </div>
+                <div className="plan-features" style={{ marginTop: 16 }}>
+                  <div className="plan-feature-item">
+                    <img src={CHECK_FEATURE} alt="" />
+                    <span className="plan-feature-text">Tất cả tính năng AI Pro</span>
+                  </div>
+                  <div className="plan-feature-item">
+                    <img src={CHECK_FEATURE} alt="" />
+                    <span className="plan-feature-text">Tính năng tùy chỉnh</span>
+                  </div>
+                  <div className="plan-feature-item">
+                    <img src={CHECK_FEATURE} alt="" />
+                    <span className="plan-feature-text">Tích hợp hệ thống khác</span>
+                  </div>
+                  <div className="plan-feature-item">
+                    <img src={CHECK_FEATURE} alt="" />
+                    <span className="plan-feature-text">Hỗ trợ riêng 24/7</span>
+                  </div>
+                </div>
+              </div>
+              <a href="#" className="btn btn-outline" style={{ justifyContent: "center", width: "100%", marginTop: 8 }}>Liên hệ tư vấn</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== CTA ===== */}
+      <section className="cta-section">
+        <div className="cta-wrap">
+          <img className="cta-bg" src="https://www.figma.com/api/mcp/asset/f82655f1-a270-41eb-b764-aab1191d4b0c" alt="" />
+          <div className="cta-inner">
+            <div className="cta-text">
+              <h2 className="cta-headline">Sẵn sàng minh bạch hóa<br />thông tin tòa nhà?</h2>
+              <p className="cta-sub">Hơn 50+ Ban quản trị đã lựa chọn Nhà Chung để kết nối &amp; phục vụ cư dân tốt hơn.</p>
+            </div>
+            <div className="cta-actions">
+              <a href="#" className="btn btn-white">Tạo miễn phí</a>
+              <a href="#" className="btn btn-outline-white">Đặt lịch demo</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== FOOTER ===== */}
+      <footer>
+        <div className="footer-main">
+          <div className="footer-brand">
+            <div className="footer-logo">
+              <img className="logo-icon" src="https://www.figma.com/api/mcp/asset/ed15c83a-0692-42e9-965e-2b36ff5e95b9" alt="" />
+              <img className="logo-text" src="https://www.figma.com/api/mcp/asset/ad9c6754-4e2f-4b35-8015-b11d4a3253bc" alt="Nhà Chung" style={{ filter: "brightness(10)" }} />
+            </div>
+            <p className="footer-brand-desc">Nhà Chung là nền tảng công nghệ giúp Ban quản trị công bố thông tin minh bạch, kết nối cư dân và vận hành tòa nhà hiệu quả.</p>
+            <div className="footer-socials">
+              <img className="footer-social" src="https://www.figma.com/api/mcp/asset/ef8a1d74-bd0f-497a-bcae-af02ed3b6b6d" alt="Facebook" />
+              <img className="footer-social" src="https://www.figma.com/api/mcp/asset/657bd54d-1a27-4a78-b38e-dba790c100c2" alt="Youtube" />
+              <img className="footer-social" src="https://www.figma.com/api/mcp/asset/3cbe8460-7865-49d6-92ca-4d1539361255" alt="Zalo" />
+              <img className="footer-social" src="https://www.figma.com/api/mcp/asset/210a706b-98c8-4852-92c0-58cecd7a291d" alt="TikTok" style={{ width: 33, height: 33 }} />
+            </div>
+          </div>
+          <div className="footer-col">
+            <div className="footer-col-title">Sản phẩm</div>
+            <div className="footer-links">
+              <a href="#" className="footer-link">Giải pháp</a>
+              <a href="#" className="footer-link">Tính năng</a>
+              <a href="#" className="footer-link">AI Chatbot</a>
+              <a href="#" className="footer-link">Bảng giá</a>
+              <a href="#" className="footer-link">Demo</a>
+            </div>
+          </div>
+          <div className="footer-col">
+            <div className="footer-col-title">Tài nguyên</div>
+            <div className="footer-links">
+              <a href="#" className="footer-link">Blog</a>
+              <a href="#" className="footer-link">Hướng dẫn</a>
+              <a href="#" className="footer-link">Trung tâm hỗ trợ</a>
+              <a href="#" className="footer-link">Chính sách bảo mật</a>
+              <a href="#" className="footer-link">Điều khoản sử dụng</a>
+            </div>
+          </div>
+          <div className="footer-col">
+            <div className="footer-col-title">Liên hệ</div>
+            <div className="footer-contact">
+              <div className="footer-contact-item">
+                <img src="https://www.figma.com/api/mcp/asset/ae51402b-1ef7-47e5-ac59-464e9b71ac6c" alt="" />
+                <span>hello@nhachung.vn</span>
+              </div>
+              <div className="footer-contact-item">
+                <img src="https://www.figma.com/api/mcp/asset/f9599d11-221f-4b44-bd2a-81c49760ac0c" alt="" />
+                <span>0909 123 456</span>
+              </div>
+              <div className="footer-contact-item">
+                <img src="https://www.figma.com/api/mcp/asset/260f90c6-0b23-4676-9fe7-e9c585c3ea4b" alt="" />
+                <span>TP. Hồ Chí Minh, Việt Nam</span>
+              </div>
+            </div>
+          </div>
+          <div className="footer-newsletter">
+            <p className="newsletter-title">Nhận tin cập nhật</p>
+            <p className="newsletter-sub">Đăng ký để nhận thông tin tính năng mới và ưu đãi từ Nhà Chung.</p>
+            <div className="newsletter-form-row">
+              <input className="newsletter-input" type="email" placeholder="Nhập email của bạn" />
+              <button className="newsletter-btn" type="button">Gửi</button>
+            </div>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <p className="footer-copy">© 2026 Nhà Chung. Tất cả quyền được bảo lưu.</p>
+          <div className="footer-badges">
+            <img src="https://www.figma.com/api/mcp/asset/9b26a26a-c6a1-4655-bad4-4aba3f743ffe" alt="Sale Noti Certified" />
+            <img src="https://www.figma.com/api/mcp/asset/1c885a66-7c68-4487-b829-7d091b0f4191" alt="DMCA Protected" />
+          </div>
+        </div>
+      </footer>
+
+      <style jsx global>{`
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: auto; }
+        body {
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+          color: #222;
+          background: #fff;
+          overflow-x: hidden;
+          overflow-y: auto;
+        }
+        img { display: block; }
+        a { text-decoration: none; }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 32px 80px 0; position: relative; z-index: 10;
+        }
+        .logo { position: relative; width: 165px; height: 42px; flex-shrink: 0; }
+        .logo-icon { position: absolute; top: 0; left: 0; width: 36px; height: 40px; }
+        .logo-text { position: absolute; top: 10px; left: 48px; width: 114px; height: 23px; }
+        .nav-links { display: flex; gap: 4px; align-items: center; }
+        .nav-link {
+          font-size: 16px; font-weight: 400; color: #000; padding: 4px 10px;
+          border-radius: 6px; white-space: nowrap; transition: color 0.2s;
+        }
+        .nav-link:hover { color: #4137f9; }
+        .nav-actions { display: flex; gap: 12px; align-items: center; }
+        .btn {
+          display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+          padding: 12px 16px; border-radius: 10px; font-size: 16px; font-weight: 500;
+          cursor: pointer; white-space: nowrap; transition: opacity 0.2s; border: none;
+          font-family: -apple-system, 'Inter', sans-serif;
+        }
+        .btn:hover { opacity: 0.85; }
+        .btn-outline { background: white; border: 1px solid #4137f9; color: #4137f9; }
+        .btn-primary { background: #4137f9; color: white; }
+        .btn-white { background: white; color: #4137f9; }
+        .btn-outline-white { background: transparent; border: 1px solid white; color: white; }
+        .btn img { width: 24px; height: 24px; flex-shrink: 0; }
+        .hamburger {
+          display: none; flex-direction: column; gap: 5px;
+          cursor: pointer; padding: 8px; background: none; border: none;
+        }
+        .hamburger span { display: block; width: 24px; height: 2px; background: #222; border-radius: 2px; }
+
+        /* ===== MOBILE MENU ===== */
+        .mobile-menu {
+          display: none; position: fixed; inset: 0; background: white;
+          z-index: 1000; flex-direction: column; padding: 20px; overflow-y: auto;
+        }
+        .mobile-menu.open { display: flex; }
+        .mobile-menu-header {
+          display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+        }
+        .close-btn {
+          background: none; border: none; font-size: 32px;
+          cursor: pointer; color: #222; line-height: 1; padding: 4px;
+        }
+        .mobile-menu a.nav-link {
+          display: block; font-size: 17px; padding: 14px 0;
+          border-bottom: 1px solid #d4d7e5;
+        }
+        .mobile-menu-actions { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+        .mobile-menu-actions .btn { justify-content: center; width: 100%; }
+
+        /* ===== HERO ===== */
+        .hero-section { padding: 20px 80px 80px; }
+        .hero-content { display: flex; gap: 40px; align-items: flex-start; }
+        .hero-text {
+          flex-shrink: 0; max-width: 480px; display: flex;
+          flex-direction: column; gap: 26px; padding-top: 30px;
+        }
+        .badge {
+          display: inline-flex; align-items: center; justify-content: center;
+          padding: 6px 12px; border: 1px solid #4137f9; border-radius: 12px;
+          font-size: 14px; font-weight: 500; color: #4137f9; text-transform: uppercase;
+          align-self: flex-start; width: fit-content; flex-shrink: 0;
+        }
+        .hero-headline {
+          font-family: 'Manrope', sans-serif; font-weight: 800;
+          font-size: 50px; line-height: 1.2; color: #222;
+          letter-spacing: -2px;
+        }
+        .hero-headline .accent { color: #4137f9; }
+        .hero-subtitle {
+          font-size: 18px; line-height: 26px; color: #3e4265; font-weight: 400;
+        }
+        .hero-checklist { display: flex; flex-direction: column; gap: 10px; }
+        .check-item { display: flex; align-items: center; gap: 8px; }
+        .check-item img { width: 24px; height: 24px; flex-shrink: 0; }
+        .check-item span {
+          font-size: 14px; font-weight: 500; color: #2c0e87;
+          font-family: -apple-system, 'Inter', sans-serif;
+        }
+        .hero-cta { display: flex; flex-direction: column; gap: 26px; }
+        .subdomain-input {
+          display: flex; align-items: center; justify-content: space-between;
+          height: 44px; padding: 0 13px; border: 1px solid #d4d7e5;
+          border-radius: 8px; background: white; gap: 8px;
+        }
+        .subdomain-input input {
+          flex: 1; border: none; outline: none; font-size: 16px;
+          font-family: 'Inter', sans-serif; color: #222; background: transparent;
+          min-width: 0;
+        }
+        .subdomain-input input::placeholder { color: #999; }
+        .subdomain-suffix {
+          font-size: 16px; font-weight: 500; color: #4137f9;
+          font-family: -apple-system, 'Inter', sans-serif; white-space: nowrap; flex-shrink: 0;
+        }
+        .hero-buttons { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .hero-image-wrap {
+          flex: 0 0 auto;
+          width: min(760px, calc(100% - 520px));
+          margin-left: auto;
+          position: relative;
+          border-radius: 24px; align-self: stretch; min-height: 460px;
+        }
+        .hero-image-inner {
+          position: absolute; inset: 0; overflow: hidden;
+          border-radius: 24px; pointer-events: none;
+        }
+        .hero-image-wrap img {
+          position: absolute; height: 100%; left: -41.65%;
+          width: 141.62%; top: 0; max-width: none;
+        }
+
+        /* ===== STATS BAR ===== */
+        .stats-section { padding: 0 80px 40px; }
+        .stats-bar {
+          display: flex; align-items: center; justify-content: space-between;
+          border: 1px solid #d3c5fd; border-radius: 18px;
+          background: white; min-height: 104px; padding: 0 16px;
+        }
+        .stat-item {
+          display: flex; flex: 1; gap: 10px;
+          align-items: center; justify-content: center; padding: 16px 8px;
+        }
+        .stat-item + .stat-item { border-left: 1px solid #d3c5fd; }
+        .stat-icon-box {
+          width: 62px; height: 62px; background: #f7f5ff;
+          border: 1px solid #4137f9; border-radius: 10px;
+          display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .stat-icon-inner { position: relative; width: 38px; height: 38px; overflow: hidden; }
+        .stat-icon-inner img { position: absolute; display: block; max-width: none; }
+        .stat-text { white-space: nowrap; }
+        .stat-number { font-size: 26px; font-weight: 700; color: #4137f9; line-height: 1.2; }
+        .stat-label { font-size: 14px; font-weight: 500; color: #585c7b; line-height: 22px; }
+
+        /* ===== SECTION HELPERS ===== */
+        .section-heading { display: flex; flex-direction: column; gap: 10px; }
+        .section-title { font-size: 30px; font-weight: 700; line-height: 38px; color: #222; }
+        .section-title-lg { font-size: 32px; font-weight: 700; line-height: 40px; color: #222; }
+
+        /* ===== SOLUTIONS ===== */
+        .solutions-section {
+          display: flex; gap: 30px; align-items: flex-start;
+          padding: 40px 80px;
+        }
+        .solutions-left { flex-shrink: 0; display: flex; flex-direction: column; gap: 10px; }
+        .solutions-cards {
+          display: flex; flex: 1; gap: 12px; align-items: stretch; min-width: 0;
+        }
+        .service-card {
+          flex: 1; min-width: 0; background: white; border-radius: 20px;
+          padding: 20px; box-shadow: 0 2px 20px rgba(85,85,85,0.14);
+          display: flex; flex-direction: column; gap: 20px;
+        }
+        .card-icon {
+          border-radius: 10px; display: flex; align-items: center;
+          justify-content: center; flex-shrink: 0; overflow: hidden; padding: 10px 12px;
+        }
+        .card-icon-50 { width: 50px; height: 50px; }
+        .card-icon-60 { width: 60px; height: 60px; }
+        .card-icon-inner { position: relative; flex: 1 0 0; min-width: 1px; overflow: hidden; aspect-ratio: 1 / 1; }
+        .card-icon-inner img { position: absolute; display: block; max-width: none; }
+        .card-title { font-size: 18px; font-weight: 700; color: #222; line-height: 26px; }
+        .card-desc { font-size: 16px; font-weight: 400; color: #3e4265; line-height: 24px; }
+
+        /* ===== ABOUT (AI / SECURITY) ===== */
+        .about-section { padding: 20px 80px; }
+        .about-content { display: flex; gap: 40px; align-items: flex-start; }
+        .about-text { flex-shrink: 0; max-width: 360px; display: flex; flex-direction: column; gap: 20px; }
+        .about-title { font-size: 32px; font-weight: 700; line-height: 40px; color: #222; }
+        .about-desc { font-size: 18px; line-height: 26px; color: #3e4265; }
+        .about-image { flex: 1; min-width: 0; border-radius: 16px; overflow: hidden; }
+        .about-image img { width: 100%; height: auto; }
+
+        /* ===== FEATURES ===== */
+        .features-section { padding: 40px 80px; }
+        .features-header {
+          display: flex; flex-direction: column; gap: 10px;
+          align-items: center; text-align: center; margin-bottom: 40px;
+        }
+        .features-header .badge { align-self: center; }
+        .features-grid { display: flex; gap: 12px; align-items: stretch; }
+        .feature-card {
+          flex: 1; min-width: 0; background: white; border-radius: 20px;
+          padding: 20px; box-shadow: 0 2px 20px rgba(85,85,85,0.14);
+          display: flex; flex-direction: column; gap: 30px;
+          align-items: center; text-align: center;
+        }
+        .feature-title { font-size: 16px; font-weight: 700; color: #222; line-height: 24px; }
+        .feature-desc { font-size: 16px; font-weight: 400; color: #3e4265; line-height: 24px; margin-top: 4px; }
+
+        /* ===== PARTNERS ===== */
+        .partners-section {
+          display: flex; align-items: center; gap: 40px;
+          padding: 40px 80px;
+        }
+        .partners-list { display: flex; flex: 1; gap: 0; align-items: center; }
+        .partner-item {
+          flex: 1; display: flex; align-items: center;
+          justify-content: center; padding: 20px 14px;
+        }
+        .partner-item img { width: 100%; max-width: 140px; height: 74px; object-fit: contain; }
+
+        /* ===== PRICING ===== */
+        .pricing-section { padding: 40px 80px; }
+        .pricing-content { display: flex; flex-direction: column; gap: 30px; }
+        .pricing-top-row { display: flex; align-items: flex-start; justify-content: space-between; width: 100%; gap: 20px; }
+        .pricing-info { display: flex; flex-direction: column; gap: 10px; }
+        .pricing-desc { font-size: 18px; line-height: 26px; color: #3e4265; }
+        .pricing-city-img { width: 374px; height: 211px; flex-shrink: 0; object-fit: cover; display: block; }
+        .pricing-cards { display: flex; gap: 10px; align-items: stretch; width: 100%; }
+        .pricing-card {
+          flex: 1; min-width: 0; background: white; border-radius: 20px;
+          padding: 24px 16px; box-shadow: 0 2px 20px rgba(85,85,85,0.08);
+          display: flex; flex-direction: column; justify-content: space-between;
+          gap: 20px; position: relative;
+        }
+        .pricing-card.featured {
+          border: 1px solid #4137f9;
+          box-shadow: 0 2px 10px rgba(36,85,224,0.3);
+        }
+        .popular-badge {
+          position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+          background: #4137f9; color: white; font-size: 14px; font-weight: 500;
+          padding: 6px 12px; border-radius: 12px; text-transform: uppercase; white-space: nowrap;
+        }
+        .pricing-header {
+          padding-bottom: 16px; border-bottom: 1px solid #d4d7e5;
+          display: flex; flex-direction: column; gap: 6px;
+        }
+        .plan-name { font-size: 20px; font-weight: 700; color: #0c091a; line-height: 28px; }
+        .price-row { display: flex; align-items: flex-end; gap: 3px; }
+        .price { font-size: 25px; font-weight: 700; color: #4137f9; line-height: 36px; }
+        .period { font-size: 14px; color: #585c7b; line-height: 30px; }
+        .plan-sub { font-size: 14px; color: #585c7b; line-height: 22px; }
+        .plan-features { display: flex; flex-direction: column; gap: 6px; }
+        .plan-feature-item { display: flex; align-items: center; gap: 4px; }
+        .plan-feature-item img { width: 24px; height: 24px; flex-shrink: 0; }
+        .plan-feature-text {
+          font-size: 13px; color: #0c091a; line-height: 22px;
+          font-family: -apple-system, 'Inter', sans-serif;
+        }
+
+        /* ===== CTA ===== */
+        .cta-section { padding: 40px 80px; }
+        .cta-wrap {
+          position: relative; border-radius: 24px;
+          overflow: hidden; padding: 40px;
+          background: #4137f9;
+        }
+        .cta-bg {
+          position: absolute; inset: 0; width: 100%;
+          height: 100%; object-fit: cover; pointer-events: none;
+        }
+        .cta-inner {
+          position: relative; z-index: 1;
+          display: flex; gap: 50px; align-items: center;
+        }
+        .cta-text { color: white; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+        .cta-headline { font-size: 24px; font-weight: 700; line-height: 32px; }
+        .cta-sub { font-size: 16px; line-height: 24px; max-width: 403px; }
+        .cta-actions { display: flex; gap: 12px; align-items: center; flex-shrink: 0; }
+
+        /* ===== FOOTER ===== */
+        footer {
+          background: #210968; padding: 50px 60px 30px;
+          display: flex; flex-direction: column; gap: 30px;
+        }
+        .footer-main { display: flex; gap: 40px; align-items: flex-start; }
+        .footer-brand {
+          width: 291px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px;
+        }
+        .footer-logo { position: relative; width: 165px; height: 42px; }
+        .footer-logo .logo-icon { filter: brightness(10); }
+        .footer-logo .logo-text { filter: brightness(10); }
+        .footer-brand-desc { font-size: 14px; line-height: 22px; color: #f7f5ff; }
+        .footer-socials { display: flex; gap: 12px; align-items: center; }
+        .footer-social { width: 33px; height: 33px; }
+        .footer-col { flex: 1; display: flex; flex-direction: column; gap: 16px; min-width: 120px; }
+        .footer-col-title { font-size: 18px; font-weight: 700; color: white; line-height: 26px; }
+        .footer-links { display: flex; flex-direction: column; }
+        .footer-link {
+          font-size: 14px; color: #f7f5ff; padding: 6px 0; line-height: 22px;
+          transition: color 0.2s;
+        }
+        .footer-link:hover { color: white; }
+        .footer-contact { display: flex; flex-direction: column; gap: 10px; }
+        .footer-contact-item { display: flex; align-items: flex-start; gap: 8px; }
+        .footer-contact-item img { width: 20px; height: 20px; flex-shrink: 0; margin-top: 1px; }
+        .footer-contact-item span { font-size: 14px; color: #f7f5ff; line-height: 22px; }
+        .footer-bottom {
+          display: flex; align-items: center; justify-content: space-between;
+          padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.15);
+          flex-wrap: wrap; gap: 12px;
+        }
+        .footer-copy { font-size: 13px; color: #f7f5ff; }
+        .footer-badges { display: flex; align-items: center; gap: 12px; }
+        .footer-badges img { height: 36px; width: auto; }
+
+        /* ===== NEWSLETTER ===== */
+        .footer-newsletter {
+          background: #18154c; padding: 14px; border-radius: 14px;
+          display: flex; flex-direction: column; gap: 16px;
+          flex: 1 0 0; min-width: 0;
+        }
+        .newsletter-title { font-size: 18px; font-weight: 700; color: white; line-height: 26px; }
+        .newsletter-sub { font-size: 14px; color: #f7f5ff; line-height: 22px; }
+        .newsletter-form-row {
+          display: flex; gap: 10px; align-items: center;
+          background: white; border-radius: 12px;
+          padding: 4px 4px 4px 12px; width: 100%;
+        }
+        .newsletter-input {
+          flex: 1; min-width: 0; border: none; outline: none;
+          background: transparent; padding: 0;
+          font-size: 14px; color: #3e4265; font-family: 'Inter', sans-serif;
+        }
+        .newsletter-input::placeholder { color: #9397ad; }
+        .newsletter-btn {
+          border: none; cursor: pointer; background: #4137f9;
+          color: white; font-size: 16px; font-weight: 400; padding: 14px 16px;
+          white-space: nowrap; font-family: 'Inter', sans-serif;
+          border-radius: 8px; transition: opacity 0.2s; flex-shrink: 0;
+        }
+        .newsletter-btn:hover { opacity: 0.88; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+          .navbar { padding: 24px 40px 0; }
+          .hero-section { padding: 16px 40px 60px; }
+          .stats-section { padding: 0 40px 40px; }
+          .solutions-section { padding: 32px 40px; flex-direction: column; }
+          .about-section { padding: 16px 40px; }
+          .features-section { padding: 32px 40px; }
+          .partners-section { padding: 32px 40px; }
+          .pricing-section { padding: 32px 40px; }
+          .cta-section { padding: 32px 40px; }
+          footer { padding: 40px 40px 24px; }
+          .hero-headline { font-size: 42px; }
+        }
+        @media (max-width: 1024px) {
+          .nav-links { gap: 0; }
+          .nav-link { font-size: 14px; padding: 4px 6px; }
+          .features-grid { flex-wrap: wrap; }
+          .feature-card { flex: 0 0 calc(33.33% - 8px); min-width: calc(33.33% - 8px); }
+          .pricing-top-row { flex-direction: column; }
+          .pricing-city-img { width: 100%; height: auto; }
+          .about-text { max-width: 320px; }
+        }
+        @media (max-width: 768px) {
+          .navbar { padding: 16px 20px 0; }
+          .nav-links, .nav-actions { display: none; }
+          .hamburger { display: flex; }
+          .hero-section { padding: 16px 20px 48px; }
+          .hero-content { flex-direction: column; }
+          .hero-text { max-width: 100%; padding-top: 12px; }
+          .hero-headline { font-size: 30px; letter-spacing: -1px; }
+          .hero-image-wrap { width: 100%; min-height: 220px; align-self: auto; flex: none; border-radius: 16px; }
+          .hero-image-inner { border-radius: 16px; }
+          .hero-image-wrap img { left: 0; width: 100%; }
+          .stats-section { padding: 0 20px 32px; }
+          .stats-bar { flex-wrap: wrap; min-height: auto; padding: 12px; }
+          .stat-item { flex: 0 0 calc(50% - 12px); justify-content: flex-start; border-left: none !important; }
+          .stat-item:nth-child(odd) { border-right: 1px solid #d3c5fd; }
+          .solutions-section { padding: 28px 20px; flex-direction: column; }
+          .solutions-cards { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 8px; -webkit-overflow-scrolling: touch; }
+          .service-card { flex: 0 0 180px; min-width: 180px; }
+          .about-section { padding: 16px 20px; }
+          .about-content { flex-direction: column; }
+          .about-text { max-width: 100%; }
+          .features-section { padding: 28px 20px; }
+          .features-grid { flex-wrap: wrap; gap: 10px; }
+          .feature-card { flex: 0 0 calc(50% - 5px); min-width: calc(50% - 5px); }
+          .partners-section { padding: 28px 20px; flex-direction: column; align-items: flex-start; }
+          .partners-list { overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch; }
+          .partner-item { min-width: 90px; flex: 0 0 90px; }
+          .pricing-section { padding: 28px 20px; }
+          .pricing-top-row { flex-direction: column; }
+          .pricing-city-img { width: 100%; height: auto; }
+          .pricing-cards { flex-wrap: wrap; gap: 12px; }
+          .pricing-card { flex: 0 0 calc(50% - 6px); min-width: calc(50% - 6px); }
+          .cta-section { padding: 28px 20px; }
+          .cta-wrap { padding: 28px 24px; }
+          .cta-inner { flex-direction: column; gap: 24px; align-items: flex-start; }
+          .cta-text { flex-shrink: 1; }
+          .cta-actions { flex-wrap: wrap; }
+          footer { padding: 36px 20px 20px; }
+          .footer-main { flex-wrap: wrap; gap: 28px; }
+          .footer-brand { width: 100%; }
+          .footer-col { flex: 0 0 calc(50% - 20px); }
+          .footer-newsletter { flex: 0 0 100%; }
+        }
+        @media (max-width: 480px) {
+          .hero-headline { font-size: 26px; }
+          .feature-card { flex: 0 0 calc(50% - 5px); min-width: calc(50% - 5px); }
+          .pricing-card { flex: 0 0 100%; min-width: 100%; }
+          .footer-col { flex: 0 0 100%; }
+          .footer-newsletter { flex: 0 0 100%; }
+          .cta-actions { flex-direction: column; width: 100%; }
+          .cta-actions .btn { width: 100%; justify-content: center; }
+        }
+      `}</style>
+    </>
+  );
+}
